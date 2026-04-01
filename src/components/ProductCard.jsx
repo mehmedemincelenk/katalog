@@ -237,7 +237,7 @@ export default function ProductCard({ product, categories = [], isAdmin, onDelet
             >
               <div className="flex items-center gap-1.5 pointer-events-none select-none">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
-                <span className="text-[10px] font-bold text-stone-600">Kategori (Sürükle)</span>
+                <span className="text-[10px] font-bold text-stone-600">Kategori</span>
               </div>
               <button type="button" onClick={() => setIsEditingCategory(false)} className="text-stone-400 hover:text-stone-700 leading-none">×</button>
             </div>

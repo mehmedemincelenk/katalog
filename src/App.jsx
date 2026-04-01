@@ -74,11 +74,9 @@ export default function App() {
           <h1 className="text-sm font-semibold text-stone-500">
             {filteredProducts.length} ürün listeleniyor
           </h1>
-          {isAdmin && (
-            <div className="text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 px-2 py-1 rounded">
-              🔓 Admin Modu Aktif
-            </div>
-          )}
+          <div className={`text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 px-2 py-1 rounded transition-opacity ${isAdmin ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            🔓 Admin Modu Aktif
+          </div>
         </div>
 
         <ProductGrid

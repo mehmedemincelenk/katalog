@@ -15,7 +15,7 @@ export const COMPANY = {
 
 // ----- Navbar -----
 export const NAVBAR = {
-  heightClass: 'h-14',                     // Bar yüksekliği
+  heightClass: 'h-12',                     // Bar yüksekliği
   bgClass: 'bg-white',                 // Arka plan
   borderClass: 'border-b border-stone-200',// Alt çizgi
   shadowClass: 'shadow-sm',                // Gölge yoğunluğu
@@ -106,7 +106,7 @@ export const CAROUSEL = {
   titleSizePC: 'sm:text-xl lg:text-2xl',        // [PC] Başlık boyutu
   titleWeight: 'font-extrabold',
   titleColor: 'text-white',
-  titleTracking: 'tracking-tight leading-none mb-1',
+  titleTracking: 'tracking-tight',
   titleShadow: 'drop-shadow',
 
   // Alt Metin (Sub) Tasarımı

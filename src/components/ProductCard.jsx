@@ -283,33 +283,37 @@ export default function ProductCard({ product, categories = [], isAdmin, onDelet
               className="absolute bottom-full right-0 mb-1.5 z-40 bg-white border border-stone-200 rounded-full shadow-xl px-1.5 py-1.5 flex items-center gap-1.5 origin-bottom-right"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Stock Toggle */}
+              {/* Stock Toggle (Cube SVG) */}
               <button 
                 type="button"
                 onClick={() => { onUpdate(product.id, { inStock: product.inStock === false ? true : false }); setShowActions(false); }}
-                className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors ${product.inStock !== false ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors ${product.inStock !== false ? 'bg-stone-900 text-white' : 'bg-transparent text-stone-400 hover:bg-stone-100 hover:text-stone-700'}`}
                 title={product.inStock !== false ? "Stokta Var (Kapatmak için tıkla)" : "Tükendi (Açmak için tıkla)"}
               >
-                {product.inStock !== false ? '✅' : '❌'}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                </svg>
               </button>
 
-              {/* Archive Toggle */}
+              {/* Archive Toggle (Archive Box SVG) */}
               <button 
                 type="button"
                 onClick={() => { onUpdate(product.id, { isArchived: !product.isArchived }); setShowActions(false); }}
-                className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors ${product.isArchived ? 'bg-amber-100 text-amber-700 hover:bg-amber-200' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}
-                title={product.isArchived ? "Arşivden Çıkar" : "Arşivle"}
+                className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors ${product.isArchived ? 'bg-stone-900 text-white' : 'bg-transparent text-stone-400 hover:bg-stone-100 hover:text-stone-700'}`}
+                title={product.isArchived ? "Arşivden Çıkar" : "Arşive Al"}
               >
-                {product.isArchived ? '👁️' : '📦'}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                </svg>
               </button>
 
               <div className="w-px h-4 bg-stone-200 mx-0.5"></div>
 
-              {/* Delete Button */}
+              {/* Delete Button (Trash) */}
               <button 
                 type="button"
                 onClick={(e) => { setShowActions(false); handleDeleteClick(e); }}
-                className="w-7 h-7 flex items-center justify-center rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                className="w-7 h-7 flex items-center justify-center rounded-full bg-transparent text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors"
                 title="Kalıcı Olarak Sil"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

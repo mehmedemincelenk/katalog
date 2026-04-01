@@ -14,12 +14,10 @@
     transition: opacity 0.8s ease-in-out;
   }
 
-  /* Düzenlenebilir alanlar — contenteditable ve açıklama textarea aynı görünüm */
+  /* Düzenlenebilir alanlar — SIFIR çerçeve kuralı */
   [contenteditable="true"],
   .admin-textarea {
-    outline: 2px dashed theme('colors.amber.400');
-    outline-offset: 2px;
-    border-radius: 2px;
+    outline: none !important;
     cursor: text;
   }
 

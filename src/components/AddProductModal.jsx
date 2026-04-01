@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { MODAL } from '../data/config';
 
-const EMPTY = { name: '', category: '', newCategory: '', price: '', description: '', image: null };
+const EMPTY = { name: '', category: '', newCategory: '', price: '', description: '', image: null, inStock: true };
 
 export default function AddProductModal({ categories = [], onAdd, onClose }) {
   const [form, setForm] = useState(EMPTY);
@@ -79,6 +79,20 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
 
           {/* Text fields */}
           <div className="space-y-3">
+            <div className="flex items-center justify-between bg-stone-50 border border-stone-200 rounded-md px-3 py-2">
+              <label className="text-xs font-semibold text-stone-600 cursor-pointer select-none" htmlFor="add-instock">
+                Ürün Stokta Var Mı?
+              </label>
+              <input
+                id="add-instock"
+                name="inStock"
+                type="checkbox"
+                checked={form.inStock}
+                onChange={(e) => setForm((prev) => ({ ...prev, inStock: e.target.checked }))}
+                className="w-4 h-4 text-stone-900 border-stone-300 rounded focus:ring-stone-900 focus:ring-2"
+              />
+            </div>
+
             <div>
               <label className="block text-xs font-semibold text-stone-600 mb-1" htmlFor="add-name">
                 Ürün Adı *

@@ -65,12 +65,6 @@ export default function HeroCarousel({ isAdmin }) {
                ></div>
             )}
             
-            {isAdmin && idx === activeIndex && (
-               <div className="absolute top-4 right-4 bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-1 rounded z-30 shadow border border-amber-300 pointer-events-none">
-                 Resme Tıkla → Değiştir | Yazıya Tıkla → Düzenle
-               </div>
-            )}
-            
             {/* Glassmorphism Text Box (Sol Alt) */}
             <div className={`absolute z-20 ${boxPositionMobile} ${boxPositionPC} ${boxWidthMobile} ${boxWidthPC} ${boxPaddingMobile} ${boxPaddingPC} ${boxRounding} ${boxBg} ${boxBorder} ${boxShadow}`}>
               <h2 

@@ -131,7 +131,7 @@ export default function ProductCard({ product, isAdmin, onDelete, onUpdate }) {
   };
 
   return (
-    <article className={`bg-white border border-stone-200 rounded-lg overflow-hidden flex flex-col group hover:shadow-md transition-shadow duration-200 relative ${isAdmin ? 'ring-1 ring-amber-300' : ''}`}>
+    <article className="bg-white border border-stone-200 rounded-lg overflow-hidden flex flex-col group hover:shadow-md transition-shadow duration-200 relative">
 
       {/* Admin: trash button */}
       {isAdmin && (
@@ -148,14 +148,8 @@ export default function ProductCard({ product, isAdmin, onDelete, onUpdate }) {
           ? <img src={getImageUrl(product.image)} alt={product.name} className="w-full h-full object-cover" draggable={false} />
           : <div className="flex flex-col items-center gap-1 text-stone-300 select-none">
               <span className="text-5xl">📦</span>
-              {isAdmin && <span className="text-[10px] text-stone-400 font-medium">Resim ekle</span>}
             </div>
         }
-        {isAdmin && (
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-            <span className="opacity-0 group-hover:opacity-100 text-white text-[10px] font-semibold bg-black/50 px-2 py-1 rounded transition-opacity">Değiştir</span>
-          </div>
-        )}
         <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={handleFileChange} />
 
         {/* Category chip — top-left overlay */}
@@ -205,12 +199,6 @@ export default function ProductCard({ product, isAdmin, onDelete, onUpdate }) {
         </p>
       </div>
 
-      {/* Admin hint */}
-      {isAdmin && (
-        <div className="px-2 pb-1.5 text-[9px] text-stone-400 italic">
-          🗑 Sil &nbsp;|&nbsp; Resme tıkla → değiştir &nbsp;|&nbsp; Alanlara tıkla → düzenle
-        </div>
-      )}
-    </article>
+      </article>
   );
 }

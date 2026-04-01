@@ -52,7 +52,7 @@ export const STORAGE_KEY = 'toptanambalaj_products_v5'; // localStorage anahtar�
 // ----- UI / Modal Tasarımı -----
 export const MODAL = {
   bgClass: 'bg-white',
-  maxWidthClass: 'max-w-md',
+  maxWidthClass: 'max-w-sm',
   roundingClass: 'rounded-xl',
   shadowClass: 'shadow-2xl',
   overlayBg: 'bg-black/50',
@@ -87,7 +87,7 @@ export const CAROUSEL = {
   boxShadow: 'shadow-2xl',                       // Derinlik gölgesi
 
   // Ana Başlık (Label) Tasarımı
-  titleSizeMobile: 'text-[10px]',                // [MOBİL] Başlık boyutu
+  titleSizeMobile: 'text-[12px]',                // [MOBİL] Başlık boyutu
   titleSizePC: 'sm:text-xl lg:text-2xl',        // [PC] Başlık boyutu
   titleWeight: 'font-extrabold',
   titleColor: 'text-white',
@@ -95,7 +95,7 @@ export const CAROUSEL = {
   titleShadow: 'drop-shadow',
 
   // Alt Metin (Sub) Tasarımı
-  subSizeMobile: 'text-[8px]',                  // [MOBİL] Alt metin boyutu
+  subSizeMobile: 'text-[10px]',                  // [MOBİL] Alt metin boyutu
   subSizePC: 'text-[12px]',                     // [PC] Alt metin boyutu
   subWeight: 'font-medium',
   subColor: 'text-white/90',

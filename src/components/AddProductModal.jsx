@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { MODAL } from '../data/config';
 
-const EMPTY = { name: '', category: '', price: '', description: '', image: null };
+const EMPTY = { name: '', category: '', newCategory: '', price: '', description: '', image: null };
 
 export default function AddProductModal({ categories = [], onAdd, onClose }) {
   const [form, setForm] = useState(EMPTY);
@@ -26,11 +26,12 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.category.trim() || !form.price.trim()) {
+    const finalCategory = form.newCategory.trim() || form.category.trim();
+    if (!form.name.trim() || !finalCategory || !form.price.trim()) {
       setError('Lütfen tüm alanları doldurun.');
       return;
     }
-    onAdd({ ...form, name: form.name.trim(), category: form.category.trim(), price: form.price.trim() });
+    onAdd({ ...form, name: form.name.trim(), category: finalCategory, price: form.price.trim() });
     onClose();
   };
 
@@ -93,24 +94,39 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-stone-600 mb-1" htmlFor="add-category">
+              <label className="block text-xs font-semibold text-stone-600 mb-2">
                 Kategori *
               </label>
+              
+              {/* Mevcut Kategoriler (Chip Seçimi) */}
+              {categories.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setForm((prev) => ({ ...prev, category: cat, newCategory: '' }))}
+                      className={`px-2 py-1 text-[10px] font-semibold rounded-full border transition-colors ${
+                        form.category === cat && !form.newCategory
+                          ? 'bg-stone-900 text-white border-stone-900'
+                          : 'bg-white text-stone-600 border-stone-300 hover:border-stone-500'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              )}
+              
+              {/* Yeni Kategori Ekleme */}
               <input
-                id="add-category"
-                name="category"
+                name="newCategory"
                 type="text"
-                list="existing-categories"
-                value={form.category}
-                onChange={handleChange}
-                placeholder="Örn. Kargo Kutuları (Seç veya Yaz)"
+                value={form.newCategory}
+                onChange={(e) => setForm((prev) => ({ ...prev, newCategory: e.target.value, category: '' }))}
+                placeholder="Veya yeni kategori yazın..."
                 className="w-full border border-stone-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-kraft-400 focus:border-kraft-400 transition"
               />
-              <datalist id="existing-categories">
-                {categories.map((cat) => (
-                  <option key={cat} value={cat} />
-                ))}
-              </datalist>
             </div>
             <div>
               <label className="block text-xs font-semibold text-stone-600 mb-1" htmlFor="add-price">

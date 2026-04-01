@@ -66,19 +66,19 @@ export const CAROUSEL = {
   roundedClass: 'rounded-md',  // Köşe yuvarlama
 
   // Kutucuk (Glassmorphism) Görünümü
-  boxPositionMobile: 'bottom-10 left-4',         // [MOBİL] Kutunun konumu
-  boxPositionPC: 'sm:bottom-10 sm:left-6',      // [PC] Kutunun konumu (Geniş ekranlar için sm: veya lg: öneki şarttır)
+  boxPositionMobile: 'bottom-8 left-2',          // [MOBİL] Kutunun konumu
+  boxPositionPC: 'sm:bottom-10 sm:left-6',       // [PC] Kutunun konumu (Geniş ekranlar için sm: veya lg: öneki şarttır)
   boxWidthMobile: 'max-w-[40%]',                 // [MOBİL] Kutu maksimum genişliği
   boxWidthPC: 'sm:max-w-md',                     // [PC] Kutu maksimum genişliği
   boxPaddingMobile: 'p-3',                       // [MOBİL] Kutu iç boşluğu
   boxPaddingPC: 'sm:p-5',                        // [PC] Kutu iç boşluğu
-  boxRounding: 'rounded-2xl',                    // Köşe yuvarlama
+  boxRounding: 'rounded-xl',                     // Köşe yuvarlama
   boxBg: 'bg-black/25 backdrop-blur-md',         // Arka plan (buzlu cam efekti) 
   boxBorder: 'border border-white/20',           // Kenarlık
   boxShadow: 'shadow-2xl',                       // Derinlik gölgesi
 
   // Ana Başlık (Label) Tasarımı
-  titleSizeMobile: 'text-[14px]',                // [MOBİL] Başlık boyutu
+  titleSizeMobile: 'text-[10px]',                // [MOBİL] Başlık boyutu
   titleSizePC: 'sm:text-xl lg:text-2xl',        // [PC] Başlık boyutu
   titleWeight: 'font-extrabold',
   titleColor: 'text-white',
@@ -86,7 +86,7 @@ export const CAROUSEL = {
   titleShadow: 'drop-shadow',
 
   // Alt Metin (Sub) Tasarımı
-  subSizeMobile: 'text-[10px]',                  // [MOBİL] Alt metin boyutu
+  subSizeMobile: 'text-[8px]',                  // [MOBİL] Alt metin boyutu
   subSizePC: 'text-[12px]',                     // [PC] Alt metin boyutu
   subWeight: 'font-medium',
   subColor: 'text-white/90',
@@ -143,7 +143,7 @@ export const REFERENCES = [
 // ----- Ürün Kartı Tipografisi -----
 export const CARD_TYPOGRAPHY = {
   // Kategori chip (resim üstü overlay)
-  categoryFontSize: 'text-[8px]',             // Çip metin boyutu
+  categoryFontSize: 'text-[6px]',             // Çip metin boyutu
   categoryWeight: 'font-semibold',            // Çip metin kalınlığı
   categoryCase: 'uppercase',                  // Çip metni büyük/küçük harf durumu
   categoryTracking: 'tracking-wider',         // Çip harf arası boşluk (harf aralığı)
@@ -160,7 +160,7 @@ export const CARD_TYPOGRAPHY = {
   nameLeading: 'leading-snug',                // Ürün adı satır yüksekliği
 
   // Fiyat
-  priceFontSize: 'text-[16px]',               // Ürün fiyatı yazı boyutu
+  priceFontSize: 'text-[14px]',               // Ürün fiyatı yazı boyutu
   priceWeight: 'font-bold',                   // Ürün fiyatı yazı kalınlığı
   priceColor: 'text-stone-900',               // Ürün fiyatı yazı rengi
 

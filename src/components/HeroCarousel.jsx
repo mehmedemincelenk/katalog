@@ -32,7 +32,7 @@ export default function HeroCarousel({ isAdmin }) {
   }, [next, intervalMs, isAdmin]);
 
   return (
-    <div className={`relative w-full h-64 sm:h-80 lg:h-96 overflow-hidden mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4`}>
+    <div className={`relative w-full ${heightMobile} ${heightTablet} ${heightPC} overflow-hidden ${containerWidth} ${containerPadding} ${containerMargin}`}>
       <div className={`relative w-full h-full overflow-hidden ${roundedClass}`}>
         {slides.map((slide, idx) => (
           <div
@@ -114,13 +114,13 @@ export default function HeroCarousel({ isAdmin }) {
         />
 
         {/* Dot indicators */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+        <div className={`absolute ${dotPosition} left-1/2 -translate-x-1/2 flex ${dotGap} z-10`}>
           {slides.map((_, i) => (
             <button
               key={i}
               onClick={() => setActiveIndex(i)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                i === activeIndex ? 'bg-white scale-125' : 'bg-white/50'
+              className={`${dotSize} rounded-full transition-all duration-300 ${
+                i === activeIndex ? dotActive : dotInactive
               }`}
               aria-label={`Slayt ${i + 1}`}
             />

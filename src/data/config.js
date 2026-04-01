@@ -21,12 +21,12 @@ export const NAVBAR = {
   shadowClass: 'shadow-sm',                // Gölge yoğunluğu
   // Logo
   logoEmojiSize: 'text-[20px]',              // Emoji boyutu
-  logoNameSize: 'text-[14px]',              // Marka adı boyutu
+  logoNameSize: 'text-[12px]',              // Marka adı boyutu
   logoNameWeight: 'font-bold',                // Marka adı kalınlığı
   logoTaglineSize: 'text-[10px]',              // Tagline boyutu
   logoTaglineColor: 'text-kraft-600',           // Tagline rengi
   // Telefon & WhatsApp kombinasyon butonu
-  phoneSize: 'text-[10px]',              // Telefon yazı boyutu
+  phoneSize: 'text-[9px]',              // Telefon yazı boyutu
   phoneWeight: 'font-semibold',            // Telefon yazı kalınlığı
   phoneColor: 'text-stone-900',           // Telefon yazı rengi
   phoneHoverColor: 'hover:text-kraft-700',     // Telefon hover rengi
@@ -72,7 +72,22 @@ export const MODAL = {
 // ----- Carousel -----
 export const CAROUSEL = {
   intervalMs: 4000,          // Slayt geçiş süresi (ms)
+
+  // Dış Kasa (Kapsayıcı) ve Yükseklik Yaratıcıları
+  heightMobile: 'h-64',
+  heightTablet: 'sm:h-80',
+  heightPC: 'lg:h-96',
+  containerWidth: 'mx-auto max-w-7xl',
+  containerPadding: 'px-4 sm:px-6 lg:px-8',
+  containerMargin: 'mt-4',
   roundedClass: 'rounded-md',  // Köşe yuvarlama
+
+  // Slayt İndikatörleri (Alttaki Noktalar)
+  dotPosition: 'bottom-3',
+  dotGap: 'gap-1.5',
+  dotSize: 'w-2 h-2',
+  dotActive: 'bg-white scale-125',
+  dotInactive: 'bg-white/50',
 
   // Kutucuk (Glassmorphism) Görünümü
   boxPositionMobile: 'bottom-8 left-2',          // [MOBİL] Kutunun konumu
@@ -101,7 +116,6 @@ export const CAROUSEL = {
   subColor: 'text-white/90',
   subLeading: 'leading-relaxed',
   subShadow: 'drop-shadow',
-  subSpacing: 'mt-0',                            // Alt metin ile üstteki ana başlık arasındaki boşluk
 
   slides: [
     {

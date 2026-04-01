@@ -27,13 +27,19 @@ export default function SearchFilter({ products, search, onSearchChange, activeC
 
         {/* Mobile: Filter Menu Toggle Button */}
         <button
-          className="sm:hidden p-2 text-stone-600 border border-stone-300 rounded-md flex-shrink-0 flex items-center justify-center hover:bg-stone-50"
+          className={`sm:hidden p-2 border rounded-md flex-shrink-0 flex items-center justify-center transition-colors ${isDropdownOpen ? 'bg-stone-900 text-white border-stone-900' : 'text-stone-600 border-stone-300 hover:bg-stone-50'}`}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          title="Kategorileri Göster"
+          title="Kategorileri Menüsü"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clipRule="evenodd" />
-          </svg>
+          {isDropdownOpen ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clipRule="evenodd" />
+            </svg>
+          )}
         </button>
 
         {/* Desktop: Horizontal Scrollable Chips */}
@@ -74,14 +80,16 @@ export default function SearchFilter({ products, search, onSearchChange, activeC
 
       {/* Mobile: Dropdown Absolute Menu */}
       {isDropdownOpen && (
-        <div className="absolute top-full left-0 w-full bg-stone-50 border-b border-stone-200 shadow-xl p-4 z-50 sm:hidden">
-          <div className="flex flex-wrap gap-2">
-            {categories.map((cat) => {
-              const isActive = cat === 'Tümü' ? activeCategories.length === 0 : activeCategories.includes(cat);
-              return (
-                <div key={cat} className="group flex items-center gap-1">
-                  <button
-                    onClick={() => { if(!isAdmin) { onCategoryToggle(cat); setIsDropdownOpen(false); } }}
+        <>
+          <div className="fixed inset-0 z-40 sm:hidden" onClick={() => setIsDropdownOpen(false)} />
+          <div className="absolute top-full left-0 w-full bg-stone-50 border-b border-stone-200 shadow-xl p-4 z-50 sm:hidden">
+            <div className="flex flex-wrap gap-2">
+              {categories.map((cat) => {
+                const isActive = cat === 'Tümü' ? activeCategories.length === 0 : activeCategories.includes(cat);
+                return (
+                  <div key={cat} className="group flex items-center gap-1">
+                    <button
+                      onClick={() => { if(!isAdmin) { onCategoryToggle(cat); } }}
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors duration-150 shadow-sm ${
                       isActive && !isAdmin ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-600 border-stone-300'
                     } ${isAdmin ? 'cursor-text bg-amber-50' : ''}`}
@@ -106,6 +114,7 @@ export default function SearchFilter({ products, search, onSearchChange, activeC
             })}
           </div>
         </div>
+        </>
       )}
     </section>
   );

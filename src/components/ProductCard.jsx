@@ -123,6 +123,12 @@ export default function ProductCard({ product, isAdmin, onDelete, onUpdate }) {
   // Replaces raw newlines to map to our • visual output, or just let users type directly
   const descLines = (product.description || '').split('\n').filter(Boolean);
 
+  const getImageUrl = (path) => {
+    if (!path) return path;
+    if (path.startsWith('http') || path.startsWith('data:')) return path;
+    return `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
+  };
+
   return (
     <article className={`bg-white border border-stone-200 rounded-lg overflow-hidden flex flex-col group hover:shadow-md transition-shadow duration-200 relative ${isAdmin ? 'ring-1 ring-amber-300' : ''}`}>
 
@@ -138,7 +144,7 @@ export default function ProductCard({ product, isAdmin, onDelete, onUpdate }) {
       {/* Image */}
       <div className={`relative w-full bg-stone-100 aspect-square flex items-center justify-center overflow-hidden ${isAdmin ? 'cursor-pointer' : ''}`} onClick={handleImageClick}>
         {product.image
-          ? <img src={product.image} alt={product.name} className="w-full h-full object-cover" draggable={false} />
+          ? <img src={getImageUrl(product.image)} alt={product.name} className="w-full h-full object-cover" draggable={false} />
           : <div className="flex flex-col items-center gap-1 text-stone-300 select-none">
               <span className="text-5xl">📦</span>
               {isAdmin && <span className="text-[10px] text-stone-400 font-medium">Resim ekle</span>}

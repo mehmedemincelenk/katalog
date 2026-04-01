@@ -19,6 +19,12 @@ export default function HeroCarousel({ isAdmin }) {
     setActiveIndex((i) => (i + 1) % slides.length);
   }, [slides.length]);
 
+  const getImageUrl = (path) => {
+    if (!path) return path;
+    if (path.startsWith('http') || path.startsWith('data:')) return path;
+    return `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
+  };
+
   useEffect(() => {
     const timer = setInterval(next, intervalMs);
     return () => clearInterval(timer);
@@ -36,7 +42,7 @@ export default function HeroCarousel({ isAdmin }) {
           >
             {slide.src ? (
               <img
-                src={slide.src}
+                src={getImageUrl(slide.src)}
                 alt={slide.label}
                 className={`absolute inset-0 w-full h-full object-cover ${isAdmin ? 'cursor-pointer' : ''}`}
                 onClick={() => {

@@ -37,11 +37,13 @@ export default function App() {
   const filteredProducts = useMemo(() => {
     const term = search.toLowerCase().trim();
     return products.filter((p) => {
+      // Hide archived products from non-admins
+      if (!isAdmin && p.isArchived) return false;
       const matchSearch = !term || p.name.toLowerCase().includes(term);
       const matchCategory = activeCategories.length === 0 || activeCategories.includes(p.category);
       return matchSearch && matchCategory;
     });
-  }, [products, search, activeCategories]);
+  }, [products, search, activeCategories, isAdmin]);
 
   const handleAddProduct = (product) => {
     addProduct(product);

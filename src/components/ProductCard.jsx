@@ -277,35 +277,44 @@ export default function ProductCard({ product, categories = [], isAdmin, onDelet
             </svg>
           </button>
           
-          {/* Actions Popover */}
+          {/* Actions Popover (Icons Only) */}
           {showActions && (
             <div 
-              className="absolute bottom-full right-0 mb-1 z-40 bg-white border border-stone-200 rounded-lg shadow-xl w-36 py-1.5 flex flex-col items-start overflow-hidden origin-bottom-right"
+              className="absolute bottom-full right-0 mb-1.5 z-40 bg-white border border-stone-200 rounded-full shadow-xl px-1.5 py-1.5 flex items-center gap-1.5 origin-bottom-right"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Stock Toggle */}
               <button 
+                type="button"
                 onClick={() => { onUpdate(product.id, { inStock: product.inStock === false ? true : false }); setShowActions(false); }}
-                className="w-full text-left px-3 py-1.5 text-xs font-semibold hover:bg-stone-50 flex items-center justify-between"
+                className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors ${product.inStock !== false ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                title={product.inStock !== false ? "Stokta Var (Kapatmak için tıkla)" : "Tükendi (Açmak için tıkla)"}
               >
-                <span className={product.inStock !== false ? 'text-stone-600' : 'text-green-600'}>
-                  {product.inStock !== false ? '❌ Stokta Yok Yap' : '✅ Stoğa Ekle'}
-                </span>
+                {product.inStock !== false ? '✅' : '❌'}
               </button>
+
+              {/* Archive Toggle */}
               <button 
+                type="button"
                 onClick={() => { onUpdate(product.id, { isArchived: !product.isArchived }); setShowActions(false); }}
-                className="w-full text-left px-3 py-1.5 text-xs font-semibold text-stone-700 hover:bg-stone-50 flex items-center justify-between"
+                className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors ${product.isArchived ? 'bg-amber-100 text-amber-700 hover:bg-amber-200' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}
+                title={product.isArchived ? "Arşivden Çıkar" : "Arşivle"}
               >
-                <span>{product.isArchived ? '👁️ Yayına Al' : '📦 Arşive Kaldır'}</span>
+                {product.isArchived ? '👁️' : '📦'}
               </button>
-              <div className="w-full border-t border-stone-100 my-1"></div>
+
+              <div className="w-px h-4 bg-stone-200 mx-0.5"></div>
+
+              {/* Delete Button */}
               <button 
+                type="button"
                 onClick={(e) => { setShowActions(false); handleDeleteClick(e); }}
-                className="w-full text-left px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 flex items-center gap-1.5"
+                className="w-7 h-7 flex items-center justify-center rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                title="Kalıcı Olarak Sil"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
-                Kalıcı Olarak Sil
               </button>
             </div>
           )}

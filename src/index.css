@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-stone-50 text-stone-900 font-sans;
+  }
+}
+
+@layer utilities {
+  /* Carousel fade animation */
+  .carousel-slide {
+    transition: opacity 0.8s ease-in-out;
+  }
+
+  /* Düzenlenebilir alanlar — contenteditable ve açıklama textarea aynı görünüm */
+  [contenteditable="true"],
+  .admin-textarea {
+    outline: 2px dashed theme('colors.amber.400');
+    outline-offset: 2px;
+    border-radius: 2px;
+    cursor: text;
+  }
+
+  /* Admin floating button pulse */
+  @keyframes admin-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(180, 140, 80, 0.5); }
+    50%       { box-shadow: 0 0 0 8px rgba(180, 140, 80, 0); }
+  }
+  .admin-fab {
+    animation: admin-pulse 2s ease-in-out infinite;
+  }
+
+  /* Marquee — ürün ismi taştığında sürekli kayan yazı */
+  @keyframes marquee-scroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .marquee-track {
+    animation: marquee-scroll 6s linear infinite;
+    white-space: nowrap;
+  }
+
+  /* Dikey oto-kaydırma — açıklama taştığında */
+  @keyframes desc-scroll {
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+  }
+  .desc-scroll-track {
+    animation: desc-scroll 5s linear infinite;
+  }
+}

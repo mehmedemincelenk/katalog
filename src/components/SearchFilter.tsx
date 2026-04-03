@@ -104,6 +104,7 @@ export default function SearchFilter({
   removeCategoryFromProducts,
 }: SearchFilterProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
 
   const dynamicCategories = [
@@ -111,6 +112,15 @@ export default function SearchFilter({
   ];
   const sortedList = sortCategories(dynamicCategories, categoryOrder);
   const categories = ['Tümü', ...sortedList];
+
+  // Masaüstünde sınırlama mantığı (Mobilde tümü görünür olmalı)
+  const DESKTOP_THRESHOLD = 8;
+  const hasMore = categories.length > DESKTOP_THRESHOLD;
+  
+  // Görünür kategoriler: Adminse hepsi, mobildeyse hepsi, masaüstünde 'showAll' ise hepsi, değilse limitli.
+  const visibleCategories = (showAll || isAdmin || isMenuOpen) 
+    ? categories 
+    : categories.slice(0, DESKTOP_THRESHOLD);
 
   const handleDragStart = (e: React.DragEvent, category: string) => {
     if (!isAdmin || category === 'Tümü') return;
@@ -206,23 +216,35 @@ export default function SearchFilter({
               })}
             </div>
           ) : (
-            categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => onCategoryToggle(cat)}
-                className={`px-3 py-1.5 rounded-full text-[10px] font-semibold border transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  (
-                    cat === 'Tümü'
-                      ? activeCategories.length === 0
-                      : activeCategories.includes(cat)
-                  )
-                    ? 'bg-stone-900 text-white border-stone-900 shadow-md scale-105'
-                    : 'bg-white text-stone-600 border-stone-300 hover:border-stone-500'
-                }`}
-              >
-                {cat}
-              </button>
-            ))
+            <>
+              {visibleCategories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => onCategoryToggle(cat)}
+                  className={`px-3 py-1.5 rounded-full text-[10px] font-semibold border transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                    (
+                      cat === 'Tümü'
+                        ? activeCategories.length === 0
+                        : activeCategories.includes(cat)
+                    )
+                      ? 'bg-stone-900 text-white border-stone-900 shadow-md scale-105'
+                      : 'bg-white text-stone-600 border-stone-300 hover:border-stone-500'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+              
+              {/* Daha Fazla Butonu (Sadece Masaüstünde ve Gerekliyse) */}
+              {hasMore && (
+                <button
+                  onClick={() => setShowAll(!showAll)}
+                  className="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-full text-[10px] font-bold bg-stone-100 text-stone-500 border border-stone-200 hover:bg-stone-200 transition-colors"
+                >
+                  {showAll ? ' Daha Az' : `+${categories.length - DESKTOP_THRESHOLD} Daha`}
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>

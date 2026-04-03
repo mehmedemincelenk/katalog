@@ -12,28 +12,23 @@ description: B2B Katalog mimarisi ve Google Sheets veri yönetim kuralları.
 - **Ana Veritabanı:** Google Sheets kullanılır.
 - **Okuma:** `.env` dosyasındaki `VITE_SHEET_URL` (CSV) üzerinden yapılır.
 - **Yazma:** `.env` dosyasındaki `VITE_SHEET_SCRIPT_URL` (Google Apps Script) üzerinden yapılır.
-- **Senkronizasyon:** `products`, `categories` ve `search_logs` sayfaları anlık senkronize edilir.
-- **Görsel Sınırı:** Resimler `base64` formatına dönüştürülmeden **önce** mutlaka `250px` boyutuna sıkıştırılmalıdır (Google Sheets 32KB hücre sınırı nedeniyle).
+- **Performans:** Resimler `base64` formatına dönüştürülmeden **önce** mutlaka `250px` boyutuna sıkıştırılmalıdır (Google Sheets 32KB hücre sınırı nedeniyle).
+- **Offline/Hata:** Veri çekilemezse veya internet yoksa şık bir "Bakım Modu" ekranı gösterilir.
 
-## 2. Merkezi Konfigürasyon (Centralized Config)
-- Telefon, adres ve marka bilgileri `src/data/config.js` dosyasında tutulur.
-- Kod içinde hiçbir "hard-coded" metin veya sayısal sabit bırakılamaz.
+## 2. Teknik Standartlar (TypeScript)
+- **Dil:** Proje tamamen TypeScript (TSX) ile yazılmalıdır.
+- **Tip Güvenliği:** `any` kullanımı yasaktır. Tüm veri modelleri (`Product`, `Category`) `src/types/index.ts` içindeki arayüzleri (interfaces) kullanmalıdır.
+- **Linting:** ESLint ve Prettier kurallarına (tek tırnak, semikolon) sıkı sıkıya uyulmalıdır.
 
-## 3. Admin Toggle Mantığı
-- **Giriş:** Footer logosuna 2 saniye içinde 7 kez ardışık tıklama.
-- **Çıkış:** Admin modu açıkken footer logosuna 1 kez tıklama.
+## 3. Admin ve Güvenlik
+- **Giriş:** Footer logosuna 2 saniye içinde 7 kez tıklanarak aktif edilir.
+- **Senkronizasyon:** Admin panelinden yapılan her değişiklik (`ADD`, `UPDATE`, `DELETE`, `RENAME`) anlık olarak Google Sheets ile senkronize edilir.
 
-## 4. Tasarım Dili (Zorunlu)
-- **Renk Paleti:** Kraft (Bej/Toprak tonları), Beyaz ve Siyah.
-- **Para Birimi:** Fiyatlar daima `₺` simgesiyle gösterilir.
-
-## 5. Sabit UI Bileşenleri
-- **Navbar:** Logo, WhatsApp, Telefon ve Adres.
-- **Header:** HeroCarousel.
+## 4. UI/UX ve Tasarım
+- **Renk Paleti:** Kraft (Toprak tonları), Beyaz ve Siyah.
+- **Mobil Öncelik:** Tasarım önce mobil cihazlar için optimize edilir, PC için `sm:` önekli büyük fontlar kullanılır.
+- **Kategori Sınırı:** Masaüstünde ilk 8 kategori gösterilir, gerisi "+X Daha" butonuyla açılır. Mobilde tümü menü içinde görünür.
 - **Lazy Loading:** Tüm ürün resimleri `loading="lazy"` özniteliğine sahip olmalıdır.
-- **Hata Yönetimi:** Veri çekilemezse "Bakım Modu" ekranı (`App.jsx`) gösterilir.
 
-## 6. Veri Semantiği
-- **name:** Ürün öz adı.
-- **description:** Teknik detaylar (gramaj, adet vb.).
-- **is_archived:** Ürünün yayında olup olmadığını belirleyen boolean alan.
+## 5. Arama ve İstatistik
+- 3 karakterden uzun arama terimleri 2 saniye bekledikten sonra (debounce) `search_logs` sayfasına tarihle beraber kaydedilir.

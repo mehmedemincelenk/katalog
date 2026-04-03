@@ -7,13 +7,43 @@ export default function HeroCarousel({ isAdmin }) {
   const fileInputRef = useRef(null);
   const [editingSlideId, setEditingSlideId] = useState(null);
 
-  const { 
-    intervalMs, swipeThreshold, roundedClass,
-    heightMobile, heightTablet, heightPC, containerWidth, containerPadding, containerMargin,
-    dotPosition, dotGap, dotSize, dotActive, dotInactive,
-    boxPositionMobile, boxPositionPC, boxWidthMobile, boxWidthPC, boxPaddingMobile, boxPaddingPC, boxRounding, boxBg, boxBorder, boxShadow,
-    titleSizeMobile, titleSizePC, titleWeight, titleColor, titleTracking, titleShadow,
-    subSizeMobile, subSizePC, subWeight, subColor, subLeading, subShadow
+  const {
+    intervalMs,
+    swipeThreshold,
+    roundedClass,
+    heightMobile,
+    heightTablet,
+    heightPC,
+    containerWidth,
+    containerPadding,
+    containerMargin,
+    dotPosition,
+    dotGap,
+    dotSize,
+    dotActive,
+    dotInactive,
+    boxPositionMobile,
+    boxPositionPC,
+    boxWidthMobile,
+    boxWidthPC,
+    boxPaddingMobile,
+    boxPaddingPC,
+    boxRounding,
+    boxBg,
+    boxBorder,
+    boxShadow,
+    titleSizeMobile,
+    titleSizePC,
+    titleWeight,
+    titleColor,
+    titleTracking,
+    titleShadow,
+    subSizeMobile,
+    subSizePC,
+    subWeight,
+    subColor,
+    subLeading,
+    subShadow,
   } = CAROUSEL;
   const [activeIndex, setActiveIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
@@ -51,8 +81,10 @@ export default function HeroCarousel({ isAdmin }) {
   }, [next, intervalMs, isAdmin]);
 
   return (
-    <div className={`relative w-full ${heightMobile} ${heightTablet} ${heightPC} overflow-hidden ${containerWidth} ${containerPadding} ${containerMargin}`}>
-      <div 
+    <div
+      className={`relative w-full ${heightMobile} ${heightTablet} ${heightPC} overflow-hidden ${containerWidth} ${containerPadding} ${containerMargin}`}
+    >
+      <div
         className={`relative w-full h-full overflow-hidden ${roundedClass}`}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -78,32 +110,40 @@ export default function HeroCarousel({ isAdmin }) {
                 }}
               />
             ) : (
-               <div 
-                 className={`absolute inset-0 w-full h-full bg-stone-200 ${isAdmin ? 'cursor-pointer' : ''}`}
-                 onClick={() => {
+              <div
+                className={`absolute inset-0 w-full h-full bg-stone-200 ${isAdmin ? 'cursor-pointer' : ''}`}
+                onClick={() => {
                   if (isAdmin) {
                     setEditingSlideId(slide.id);
                     fileInputRef.current?.click();
                   }
                 }}
-               ></div>
+              ></div>
             )}
-            
+
             {/* Glassmorphism Text Box (Sol Alt) */}
-            <div className={`absolute z-20 ${boxPositionMobile} ${boxPositionPC} ${boxWidthMobile} ${boxWidthPC} ${boxPaddingMobile} ${boxPaddingPC} ${boxRounding} ${boxBg} ${boxBorder} ${boxShadow}`}>
-              <h2 
+            <div
+              className={`absolute z-20 ${boxPositionMobile} ${boxPositionPC} ${boxWidthMobile} ${boxWidthPC} ${boxPaddingMobile} ${boxPaddingPC} ${boxRounding} ${boxBg} ${boxBorder} ${boxShadow}`}
+            >
+              <h2
                 className={`${titleColor} ${titleSizeMobile} ${titleSizePC} ${titleWeight} ${titleTracking} ${titleShadow} ${isAdmin ? 'cursor-text focus:outline-none rounded px-1' : ''}`}
                 contentEditable={isAdmin}
                 suppressContentEditableWarning
                 onBlur={(e) => {
                   const val = e.currentTarget.textContent.trim();
-                  if (val && val !== slide.label) updateSlide(slide.id, { label: val });
+                  if (val && val !== slide.label)
+                    updateSlide(slide.id, { label: val });
                 }}
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.currentTarget.blur();
+                  }
+                }}
               >
                 {slide.label}
               </h2>
-              <p 
+              <p
                 className={`${subColor} ${subSizeMobile} ${subSizePC} ${subWeight} ${subShadow} ${subLeading} ${isAdmin ? 'cursor-text focus:outline-none rounded px-1' : ''}`}
                 contentEditable={isAdmin}
                 suppressContentEditableWarning
@@ -111,7 +151,12 @@ export default function HeroCarousel({ isAdmin }) {
                   const val = e.currentTarget.textContent.trim();
                   if (val !== slide.sub) updateSlide(slide.id, { sub: val });
                 }}
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.currentTarget.blur();
+                  }
+                }}
               >
                 {slide.sub}
               </p>
@@ -119,11 +164,11 @@ export default function HeroCarousel({ isAdmin }) {
           </div>
         ))}
 
-        <input 
-          ref={fileInputRef} 
-          type="file" 
-          accept="image/*" 
-          className="hidden" 
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
           onChange={async (e) => {
             const file = e.target.files?.[0];
             if (!file || !editingSlideId) return;
@@ -132,15 +177,17 @@ export default function HeroCarousel({ isAdmin }) {
               const compressedStr = await compressImage(file, 1200, 0.7);
               updateSlide(editingSlideId, { src: compressedStr });
               setEditingSlideId(null);
-            } catch (err) {
-              alert("Slayt fotoğrafı işlenemedi.");
+            } catch {
+              alert('Slayt fotoğrafı işlenemedi.');
             }
             e.target.value = '';
-          }} 
+          }}
         />
 
         {/* Dot indicators */}
-        <div className={`absolute ${dotPosition} left-1/2 -translate-x-1/2 flex ${dotGap} z-10`}>
+        <div
+          className={`absolute ${dotPosition} left-1/2 -translate-x-1/2 flex ${dotGap} z-10`}
+        >
           {slides.map((_, i) => (
             <button
               key={i}

@@ -3,7 +3,7 @@ import { ADMIN } from '../data/config';
 
 export function useAdminMode() {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [clickCount, setClickCount] = useState(0);
+  const [, setClickCount] = useState(0);
   const [timerId, setTimerId] = useState(null);
 
   const handleLogoClick = useCallback(() => {

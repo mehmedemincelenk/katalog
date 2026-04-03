@@ -4,14 +4,14 @@
 
 /**
  * compressImage
- * 
+ *
  * Dosyayı alır, belirtilen boyut ve kalitede Base64 formatına dönüştürür.
  * Google Sheets hücre sınırına (32KB) takılmaması için otomatik olarak boyut düşürür.
- * 
+ *
  * @param {File} file - İşlenecek resim dosyası
  * @param {number} maxSize - Maksimum genişlik veya yükseklik (piksel)
  * @param {number} quality - Sıkıştırma kalitesi (0.1 - 1.0 arası)
- * 
+ *
  * @returns {Promise<string>} Sıkıştırılmış resmin Base64 formatındaki URL'si
  */
 export function compressImage(file, maxSize = 250, quality = 0.6) {
@@ -36,7 +36,7 @@ export function compressImage(file, maxSize = 250, quality = 0.6) {
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
-        
+
         // Beyaz zemin (Saydamlık hatalarını önler)
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -44,12 +44,12 @@ export function compressImage(file, maxSize = 250, quality = 0.6) {
 
         // İlk deneme (varsayılan kaliteyle)
         let dataUrl = canvas.toDataURL('image/jpeg', quality);
-        
+
         // Eğer hala 30.000 karakterden büyükse (Google Sheets sınırı 32k), kaliteyi daha da düşür
         if (dataUrl.length > 30000) {
           dataUrl = canvas.toDataURL('image/jpeg', 0.4);
         }
-        
+
         // Kritik kontrol: Hala büyükse boyutu yarıya indir (En son çare)
         if (dataUrl.length > 32000) {
           canvas.width = Math.round(width / 2);

@@ -13,8 +13,12 @@ export default function Footer({ onLogoClick, isAdmin }) {
         >
           <span className="text-3xl">{COMPANY.logoEmoji}</span>
           <div className="flex flex-col items-start leading-none text-left">
-            <span className="font-bold text-stone-900 tracking-tight text-lg">{COMPANY.name}</span>
-            <span className="text-[11px] text-kraft-600 mt-0.5">{COMPANY.tagline}</span>
+            <span className="font-bold text-stone-900 tracking-tight text-lg">
+              {COMPANY.name}
+            </span>
+            <span className="text-[11px] text-kraft-600 mt-0.5">
+              {COMPANY.tagline}
+            </span>
           </div>
           {isAdmin && (
             <span className="ml-2 text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 px-1.5 py-0.5 rounded">
@@ -26,11 +30,11 @@ export default function Footer({ onLogoClick, isAdmin }) {
         <p className="text-xs text-stone-400 text-center mt-2">
           © {new Date().getFullYear()} {COMPANY.name}. Tüm hakları saklıdır.
         </p>
-        
+
         {/* Adres */}
-        <a 
-          href={`https://maps.google.com/?q=${encodeURIComponent(COMPANY.address)}`} 
-          target="_blank" 
+        <a
+          href={`https://maps.google.com/?q=${encodeURIComponent(COMPANY.address)}`}
+          target="_blank"
           rel="noopener noreferrer"
           className="text-xs text-stone-400 text-center hover:text-stone-600 hover:underline transition-colors"
           title="Google Haritalar'da Aç"

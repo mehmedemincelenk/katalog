@@ -3,7 +3,9 @@ import { compressImage } from './image';
 
 // Mocking some browser APIs that might be missing in jsdom or behave differently
 if (typeof HTMLCanvasElement.prototype.toDataURL === 'undefined') {
-  HTMLCanvasElement.prototype.toDataURL = vi.fn(() => 'data:image/jpeg;base64,mock');
+  HTMLCanvasElement.prototype.toDataURL = vi.fn(
+    () => 'data:image/jpeg;base64,mock',
+  );
 }
 
 describe('image.js utils', () => {

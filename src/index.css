@@ -19,7 +19,7 @@ body {
   }
 
   /* Düzenlenebilir alanlar — SIFIR çerçeve kuralı */
-  [contenteditable="true"],
+  [contenteditable='true'],
   .admin-textarea {
     outline: none !important;
     cursor: text;
@@ -27,8 +27,13 @@ body {
 
   /* Admin floating button pulse */
   @keyframes admin-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(180, 140, 80, 0.5); }
-    50%       { box-shadow: 0 0 0 8px rgba(180, 140, 80, 0); }
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(180, 140, 80, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(180, 140, 80, 0);
+    }
   }
   .admin-fab {
     animation: admin-pulse 2s ease-in-out infinite;
@@ -36,8 +41,12 @@ body {
 
   /* Marquee — ürün ismi taştığında sürekli kayan yazı */
   @keyframes marquee-scroll {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
   }
   .marquee-track {
     animation: marquee-scroll 6s linear infinite;
@@ -46,8 +55,12 @@ body {
 
   /* Dikey oto-kaydırma — açıklama taştığında */
   @keyframes desc-scroll {
-    0%   { transform: translateY(0); }
-    100% { transform: translateY(-50%); }
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-50%);
+    }
   }
   .desc-scroll-track {
     animation: desc-scroll 5s linear infinite;

@@ -1,7 +1,13 @@
 import { GRID, sortCategories } from '../data/config';
 import ProductCard from './ProductCard';
 
-export default function ProductGrid({ products, categoryOrder, isAdmin, onDelete, onUpdate }) {
+export default function ProductGrid({
+  products,
+  categoryOrder,
+  isAdmin,
+  onDelete,
+  onUpdate,
+}) {
   if (products.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-stone-400">
@@ -21,15 +27,16 @@ export default function ProductGrid({ products, categoryOrder, isAdmin, onDelete
 
   // Oluşan kategori reyonlarını kendi özel sırasına göre hizala
   // categoryOrder prop olarak dışarıdan (App.jsx -> useProducts) güvenle geliyor.
-  const sortedCategories = sortCategories(Object.keys(groupedProducts), categoryOrder);
+  const sortedCategories = sortCategories(
+    Object.keys(groupedProducts),
+    categoryOrder,
+  );
 
   return (
     <div className="w-full flex flex-col">
       {sortedCategories.map((catName) => (
         <div key={catName} className="flex flex-col">
-          <h2 className={GRID.headerClass}>
-            {catName}
-          </h2>
+          <h2 className={GRID.headerClass}>{catName}</h2>
           <div className={`grid ${GRID.colsClass} ${GRID.gapClass}`}>
             {groupedProducts[catName].map((product) => (
               <ProductCard

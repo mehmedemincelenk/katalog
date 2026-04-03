@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { MODAL } from '../data/config';
 
-const EMPTY = { name: '', category: '', newCategory: '', price: '', description: '', image: null, inStock: true };
+const EMPTY = {
+  name: '',
+  category: '',
+  newCategory: '',
+  price: '',
+  description: '',
+  image: null,
+  inStock: true,
+};
 
 export default function AddProductModal({ categories = [], onAdd, onClose }) {
   const [form, setForm] = useState(EMPTY);
@@ -21,8 +29,8 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
       const compressedStr = await compressImage(file, 600, 0.7);
       setPreviewUrl(compressedStr);
       setForm((prev) => ({ ...prev, image: compressedStr }));
-    } catch (err) {
-      alert("Görsel yüklenirken cihaz desteklemedi.");
+    } catch {
+      alert('Görsel yüklenirken cihaz desteklemedi.');
     }
   };
 
@@ -33,7 +41,12 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
       setError('Lütfen tüm alanları doldurun.');
       return;
     }
-    onAdd({ ...form, name: form.name.trim(), category: finalCategory, price: form.price.trim() });
+    onAdd({
+      ...form,
+      name: form.name.trim(),
+      category: finalCategory,
+      price: form.price.trim(),
+    });
     onClose();
   };
 
@@ -44,7 +57,9 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
       aria-modal="true"
       aria-label="Yeni Ürün Ekle"
     >
-      <div className={`${MODAL.bgClass} w-full ${MODAL.maxWidthClass} ${MODAL.roundingClass} ${MODAL.shadowClass} flex flex-col max-h-[85vh]`}>
+      <div
+        className={`${MODAL.bgClass} w-full ${MODAL.maxWidthClass} ${MODAL.roundingClass} ${MODAL.shadowClass} flex flex-col max-h-[85vh]`}
+      >
         {/* Modal Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 shrink-0">
           <h2 className="text-base font-bold text-stone-900">Yeni Ürün Ekle</h2>
@@ -63,7 +78,11 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
           <div className="flex flex-col items-center gap-2">
             <div className="w-20 h-20 shrink-0 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center overflow-hidden">
               {previewUrl ? (
-                <img src={previewUrl} alt="Önizleme" className="w-full h-full object-cover" />
+                <img
+                  src={previewUrl}
+                  alt="Önizleme"
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <span className="text-3xl text-stone-300">📷</span>
               )}
@@ -82,7 +101,10 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
           {/* Text fields */}
           <div className="space-y-3">
             <div className="flex items-center justify-between bg-stone-50 border border-stone-200 rounded-md px-3 py-2">
-              <label className="text-xs font-semibold text-stone-600 cursor-pointer select-none" htmlFor="add-instock">
+              <label
+                className="text-xs font-semibold text-stone-600 cursor-pointer select-none"
+                htmlFor="add-instock"
+              >
                 Ürün Stokta Var Mı?
               </label>
               <input
@@ -90,13 +112,18 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
                 name="inStock"
                 type="checkbox"
                 checked={form.inStock}
-                onChange={(e) => setForm((prev) => ({ ...prev, inStock: e.target.checked }))}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, inStock: e.target.checked }))
+                }
                 className="w-4 h-4 text-stone-900 border-stone-300 rounded focus:ring-stone-900 focus:ring-2"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-600 mb-1" htmlFor="add-name">
+              <label
+                className="block text-xs font-semibold text-stone-600 mb-1"
+                htmlFor="add-name"
+              >
                 Ürün Adı *
               </label>
               <input
@@ -113,7 +140,7 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
               <label className="block text-xs font-semibold text-stone-600 mb-2">
                 Kategori *
               </label>
-              
+
               {/* Mevcut Kategoriler (Chip Seçimi) */}
               {categories.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mb-2">
@@ -121,7 +148,13 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
                     <button
                       key={cat}
                       type="button"
-                      onClick={() => setForm((prev) => ({ ...prev, category: cat, newCategory: '' }))}
+                      onClick={() =>
+                        setForm((prev) => ({
+                          ...prev,
+                          category: cat,
+                          newCategory: '',
+                        }))
+                      }
                       className={`px-2 py-1 text-[10px] font-semibold rounded-full border transition-colors ${
                         form.category === cat && !form.newCategory
                           ? 'bg-stone-900 text-white border-stone-900'
@@ -133,19 +166,28 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
                   ))}
                 </div>
               )}
-              
+
               {/* Yeni Kategori Ekleme */}
               <input
                 name="newCategory"
                 type="text"
                 value={form.newCategory}
-                onChange={(e) => setForm((prev) => ({ ...prev, newCategory: e.target.value, category: '' }))}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    newCategory: e.target.value,
+                    category: '',
+                  }))
+                }
                 placeholder="Veya yeni kategori yazın..."
                 className="w-full border border-stone-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-kraft-400 focus:border-kraft-400 transition"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-stone-600 mb-1" htmlFor="add-price">
+              <label
+                className="block text-xs font-semibold text-stone-600 mb-1"
+                htmlFor="add-price"
+              >
                 Fiyat *
               </label>
               <input
@@ -159,7 +201,10 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-stone-600 mb-1" htmlFor="add-description">
+              <label
+                className="block text-xs font-semibold text-stone-600 mb-1"
+                htmlFor="add-description"
+              >
                 Kısa Açıklama
               </label>
               <textarea
@@ -168,10 +213,14 @@ export default function AddProductModal({ categories = [], onAdd, onClose }) {
                 rows={3}
                 value={form.description}
                 onChange={handleChange}
-                placeholder={'Her satır ayrı bir madde olur\nÖrn: 40x30x30 cm\n10 adet/koli'}
+                placeholder={
+                  'Her satır ayrı bir madde olur\nÖrn: 40x30x30 cm\n10 adet/koli'
+                }
                 className="w-full border border-stone-300 rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-kraft-400 focus:border-kraft-400 transition"
               />
-              <p className="text-[10px] text-stone-400 mt-0.5">Her satır, kartında otomatik • madde işareti alır.</p>
+              <p className="text-[10px] text-stone-400 mt-0.5">
+                Her satır, kartında otomatik • madde işareti alır.
+              </p>
             </div>
           </div>
 

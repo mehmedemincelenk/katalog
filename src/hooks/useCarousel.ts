@@ -24,7 +24,7 @@ export function useCarousel() {
 
   const updateSlide = (id, changes) => {
     setSlides((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, ...changes } : s))
+      prev.map((s) => (s.id === id ? { ...s, ...changes } : s)),
     );
   };
 

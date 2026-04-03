@@ -1,4 +1,4 @@
-import { REFERENCES, COMPANY } from '../data/config';
+import { REFERENCES } from '../data/config';
 
 export default function References() {
   return (
@@ -13,8 +13,12 @@ export default function References() {
               key={ref.id}
               className="flex flex-col items-center justify-center gap-1 bg-white border border-stone-200 rounded-lg py-4 px-2 hover:border-stone-400 transition-colors"
             >
-              <span className="text-2xl" aria-hidden="true">{ref.logo}</span>
-              <span className="text-xs font-medium text-stone-500 text-center">{ref.name}</span>
+              <span className="text-2xl" aria-hidden="true">
+                {ref.logo}
+              </span>
+              <span className="text-xs font-medium text-stone-500 text-center">
+                {ref.name}
+              </span>
             </div>
           ))}
         </div>

@@ -16,19 +16,19 @@ export default function App() {
   const [showAddModal, setShowAddModal] = useState(false);
 
   // Business Logic Encapsulated in Hook
-  const { 
-    products, 
+  const {
+    products,
     allProducts,
     existingCategories,
     categoryOrder,
     loading,
     error, // error eklendi
-    updateProduct, 
-    removeProduct, 
-    addProduct, 
-    renameCategory, 
-    removeCategoryFromProducts, 
-    updateCategoryOrder
+    updateProduct,
+    removeProduct,
+    addProduct,
+    renameCategory,
+    removeCategoryFromProducts,
+    updateCategoryOrder,
   } = useProducts(search, activeCategories, isAdmin);
 
   useEffect(() => {
@@ -41,7 +41,9 @@ export default function App() {
       <div className="min-h-screen flex items-center justify-center bg-stone-50 text-stone-500">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin"></div>
-          <p className="font-medium animate-pulse text-sm">Ürünler Yükleniyor...</p>
+          <p className="font-medium animate-pulse text-sm">
+            Ürünler Yükleniyor...
+          </p>
         </div>
       </div>
     );
@@ -53,9 +55,11 @@ export default function App() {
       <div className="min-h-screen flex items-center justify-center bg-stone-50 p-6 text-center">
         <div className="max-w-md flex flex-col items-center gap-4">
           <span className="text-6xl mb-2">🛠️</span>
-          <h1 className="text-xl font-bold text-stone-800">Katalog Şu An Bakımdadır</h1>
+          <h1 className="text-xl font-bold text-stone-800">
+            Katalog Şu An Bakımdadır
+          </h1>
           <p className="text-stone-500 text-sm leading-relaxed">
-            Sizlere daha iyi hizmet verebilmek için güncellemeler yapıyoruz. 
+            Sizlere daha iyi hizmet verebilmek için güncellemeler yapıyoruz.
             Lütfen kısa bir süre sonra tekrar ziyaret ediniz.
           </p>
           <div className="mt-4 px-4 py-2 bg-stone-100 rounded text-[10px] text-stone-400 font-mono uppercase tracking-widest">
@@ -66,8 +70,13 @@ export default function App() {
     );
   }
   const toggleCategory = (cat) => {
-    if (cat === 'Tümü') { setActiveCategories([]); return; }
-    setActiveCategories(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
+    if (cat === 'Tümü') {
+      setActiveCategories([]);
+      return;
+    }
+    setActiveCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
+    );
   };
 
   return (

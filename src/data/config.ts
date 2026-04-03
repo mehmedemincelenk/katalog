@@ -27,22 +27,24 @@ export const NAVBAR = {
   logoTaglineSize: 'text-[10px]', // Tagline boyutu
   logoTaglineColor: 'text-kraft-600', // Tagline rengi
   // Telefon & WhatsApp kombinasyon butonu
-  phoneSize: 'text-[9px]', // Telefon yazı boyutu
+  phoneSize: 'text-[9px] sm:text-[11px]', // Telefon yazı boyutu
   phoneWeight: 'font-semibold', // Telefon yazı kalınlığı
   phoneColor: 'text-stone-900', // Telefon yazı rengi
   phoneHoverColor: 'hover:text-kraft-700', // Telefon hover rengi
-  whatsappBtnSize: 'w-6 h-6', // Buton kare boyutu
-  whatsappIconSize: 'w-3.5 h-3.5', // İkon boyutu
+  whatsappBtnSize: 'w-6 h-6 sm:w-8 sm:h-8', // Buton kare boyutu
+  whatsappIconSize: 'w-3.5 h-3.5 sm:w-4.5 sm:h-4.5', // İkon boyutu
   whatsappBg: 'bg-stone-900', // Buton arka planı
   whatsappHoverBg: 'hover:bg-stone-900', // Buton hover arka planı
   whatsappRounded: 'rounded', // Köşe yuvarlama
   // Instagram
-  instaIconSize: 'w-4 h-4',
+  instaIconSize: 'w-4 h-4 sm:w-5 sm:h-5',
   instaColor: 'text-stone-900',
   instaHoverColor: 'hover:text-pink-600',
   // Adres
-  addressSize: 'text-[8px]', // Adres yazı boyutu
+  addressSize: 'text-[8px] sm:text-[11px]', // Adres yazı boyutu
   addressColor: 'text-stone-600', // Adres yazı rengi
+  // Ayırıcı Çizgi (PC)
+  separatorClass: 'hidden sm:block w-px h-4 bg-stone-300 mx-2',
 };
 
 // ----- Admin Modu -----
@@ -217,21 +219,21 @@ export const CARD_TYPOGRAPHY = {
   categoryPadding: 'px-1.5 py-0.5', // Çip içi yatay ve dikey boşluk (padding)
 
   // İsim (tek satır, yatay marquee)
-  nameFontSize: 'text-[10px]', // Ürün adı yazı boyutu
+  nameFontSize: 'text-[10px] sm:text-[13px]', // Ürün adı yazı boyutu
   nameWeight: 'font-semibold', // Ürün adı yazı kalınlığı
   nameColor: 'text-stone-900', // Ürün adı yazı rengi
   nameLeading: 'leading-snug', // Ürün adı satır yüksekliği
 
   // Fiyat
-  priceFontSize: 'text-[12px]', // Ürün fiyatı yazı boyutu
+  priceFontSize: 'text-[12px] sm:text-[15px]', // Ürün fiyatı yazı boyutu
   priceWeight: 'font-bold', // Ürün fiyatı yazı kalınlığı
   priceColor: 'text-stone-900', // Ürün fiyatı yazı rengi
 
   // Açıklama (çok satır, dikey oto-kaydırma)
-  descFontSize: 'text-[9px]', // Açıklama yazı boyutu
+  descFontSize: 'text-[9px] sm:text-[11px]', // Açıklama yazı boyutu
   descColor: 'text-stone-500', // Açıklama yazı rengi
   descLeading: 'leading-tight', // Açıklama satır yüksekliği
-  descMaxHeight: 'max-h-[36px]', // Açıklama alanı maksimum yüksekliği (kullanıcı görünümü)
+  descMaxHeight: 'max-h-[36px] sm:max-h-[44px]', // Açıklama alanı maksimum yüksekliği (kullanıcı görünümü)
   descAreaHeight: 'h-[30px]', // Admin editöründeki açıklama kutusu yüksekliği
 };
 

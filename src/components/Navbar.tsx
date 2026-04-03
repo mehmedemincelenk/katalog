@@ -25,9 +25,22 @@ export default function Navbar() {
           </div>
 
           {/* Contact & Social Section */}
-          <div className="flex flex-col items-end gap-1 shrink-0">
+          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-0 shrink-0">
+            {/* Address (On PC: Left of icons) */}
+            <a
+              href={`https://maps.google.com/?q=${encodeURIComponent(COMPANY.address)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${n.addressSize} ${n.addressColor} hover:text-stone-900 transition-colors whitespace-nowrap order-2 sm:order-1`}
+            >
+              {COMPANY.address}
+            </a>
+
+            {/* Separator Line (PC Only) */}
+            <div className={n.separatorClass + " order-2"} />
+
             {/* Social & Phone Row */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 order-1 sm:order-3">
               {/* Instagram */}
               <a
                 href={COMPANY.instagramUrl}
@@ -64,15 +77,6 @@ export default function Navbar() {
                 </span>
               </a>
             </div>
-            {/* Address Row */}
-            <a
-              href={`https://maps.google.com/?q=${encodeURIComponent(COMPANY.address)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${n.addressSize} ${n.addressColor} hover:text-stone-900 transition-colors whitespace-nowrap`}
-            >
-              {COMPANY.address}
-            </a>
           </div>
         </div>
       </div>

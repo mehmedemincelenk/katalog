@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import HeroCarousel from './components/HeroCarousel';
 import SearchFilter from './components/SearchFilter';
@@ -8,57 +8,77 @@ import References from './components/References';
 import Footer from './components/Footer';
 import { useProducts } from './hooks/useProducts';
 import { useAdminMode } from './hooks/useAdminMode';
-import { sortCategories } from './data/config';
 
 export default function App() {
-  const { products, updateProduct, removeProduct, addProduct, renameCategory, removeCategoryFromProducts } = useProducts();
   const { isAdmin, handleLogoClick } = useAdminMode();
   const [search, setSearch] = useState('');
-  const [activeCategories, setActiveCategories] = useState([]); // Boş dizi => 'Tümü'
+  const [activeCategories, setActiveCategories] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
 
+  // Business Logic Encapsulated in Hook
+  const { 
+    products, 
+    allProducts,
+    existingCategories,
+    categoryOrder,
+    loading,
+    error, // error eklendi
+    updateProduct, 
+    removeProduct, 
+    addProduct, 
+    renameCategory, 
+    removeCategoryFromProducts, 
+    updateCategoryOrder
+  } = useProducts(search, activeCategories, isAdmin);
+
   useEffect(() => {
-    if (isAdmin) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    if (isAdmin) window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [isAdmin]);
 
-  // Kategori seçme / çıkarma mantığı (Tümü'ne basılırsa hepsini iptal et)
+  // 1. Yüklenme Durumu
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-stone-50 text-stone-500">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin"></div>
+          <p className="font-medium animate-pulse text-sm">Ürünler Yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Hata (Bakım) Durumu
+  if (error && products.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-stone-50 p-6 text-center">
+        <div className="max-w-md flex flex-col items-center gap-4">
+          <span className="text-6xl mb-2">🛠️</span>
+          <h1 className="text-xl font-bold text-stone-800">Katalog Şu An Bakımdadır</h1>
+          <p className="text-stone-500 text-sm leading-relaxed">
+            Sizlere daha iyi hizmet verebilmek için güncellemeler yapıyoruz. 
+            Lütfen kısa bir süre sonra tekrar ziyaret ediniz.
+          </p>
+          <div className="mt-4 px-4 py-2 bg-stone-100 rounded text-[10px] text-stone-400 font-mono uppercase tracking-widest">
+            {error}
+          </div>
+        </div>
+      </div>
+    );
+  }
   const toggleCategory = (cat) => {
     if (cat === 'Tümü') { setActiveCategories([]); return; }
     setActiveCategories(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
   };
 
-  // Mevcut benzersiz kategorileri türet (Modal vs. için) - config sırasına göre
-  const existingCategories = useMemo(() => {
-    return sortCategories([...new Set(products.map((p) => p.category).filter(Boolean))]);
-  }, [products]);
-
-  // Derive filtered products from search + category
-  const filteredProducts = useMemo(() => {
-    const term = search.toLowerCase().trim();
-    return products.filter((p) => {
-      // Hide archived products from non-admins
-      if (!isAdmin && p.isArchived) return false;
-      const matchSearch = !term || p.name.toLowerCase().includes(term);
-      const matchCategory = activeCategories.length === 0 || activeCategories.includes(p.category);
-      return matchSearch && matchCategory;
-    });
-  }, [products, search, activeCategories, isAdmin]);
-
-  const handleAddProduct = (product) => {
-    addProduct(product);
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-stone-50">
-
       <Navbar />
-
       <HeroCarousel isAdmin={isAdmin} />
 
       <SearchFilter
-        products={products}
+        products={allProducts}
+        categoryOrder={categoryOrder}
+        updateCategoryOrder={updateCategoryOrder}
         search={search}
         onSearchChange={setSearch}
         activeCategories={activeCategories}
@@ -68,20 +88,18 @@ export default function App() {
         removeCategoryFromProducts={removeCategoryFromProducts}
       />
 
-      {/* Main catalog content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Catalog header row */}
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-sm font-semibold text-stone-500">
-            {filteredProducts.length} ürün listeleniyor
-          </h1>
-          <div className={`text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 px-2 py-1 rounded transition-opacity ${isAdmin ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-            🔓 Admin Modu Aktif
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-2">
+        {isAdmin && (
+          <div className="flex items-center justify-end mb-2">
+            <div className="text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 px-2 py-1 rounded">
+              🔓 Admin Modu Aktif
+            </div>
           </div>
-        </div>
+        )}
 
         <ProductGrid
-          products={filteredProducts}
+          products={products}
+          categoryOrder={categoryOrder}
           isAdmin={isAdmin}
           onDelete={removeProduct}
           onUpdate={updateProduct}
@@ -89,26 +107,23 @@ export default function App() {
       </main>
 
       <References />
-
       <Footer onLogoClick={handleLogoClick} isAdmin={isAdmin} />
 
-      {/* Admin floating + button */}
+      {/* Floating Action Button (Admin) */}
       {isAdmin && (
         <button
-          id="admin-add-btn"
           onClick={() => setShowAddModal(true)}
-          className="admin-fab fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-stone-900 text-white text-4xl pb-1.5 font-light shadow-xl hover:bg-stone-700 transition-colors flex items-center justify-center"
+          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-stone-900 text-white text-4xl pb-1.5 shadow-xl hover:bg-stone-700 transition-all flex items-center justify-center active:scale-95"
           aria-label="Yeni Ürün Ekle"
         >
           +
         </button>
       )}
 
-      {/* Add product modal */}
       {showAddModal && (
         <AddProductModal
           categories={existingCategories}
-          onAdd={handleAddProduct}
+          onAdd={addProduct}
           onClose={() => setShowAddModal(false)}
         />
       )}

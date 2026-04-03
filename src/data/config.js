@@ -8,6 +8,7 @@ export const COMPANY = {
   tagline: 'ÖMER KÖSE',             // Navbar altı etiket
   phone: '+90 537 342 0161',   // Telefon numarası
   whatsappUrl: 'https://wa.me/905373420161', // WhatsApp doğrudan bağlantı
+  instagramUrl: 'https://www.instagram.com/toptanambalajcim', // Instagram bağlantısı
   address: 'Mahmutbey Cd. No:10, Yenibosna / İstanbul', // Açık adres
   email: 'info@toptanambalajcim.com',  // E-posta
   logoEmoji: '📦',                  // Logo sembolü
@@ -35,6 +36,10 @@ export const NAVBAR = {
   whatsappBg: 'bg-stone-900',             // Buton arka planı
   whatsappHoverBg: 'hover:bg-stone-900',       // Buton hover arka planı
   whatsappRounded: 'rounded',                  // Köşe yuvarlama
+  // Instagram
+  instaIconSize: 'w-4 h-4',
+  instaColor: 'text-stone-900',
+  instaHoverColor: 'hover:text-pink-600',
   // Adres
   addressSize: 'text-[8px]',              // Adres yazı boyutu
   addressColor: 'text-stone-600',           // Adres yazı rengi
@@ -167,27 +172,11 @@ export const CATEGORY_ORDER = [
   'HİJYEN SARF MALZEMELERİ'
 ];
 
-export const CATEGORY_EMOJIS = {
-  'Tümü': '🛒',
-  'TURŞU VE GIDA ÇEŞİTLERİ': '🥫',
-  'BAHARAT GRUBU': '🌶️',
-  'PEÇETE': '🧻',
-  'KÖPÜK': '🧼',
-  'KAĞIT': '📄',
-  'PLASTİK ÜRÜNLERİ VE SIZDIRMAZ GRUBU': '🧊',
-  'STREÇ ÇEŞİTLERİ': '🌯',
-  'ALÜMİNYUM ÇEŞİTLERİ': '🍱',
-  'POŞET ÇEŞİTLERİ': '🛍️',
-  'DETERJAN': '🫧',
-  'HİJYEN SARF MALZEMELERİ': '🧤',
-  'Baskılı Ürünler': '🏷️',
-  'Özel Setler': '🍴'
-};
-
-export const sortCategories = (categoriesList) => {
+export const sortCategories = (categoriesList, customOrder = CATEGORY_ORDER) => {
+  const order = customOrder || CATEGORY_ORDER;
   return [...categoriesList].sort((a, b) => {
-    let indexA = CATEGORY_ORDER.indexOf(a);
-    let indexB = CATEGORY_ORDER.indexOf(b);
+    let indexA = order.indexOf(a);
+    let indexB = order.indexOf(b);
     if (indexA === -1) indexA = 999;
     if (indexB === -1) indexB = 999;
     if (indexA === indexB) return a.localeCompare(b);

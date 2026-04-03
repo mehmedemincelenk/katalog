@@ -4,24 +4,23 @@ trigger: always_on
 
 ---
 name: interaction-rules
-description: Admin etkileşimleri ve yerinde düzenleme kuralları.
+description: Admin etkileşimleri ve Google Sheets senkronizasyon kuralları.
 ---
 # ETKİLEŞİM VE UI KURALLARI
 
 ## 1. Hızlı Düzenleme (In-place Edit)
 - Admin modunda bir ürünün **Adına, Fiyatına veya Kategori Etiketine** tıklandığında alan doğrudan düzenlenebilir hale gelmelidir (`contentEditable`).
-- Resme tıklandığında cihazın yerel dosya seçicisi açılır. Seçilen görsel sıkıştırılarak (downscale) base64'e çevrilir.
+- Resme tıklandığında cihazın yerel dosya seçicisi açılır. Seçilen görsel `250px`'e sıkıştırılarak base64'e çevrilir ve Sheets'e gönderilir.
 
-## 2. Silme ve Aksiyonlar (Üç-Nokta Popover Menüsü)
-- Ürün kartı üzerindeki 3-nokta (⋯) ikonu, silme ve diğer admin aksiyonlarının tetikçisidir.
+## 2. Senkronizasyon ve Onay
+- Ürün silme ve arşivleme işlemleri 3-nokta popover menüsünden yapılır.
 - `window.confirm` ile onay alınır.
-- **NOT:** Uygulamamızda "çift tıklayarak silme" (double-tap/double-click) özelliği YOKTUR ve EKLENMEMELIDIR. Bu gereksiz bir UX karmaşıklığıdır.
+- Her değişiklik arka planda Google Sheets `UPDATE`, `DELETE` veya `RENAME` aksiyonlarını tetikler.
 
 ## 3. Dinamik Kategoriler
-- Ürünlerden taranan benzersiz (unique) kategoriler, `config.js` içindeki `CATEGORY_ORDER` dizisine göre sıralanarak filtrelerde gösterilir.
-- "Tümü" filtresi her zaman ilk sıradadır.
+- Ürünlerden taranan benzersiz kategoriler, Google Sheet'teki `categories` sayfasına göre sıralanır.
+- **Emoji Sistemi Kaldırılmıştır.** Sadece metin bazlı kategori butonları kullanılır.
 
-## 4. Filtre Davranışı
-- Filtreler çoklu seçime izin verir (birden fazla kategori aynı anda aktif olabilir).
-- Filtre menüsü; PC'de arama kutusunun yanında yatay flex-wrap olarak, mobilde aynı şekilde arama kutusunun altında flex-wrap olarak görünür.
-- Filtre menüsü kullanıcı açıkça kapatana kadar (X butonu veya dış alana tıklama) kapanmaz.
+## 4. Arama Davranışı
+- Aramalar gerçek zamanlıdır.
+- 3 karakterden uzun ve 2 saniye boyunca değişmeyen arama terimleri `search_logs` sayfasına tarihle beraber kaydedilir (Debounce log).

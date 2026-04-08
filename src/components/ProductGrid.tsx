@@ -11,6 +11,8 @@ interface ProductGridProps {
   onOrderUpdate: (newOrder: Product[]) => void;
   activeDiscount?: { code: string; rate: number; category?: string } | null;
   visibleCategoryLimit?: number;
+  search?: string;
+  activeCategories?: string[];
 }
 
 export default function ProductGrid({
@@ -22,6 +24,8 @@ export default function ProductGrid({
   onOrderUpdate,
   activeDiscount,
   visibleCategoryLimit = 999,
+  search = '',
+  activeCategories = [],
 }: ProductGridProps) {
   if (products.length === 0) {
     return (
@@ -42,8 +46,11 @@ export default function ProductGrid({
 
   const sortedCategories = sortCategories(Object.keys(groupedProducts), categoryOrder);
   
-  // Limitleme: Sadece ilk N kategoriyi göster (Admin değilse)
-  const displayedCategories = sortedCategories.slice(0, visibleCategoryLimit);
+  // Limitleme: Sadece ilk N kategoriyi göster (Admin değilse VE arama/filtreleme yoksa)
+  const isFiltering = search.trim() !== '' || activeCategories.length > 0;
+  const displayedCategories = (isAdmin || isFiltering) 
+    ? sortedCategories 
+    : sortedCategories.slice(0, visibleCategoryLimit);
 
   // Sayısal Sıralama Değiştirme Mantığı
   const handleOrderChange = (productId: string, newPosition: number) => {

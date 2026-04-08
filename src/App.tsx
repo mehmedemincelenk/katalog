@@ -8,6 +8,7 @@ import AddProductModal from './components/AddProductModal';
 import { useProducts } from './hooks/useProducts';
 import { useAdminMode } from './hooks/useAdminMode';
 import { useDiscount } from './hooks/useDiscount';
+import { sortCategories } from './data/config';
 
 export default function App() {
   const {
@@ -46,9 +47,8 @@ export default function App() {
   // Sayfalama için kategorileri grupla
   const allCategories = useMemo(() => {
     const cats = [...new Set(products.map(p => p.category || 'KATEGORİSİZ'))];
-    // Sıralama fonksiyonunu burada kullanıyoruz (aslında ProductGrid içinde yapılıyor ama burada da lazım)
-    return cats; 
-  }, [products]);
+    return sortCategories(cats, categoryOrder);
+  }, [products, categoryOrder]);
 
   const toggleCategory = (cat: string) => {
     if (cat === 'Tümü') {
@@ -112,6 +112,8 @@ export default function App() {
             onOrderUpdate={setProducts}
             activeDiscount={activeDiscount}
             visibleCategoryLimit={isAdmin ? 999 : visibleCategoryLimit}
+            search={search}
+            activeCategories={activeCategories}
           />
 
           {!isAdmin && filteredProducts.length > 0 && (

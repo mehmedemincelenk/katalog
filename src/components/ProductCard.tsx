@@ -186,34 +186,29 @@ export default function ProductCard({
       data-product-id={product.id}
       className={`bg-white border ${product.inStock === false ? 'border-transparent bg-stone-50' : 'border-stone-200'} rounded-lg flex flex-col group hover:shadow-md transition-all duration-300 relative`}
     >
-      {/* Sayısal Sıralama Dropdown (Admin) */}
+      {/* Admin Kontrol Grubu (Sağ Üst Köşe) */}
       {isAdmin && (
-        <div className="absolute top-2 left-2 z-[25]">
-          <select
-            value={orderIndex}
-            onChange={(e) => onOrderChange?.(product.id, parseInt(e.target.value, 10))}
-            style={{ textAlignLast: 'center', padding: 0 }}
-            className="appearance-none bg-stone-900 text-white text-[11px] font-black w-7 h-7 rounded-lg shadow-2xl border border-white/20 text-center cursor-pointer hover:bg-stone-800 transition-all active:scale-90 focus:outline-none ring-2 ring-black/5"
-          >
-            {Array.from({ length: itemsInCategory }, (_, i) => (
-              <option key={i + 1} value={i + 1} className="text-black">{i + 1}</option>
-            ))}
-          </select>
-        </div>
-      )}
+        <div className="absolute top-2 right-2 z-[25] flex items-center gap-1.5">
+          {/* Sıra No Dropdown */}
+          <div className="relative">
+            <select
+              value={orderIndex}
+              onChange={(e) => onOrderChange?.(product.id, parseInt(e.target.value, 10))}
+              style={{ textAlignLast: 'center', padding: 0 }}
+              className="appearance-none bg-white/90 backdrop-blur-sm text-stone-900 text-[11px] font-black w-7 h-7 rounded-lg shadow-lg border border-stone-200 text-center cursor-pointer hover:bg-white transition-all active:scale-90 focus:outline-none ring-2 ring-black/5"
+            >
+              {Array.from({ length: itemsInCategory }, (_, i) => (
+                <option key={i + 1} value={i + 1} className="text-black">{i + 1}</option>
+              ))}
+            </select>
+          </div>
 
-      <div className={`relative w-full bg-stone-100 aspect-square flex items-center justify-center rounded-t-lg ${isAdmin ? 'cursor-pointer' : ''}`} onClick={handleImageClick}>
-        {finalImageUrl && !imgError ? (
-          <img src={finalImageUrl} alt={product.name} onError={() => setImgError(true)} className={`w-full h-full object-cover rounded-t-lg transition-all duration-300 ${product.inStock === false ? 'grayscale opacity-60' : ''}`} draggable={false} loading="lazy" />
-        ) : (
-          <div className="flex flex-col items-center gap-1 text-stone-300 select-none"><span className="text-5xl">{PLACEHOLDER_EMOJI}</span></div>
-        )}
-        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-        
-        {/* Kategori Seçimi (Cihazın Orijinal Dropdown Ekranını Kullanır) */}
-        {isAdmin && (
-          <div className={`absolute top-2 right-2 z-10 ${categoryClass} shadow-lg backdrop-blur-sm bg-white/90 flex items-center justify-center overflow-hidden`}>
-            <span className="pointer-events-none">KATEGORİ</span>
+          {/* Kategori Seçimi Dropdown */}
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="relative bg-white/90 backdrop-blur-sm text-stone-900 text-[11px] font-black w-7 h-7 rounded-lg shadow-lg border border-stone-200 flex items-center justify-center cursor-pointer hover:bg-white transition-all active:scale-90 overflow-hidden ring-2 ring-black/5"
+          >
+            <span className="pointer-events-none select-none text-[10px]">📂</span>
             <select
               value={product.category || ''}
               onChange={(e) => {
@@ -234,7 +229,16 @@ export default function ProductCard({
               <option value="NEW_CAT">➕ YENİ KATEGORİ EKLE...</option>
             </select>
           </div>
+        </div>
+      )}
+
+      <div className={`relative w-full bg-stone-100 aspect-square flex items-center justify-center rounded-t-lg ${isAdmin ? 'cursor-pointer' : ''}`} onClick={handleImageClick}>
+        {finalImageUrl && !imgError ? (
+          <img src={finalImageUrl} alt={product.name} onError={() => setImgError(true)} className={`w-full h-full object-cover rounded-t-lg transition-all duration-300 ${product.inStock === false ? 'grayscale opacity-60' : ''}`} draggable={false} loading="lazy" />
+        ) : (
+          <div className="flex flex-col items-center gap-1 text-stone-300 select-none"><span className="text-5xl">{PLACEHOLDER_EMOJI}</span></div>
         )}
+        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
       </div>
 
       <div className={`${CL.cardInfoPadding} flex flex-col gap-0.5 flex-grow`}>
@@ -257,8 +261,8 @@ export default function ProductCard({
 
       {isAdmin && (
         <div className={`absolute ${CL.actionMenuAnchorB} ${CL.actionMenuAnchorR} z-20`}>
-          {/* Görünür Şık Buton */}
-          <div className={`${CL.iconSmall} flex items-center justify-center bg-white border border-stone-200 text-stone-400 hover:text-stone-900 shadow-sm rounded-full transition-colors`}>
+          {/* Sadece İkon (Arka plan ve çember kaldırıldı) */}
+          <div className={`${CL.iconSmall} flex items-center justify-center text-stone-400 hover:text-stone-900 transition-colors relative overflow-hidden`}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
             </svg>
@@ -277,9 +281,13 @@ export default function ProductCard({
               className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
             >
               <option value="" disabled>Seç...</option>
-              <option value="TOGGLE_STOCK">{product.inStock ? '[X] STOK' : '[ ] STOK'}</option>
-              <option value="TOGGLE_ARCHIVE">{product.is_archived ? '[X] ARŞİV' : '[ ] ARŞİV'}</option>
-              <option value="DELETE">🗑️ SİL</option>
+              <option value="TOGGLE_STOCK">
+                {product.inStock ? 'TÜKENDİ' : 'STOKTA'}
+              </option>
+              <option value="TOGGLE_ARCHIVE">
+                {product.is_archived ? 'YAYINLA' : 'ARŞİVLE'}
+              </option>
+              <option value="DELETE">SİL</option>
             </select>
           </div>
         </div>

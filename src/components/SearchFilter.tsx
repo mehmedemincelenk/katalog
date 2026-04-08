@@ -161,6 +161,22 @@ export default function SearchFilter({
               {showAll ? ' Daha Az' : `+${categories.length - DESKTOP_THRESHOLD} Daha`}
             </button>
           )}
+
+          {/* Yeni Kategori Ekle Butonu (Sadece Admin) */}
+          {isAdmin && (
+            <button
+              onClick={() => {
+                const name = window.prompt('Yeni kategori adını yazın:');
+                if (name?.trim() && !categoryOrder.includes(name.trim())) {
+                  updateCategoryOrder([...categoryOrder, name.trim()]);
+                }
+              }}
+              className="flex items-center justify-center w-8 h-8 rounded-full border-2 border-dashed border-stone-300 text-stone-400 hover:border-stone-900 hover:text-stone-900 transition-all active:scale-90"
+              title="Yeni Kategori Ekle"
+            >
+              <span className="text-lg font-bold">+</span>
+            </button>
+          )}
         </div>
       </div>
     </section>

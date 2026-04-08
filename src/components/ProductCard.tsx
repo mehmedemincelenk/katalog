@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { CARD_TYPOGRAPHY as CT, CARD_LAYOUT as CL, DISCOUNT_UI } from '../data/config';
 import { Product } from '../types';
 import { getImageUrl, PLACEHOLDER_EMOJI } from '../utils/image';
@@ -98,17 +98,14 @@ export default function ProductCard({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cardRef = useRef<HTMLElement>(null);
   const descAreaRef = useRef<HTMLTextAreaElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  const [isEditingCategory, setIsEditingCategory] = useState(false);
   const [isEditingDesc, setIsEditingDesc] = useState(false);
   const [tempDesc, setTempDesc] = useState(product.description || '');
-  const [newCatData, setNewCatData] = useState('');
   const [showActions, setShowActions] = useState(false);
+  const [menuMode, setMenuMode] = useState<'main' | 'categories'>('main');
+  const [menuDirection, setMenuDirection] = useState<'left' | 'right'>('right');
   const [imgError, setImgError] = useState(false);
-
-  const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const dragStartRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     if (isEditingDesc && descAreaRef.current) {
@@ -117,40 +114,29 @@ export default function ProductCard({
     }
   }, [tempDesc, isEditingDesc]);
 
+  // Menü konumlandırma ve dışarı tıklama kontrolü
   useEffect(() => {
     const handleClickOutside = (ev: MouseEvent) => {
       if (cardRef.current && !cardRef.current.contains(ev.target as Node)) {
-        setIsEditingCategory(false);
         setIsEditingDesc(false);
         setShowActions(false);
+        setMenuMode('main');
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    if (!isDragging) return;
-    const handleMove = (ev: MouseEvent | TouchEvent) => {
-      const clientX = 'touches' in ev ? ev.touches[0].clientX : ev.clientX;
-      const clientY = 'touches' in ev ? ev.touches[0].clientY : ev.clientY;
-      setDragPos({ x: clientX - dragStartRef.current.x, y: clientY - dragStartRef.current.y });
-    };
-    const handleEnd = () => setIsDragging(false);
-    document.addEventListener('mousemove', handleMove);
-    document.addEventListener('mouseup', handleEnd);
-    return () => {
-      document.removeEventListener('mousemove', handleMove);
-      document.removeEventListener('mouseup', handleEnd);
-    };
-  }, [isDragging]);
-
-  const handleDragStartInternal = (ev: React.MouseEvent | React.TouchEvent) => {
-    const clientX = 'touches' in ev ? ev.nativeEvent.touches[0].clientX : (ev as React.MouseEvent).clientX;
-    const clientY = 'touches' in ev ? ev.nativeEvent.touches[0].clientY : (ev as React.MouseEvent).clientY;
-    dragStartRef.current = { x: clientX - dragPos.x, y: clientY - dragPos.y };
-    setIsDragging(true);
-  };
+  useLayoutEffect(() => {
+    if (showActions && menuRef.current) {
+      const rect = menuRef.current.getBoundingClientRect();
+      if (rect.right > window.innerWidth - 20) {
+        setMenuDirection('left');
+      } else {
+        setMenuDirection('right');
+      }
+    }
+  }, [showActions]);
 
   const handleImageClick = () => { if (isAdmin) fileInputRef.current?.click(); };
   const handleFileChange = async (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,7 +162,6 @@ export default function ProductCard({
   const priceColorClass = isDiscountActive ? DISCOUNT_UI.activeColor : CT.priceColor;
   const priceClass = `${CT.priceFontSize} ${CT.priceWeight} ${priceColorClass}`;
   const descClass = `${CT.descFontSize} ${CT.descColor} ${CT.descLeading}`;
-  const categoryClass = `inline-block ${CT.categoryFontSize} ${CT.categoryWeight} ${CT.categoryCase} ${CT.categoryTracking} ${CT.categoryColor} ${CT.categoryBg} ${CT.categoryBorder} ${CT.categoryRounding} ${CT.categoryPadding}`;
 
   const finalImageUrl = getImageUrl(product.image);
 
@@ -186,49 +171,19 @@ export default function ProductCard({
       data-product-id={product.id}
       className={`bg-white border ${product.inStock === false ? 'border-transparent bg-stone-50' : 'border-stone-200'} rounded-lg flex flex-col group hover:shadow-md transition-all duration-300 relative`}
     >
-      {/* Admin Kontrol Grubu (Sağ Üst Köşe) */}
+      {/* Sayısal Sıralama (Sağ Üst) */}
       {isAdmin && (
-        <div className="absolute top-2 right-2 z-[25] flex items-center gap-1.5">
-          {/* Sıra No Dropdown */}
-          <div className="relative">
-            <select
-              value={orderIndex}
-              onChange={(e) => onOrderChange?.(product.id, parseInt(e.target.value, 10))}
-              style={{ textAlignLast: 'center', padding: 0 }}
-              className="appearance-none bg-white/90 backdrop-blur-sm text-stone-900 text-[11px] font-black w-7 h-7 rounded-lg shadow-lg border border-stone-200 text-center cursor-pointer hover:bg-white transition-all active:scale-90 focus:outline-none ring-2 ring-black/5"
-            >
-              {Array.from({ length: itemsInCategory }, (_, i) => (
-                <option key={i + 1} value={i + 1} className="text-black">{i + 1}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Kategori Seçimi Dropdown */}
-          <div 
-            onClick={(e) => e.stopPropagation()}
-            className="relative bg-white/90 backdrop-blur-sm text-stone-900 text-[11px] font-black w-7 h-7 rounded-lg shadow-lg border border-stone-200 flex items-center justify-center cursor-pointer hover:bg-white transition-all active:scale-90 overflow-hidden ring-2 ring-black/5"
+        <div className="absolute top-2 right-2 z-[25]">
+          <select
+            value={orderIndex}
+            onChange={(e) => onOrderChange?.(product.id, parseInt(e.target.value, 10))}
+            style={{ textAlignLast: 'center', padding: 0 }}
+            className="appearance-none bg-white/90 backdrop-blur-sm text-stone-900 text-[11px] font-black w-7 h-7 rounded-lg shadow-lg border border-stone-200 text-center cursor-pointer hover:bg-white transition-all active:scale-90 focus:outline-none ring-2 ring-black/5"
           >
-            <span className="pointer-events-none select-none text-[10px]">📂</span>
-            <select
-              value={product.category || ''}
-              onChange={(e) => {
-                const val = e.target.value;
-                if (val === 'NEW_CAT') {
-                  const newName = window.prompt('Yeni kategori adını yazın:');
-                  if (newName?.trim()) onUpdate(product.id, { category: newName.trim() });
-                } else {
-                  onUpdate(product.id, { category: val });
-                }
-              }}
-              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-            >
-              <option value="" disabled>Kategori Seçin</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-              <option value="NEW_CAT">➕ YENİ KATEGORİ EKLE...</option>
-            </select>
-          </div>
+            {Array.from({ length: itemsInCategory }, (_, i) => (
+              <option key={i + 1} value={i + 1} className="text-black">{i + 1}</option>
+            ))}
+          </select>
         </div>
       )}
 
@@ -261,37 +216,90 @@ export default function ProductCard({
 
       {isAdmin && (
         <div className={`absolute ${CL.actionMenuAnchorB} ${CL.actionMenuAnchorR} z-20`}>
-          {/* Sadece İkon (Arka plan ve çember kaldırıldı) */}
-          <div className={`${CL.iconSmall} flex items-center justify-center text-stone-400 hover:text-stone-900 transition-colors relative overflow-hidden`}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
+          {/* 3 Nokta Butonu */}
+          <button 
+            onClick={(e) => { e.stopPropagation(); setShowActions(!showActions); setMenuMode('main'); }}
+            className={`${CL.iconSmall} flex items-center justify-center text-stone-400 hover:text-stone-900 transition-colors active:scale-90`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4 pointer-events-none">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
             </svg>
-            
-            <select
-              value=""
-              onChange={(e) => {
-                const action = e.target.value;
-                if (action === 'TOGGLE_STOCK') onUpdate(product.id, { inStock: !product.inStock });
-                if (action === 'TOGGLE_ARCHIVE') onUpdate(product.id, { is_archived: !product.is_archived });
-                if (action === 'DELETE') {
-                  if (window.confirm('Silinsin mi?')) onDelete(product.id);
-                }
-                e.target.value = '';
-              }}
-              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+          </button>
+
+          {/* Profesyonel Custom Menü */}
+          {showActions && (
+            <div 
+              ref={menuRef}
+              style={{ transformOrigin: menuDirection === 'right' ? 'top left' : 'top right' }}
+              className={`absolute bottom-full ${menuDirection === 'right' ? 'left-0' : 'right-0'} mb-2 w-40 bg-white border border-stone-200 rounded-xl shadow-2xl py-1.5 z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200`}
+              onClick={(e) => e.stopPropagation()}
             >
-              <option value="" disabled>Seç...</option>
-              <option value="TOGGLE_STOCK">
-                {product.inStock ? 'TÜKENDİ' : 'STOKTA'}
-              </option>
-              <option value="TOGGLE_ARCHIVE">
-                {product.is_archived ? 'YAYINLA' : 'ARŞİVLE'}
-              </option>
-              <option value="DELETE">SİL</option>
-            </select>
-          </div>
+              {menuMode === 'main' ? (
+                <>
+                  <button 
+                    onClick={() => setMenuMode('categories')}
+                    className="w-full text-left px-3 py-2 text-[11px] font-bold text-stone-700 hover:bg-stone-50 flex items-center justify-between group"
+                  >
+                    <span>KATEGORİ</span>
+                    <span className="text-stone-300 group-hover:text-stone-500">→</span>
+                  </button>
+                  <button 
+                    onClick={() => { onUpdate(product.id, { inStock: !product.inStock }); setShowActions(false); }}
+                    className="w-full text-left px-3 py-2 text-[11px] font-bold text-stone-700 hover:bg-stone-50"
+                  >
+                    {product.inStock ? 'TÜKENDİ' : 'STOKTA'}
+                  </button>
+                  <button 
+                    onClick={() => { onUpdate(product.id, { is_archived: !product.is_archived }); setShowActions(false); }}
+                    className="w-full text-left px-3 py-2 text-[11px] font-bold text-stone-700 hover:bg-stone-50"
+                  >
+                    {product.is_archived ? 'YAYINLA' : 'ARŞİVLE'}
+                  </button>
+                  <div className="h-px bg-stone-100 my-1"></div>
+                  <button 
+                    onClick={() => { if(window.confirm('Silinsin mi?')) onDelete(product.id); setShowActions(false); }}
+                    className="w-full text-left px-3 py-2 text-[11px] font-bold text-red-500 hover:bg-red-50"
+                  >
+                    SİL
+                  </button>
+                </>
+              ) : (
+                <div className="flex flex-col">
+                  <button 
+                    onClick={() => setMenuMode('main')}
+                    className="w-full text-left px-3 py-1.5 text-[9px] font-black text-stone-400 hover:text-stone-600 bg-stone-50 border-b border-stone-100"
+                  >
+                    ← GERİ DÖN
+                  </button>
+                  <div className="max-h-48 overflow-y-auto py-1">
+                    {categories.map(cat => (
+                      <button 
+                        key={cat}
+                        onClick={() => { onUpdate(product.id, { category: cat }); setShowActions(false); }}
+                        className={`w-full text-left px-3 py-2 text-[11px] font-semibold hover:bg-stone-50 ${product.category === cat ? 'text-kraft-600 bg-kraft-50' : 'text-stone-600'}`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                    <button 
+                      onClick={() => {
+                        const name = window.prompt('Yeni kategori adı:');
+                        if (name?.trim()) onUpdate(product.id, { category: name.trim() });
+                        setShowActions(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-[11px] font-bold text-stone-900 border-t border-stone-100 bg-stone-50 hover:bg-stone-100"
+                    >
+                      + YENİ EKLE
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
+
+      {/* Durum İkonları */}
       <div className="absolute inset-0 z-[5] pointer-events-none rounded-lg flex items-center justify-center gap-2">
         {!product.inStock && (
           <div className="bg-stone-900/90 text-white w-8 h-8 rounded-full shadow-xl flex items-center justify-center -translate-y-4">

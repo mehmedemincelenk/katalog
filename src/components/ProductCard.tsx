@@ -257,18 +257,45 @@ export default function ProductCard({
 
       {isAdmin && (
         <div className={`absolute ${CL.actionMenuAnchorB} ${CL.actionMenuAnchorR} z-20`}>
-          <button onClick={(ev) => (ev.stopPropagation(), setShowActions(!showActions))} className={`${CL.iconSmall} flex items-center justify-center rounded-full transition-colors ${showActions ? 'bg-stone-200 text-stone-900' : 'text-stone-300 hover:bg-stone-100 hover:text-stone-700'}`}><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg></button>
-          {showActions && (
-            <div className={`absolute ${CL.actionPopoverOffsetB} left-1/2 -translate-x-1/2 z-40 bg-white border border-stone-200 rounded-full shadow-2xl px-1.5 py-1.5 flex items-center ${CL.gapSmall}`} onClick={(ev) => ev.stopPropagation()}>
-              <button onClick={() => (onUpdate(product.id, { inStock: !product.inStock }), setShowActions(false))} className={`${CL.iconMedium} flex items-center justify-center rounded-full ${!product.inStock ? 'bg-stone-900 text-white' : 'text-stone-400 hover:bg-stone-100 hover:text-stone-700'}`} title="Stok Durumu"><span className="text-xl font-light">∅</span></button>
-              <button onClick={() => (onUpdate(product.id, { is_archived: !product.is_archived }), setShowActions(false))} className={`${CL.iconMedium} flex items-center justify-center rounded-full ${product.is_archived ? 'bg-stone-900 text-white' : 'text-stone-400 hover:bg-stone-100 hover:text-stone-700'}`} title="Arşivle"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg></button>
-              <div className="w-px h-4 bg-stone-200 mx-0.5"></div>
-              <button onClick={() => (setShowActions(false), window.confirm('Silinsin mi?') && onDelete(product.id))} className={`${CL.iconMedium} flex items-center justify-center rounded-full text-red-500 hover:bg-red-50`} title="Sil"><svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
-            </div>
-          )}
+          {/* Görünür Şık Buton */}
+          <div className={`${CL.iconSmall} flex items-center justify-center bg-white border border-stone-200 text-stone-400 hover:text-stone-900 shadow-sm rounded-full transition-colors`}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+            </svg>
+            
+            <select
+              value=""
+              onChange={(e) => {
+                const action = e.target.value;
+                if (action === 'TOGGLE_STOCK') onUpdate(product.id, { inStock: !product.inStock });
+                if (action === 'TOGGLE_ARCHIVE') onUpdate(product.id, { is_archived: !product.is_archived });
+                if (action === 'DELETE') {
+                  if (window.confirm('Silinsin mi?')) onDelete(product.id);
+                }
+                e.target.value = '';
+              }}
+              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+            >
+              <option value="" disabled>Seç...</option>
+              <option value="TOGGLE_STOCK">{product.inStock ? '[X] STOK' : '[ ] STOK'}</option>
+              <option value="TOGGLE_ARCHIVE">{product.is_archived ? '[X] ARŞİV' : '[ ] ARŞİV'}</option>
+              <option value="DELETE">🗑️ SİL</option>
+            </select>
+          </div>
         </div>
       )}
-      <div className="absolute inset-0 z-[5] pointer-events-none rounded-lg flex items-center justify-center gap-2">{(!product.inStock || product.is_archived) && (<div className="bg-stone-900/90 text-white w-8 h-8 rounded-full shadow-xl flex items-center justify-center -translate-y-4">{product.is_archived ? '📦' : '∅'}</div>)}</div>
+      <div className="absolute inset-0 z-[5] pointer-events-none rounded-lg flex items-center justify-center gap-2">
+        {!product.inStock && (
+          <div className="bg-stone-900/90 text-white w-8 h-8 rounded-full shadow-xl flex items-center justify-center -translate-y-4">
+            ∅
+          </div>
+        )}
+        {product.is_archived && (
+          <div className="bg-stone-900/90 text-white w-8 h-8 rounded-full shadow-xl flex items-center justify-center -translate-y-4">
+            📦
+          </div>
+        )}
+      </div>
     </article>
   );
 }

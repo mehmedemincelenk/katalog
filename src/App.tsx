@@ -11,6 +11,13 @@ import { useDiscount } from './hooks/useDiscount';
 import { sortCategories } from './data/config';
 
 export default function App() {
+  const { isAdmin, handleLogoClick, logout } = useAdminMode();
+  const { activeDiscount, applyCode, error: discountError } = useDiscount();
+
+  const [search, setSearch] = useState('');
+  const [activeCategories, setActiveCategories] = useState<string[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const {
     products,
     categoryOrder,
@@ -24,14 +31,7 @@ export default function App() {
     removeCategoryFromProducts,
     existingCategories,
     reorderProductsInCategory,
-  } = useProducts();
-
-  const { isAdmin, handleLogoClick, logout } = useAdminMode();
-  const { activeDiscount, applyCode, error: discountError } = useDiscount();
-
-  const [search, setSearch] = useState('');
-  const [activeCategories, setActiveCategories] = useState<string[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  } = useProducts(search, activeCategories, isAdmin);
   
   // Her tıklamada 1 kategori daha göster (Başlangıçta 2 kategori + Admin her şeyi görür)
   const INITIAL_CAT_LIMIT = 3;
@@ -78,27 +78,6 @@ export default function App() {
         />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {isAdmin && (
-            <div className="mb-8 flex flex-wrap items-center justify-between gap-4 bg-amber-50 border border-amber-200 p-4 rounded-xl shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse" />
-                <button 
-                  onClick={logout}
-                  className="text-sm font-bold text-amber-900 hover:underline"
-                  title="Admin modundan çıkmak için tıkla"
-                >
-                  ADMİN MODU AKTİF (Kapatmak için tıkla)
-                </button>
-              </div>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="bg-stone-900 text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-stone-800 transition-all shadow-lg active:scale-95 flex items-center gap-2"
-              >
-                <span>+</span> Yeni Ürün Ekle
-              </button>
-            </div>
-          )}
-
           <ProductGrid
             products={filteredProducts}
             categoryOrder={categoryOrder}
@@ -110,7 +89,22 @@ export default function App() {
             visibleCategoryLimit={isAdmin ? 999 : visibleCategoryLimit}
             search={search}
             activeCategories={activeCategories}
+            onAddClick={() => setIsModalOpen(true)}
           />
+
+          {/* Yüzen Admin Kapatma Butonu (Sağ Alt) */}
+          {isAdmin && (
+            <button 
+              onClick={logout}
+              className="fixed bottom-6 right-6 z-[100] bg-stone-900 text-white w-12 h-12 rounded-full shadow-2xl flex items-center justify-center border-2 border-white/20 active:scale-90 transition-all group"
+              title="Admin Modunu Kapat"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9" />
+              </svg>
+              <span className="absolute right-14 bg-stone-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">ADMİNİ KAPAT</span>
+            </button>
+          )}
 
           {!isAdmin && filteredProducts.length > 0 && (
             <div className="mt-12 flex justify-center">

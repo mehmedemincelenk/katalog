@@ -3,6 +3,7 @@ import { MODAL } from '../data/config';
 import { Product } from '../types';
 
 interface AddProductModalProps {
+  isOpen: boolean;
   categories: string[];
   onAdd: (product: Omit<Product, 'id' | 'inStock' | 'is_archived'> & { inStock: boolean }) => void;
   onClose: () => void;
@@ -19,6 +20,7 @@ const EMPTY = {
 };
 
 export default function AddProductModal({
+  isOpen,
   categories = [],
   onAdd,
   onClose,
@@ -26,6 +28,8 @@ export default function AddProductModal({
   const [form, setForm] = useState(EMPTY);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState('');
+
+  if (!isOpen) return null;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,

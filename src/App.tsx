@@ -1,165 +1,151 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import Navbar from './components/Navbar';
 import HeroCarousel from './components/HeroCarousel';
 import SearchFilter from './components/SearchFilter';
 import ProductGrid from './components/ProductGrid';
-import AddProductModal from './components/AddProductModal';
-import References from './components/References';
 import Footer from './components/Footer';
+import AddProductModal from './components/AddProductModal';
 import { useProducts } from './hooks/useProducts';
 import { useAdminMode } from './hooks/useAdminMode';
 import { useDiscount } from './hooks/useDiscount';
 
 export default function App() {
-  const { isAdmin, handleLogoClick } = useAdminMode();
-  const { activeDiscount, applyCode, error: discountError } = useDiscount();
-  const [search, setSearch] = useState('');
-  const [activeCategories, setActiveCategories] = useState<string[]>([]);
-  const [showAddModal, setShowAddModal] = useState(false);
-
-  // Business Logic Encapsulated in Hook
   const {
     products,
-    allProducts,
-    existingCategories,
     categoryOrder,
     loading,
-    error, // error eklendi
-    updateProduct,
-    removeProduct,
     addProduct,
+    deleteProduct,
+    updateProduct,
+    updateCategoryOrder,
+    setProducts,
     renameCategory,
     removeCategoryFromProducts,
-    updateCategoryOrder,
-    reorderProducts,
-    hasMore,
-    loadMore,
-  } = useProducts(search, activeCategories, isAdmin);
+  } = useProducts();
 
-  useEffect(() => {
-    if (isAdmin) window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [isAdmin]);
+  const { isAdmin, handleLogoClick, logout } = useAdminMode();
+  const { activeDiscount, applyCode, error: discountError } = useDiscount();
 
-  // 1. Yüklenme Durumu
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-50 text-stone-500">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin"></div>
-          <p className="font-medium animate-pulse text-sm">
-            Ürünler Yükleniyor...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const [search, setSearch] = useState('');
+  const [activeCategories, setActiveCategories] = useState<string[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Her tıklamada 1 kategori daha göster (Başlangıçta 2 kategori + Admin her şeyi görür)
+  const INITIAL_CAT_LIMIT = 3;
+  const [visibleCategoryLimit, setVisibleCategoryLimit] = useState(INITIAL_CAT_LIMIT);
 
-  // 2. Hata (Bakım) Durumu
-  if (error && products.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-50 p-6 text-center">
-        <div className="max-w-md flex flex-col items-center gap-4">
-          <span className="text-6xl mb-2">🛠️</span>
-          <h1 className="text-xl font-bold text-stone-800">
-            Katalog Şu An Bakımdadır
-          </h1>
-          <p className="text-stone-500 text-sm leading-relaxed">
-            Sizlere daha iyi hizmet verebilmek için güncellemeler yapıyoruz.
-            Lütfen kısa bir süre sonra tekrar ziyaret ediniz.
-          </p>
-          <div className="mt-4 px-4 py-2 bg-stone-100 rounded text-[10px] text-stone-400 font-mono uppercase tracking-widest">
-            {error}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) => {
+      const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
+                        (p.description || '').toLowerCase().includes(search.toLowerCase());
+      const matchCat = activeCategories.length === 0 || activeCategories.includes(p.category || '');
+      return matchSearch && matchCat;
+    });
+  }, [products, search, activeCategories]);
+
+  // Sayfalama için kategorileri grupla
+  const allCategories = useMemo(() => {
+    const cats = [...new Set(products.map(p => p.category || 'KATEGORİSİZ'))];
+    // Sıralama fonksiyonunu burada kullanıyoruz (aslında ProductGrid içinde yapılıyor ama burada da lazım)
+    return cats; 
+  }, [products]);
 
   const toggleCategory = (cat: string) => {
     if (cat === 'Tümü') {
       setActiveCategories([]);
-      return;
+    } else {
+      setActiveCategories((prev) =>
+        prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+      );
     }
-    setActiveCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
-    );
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-stone-50">
       <Navbar />
-      <HeroCarousel isAdmin={isAdmin} />
-
-      <SearchFilter
-        products={allProducts}
-        categoryOrder={categoryOrder}
-        updateCategoryOrder={updateCategoryOrder}
-        search={search}
-        onSearchChange={setSearch}
-        activeCategories={activeCategories}
-        onCategoryToggle={toggleCategory}
-        isAdmin={isAdmin}
-        renameCategory={renameCategory}
-        removeCategoryFromProducts={removeCategoryFromProducts}
-      />
-
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-2">
-        {isAdmin && (
-          <div className="flex items-center justify-end mb-2">
-            <div className="text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 px-2 py-1 rounded">
-              🔓 Admin Modu Aktif
-            </div>
-          </div>
-        )}
-
-        <ProductGrid
+      
+      <main className="flex-grow">
+        <HeroCarousel />
+        
+        <SearchFilter
           products={products}
           categoryOrder={categoryOrder}
+          updateCategoryOrder={updateCategoryOrder}
+          search={search}
+          onSearchChange={setSearch}
+          activeCategories={activeCategories}
+          onCategoryToggle={toggleCategory}
           isAdmin={isAdmin}
-          onDelete={removeProduct}
-          onUpdate={updateProduct}
-          onOrderUpdate={reorderProducts}
+          renameCategory={renameCategory}
+          removeCategoryFromProducts={removeCategoryFromProducts}
           activeDiscount={activeDiscount}
         />
 
-        {/* Sayfalama Butonu */}
-        {hasMore && !isAdmin && (
-          <div className="flex justify-center mt-12 mb-8">
-            <button
-              onClick={loadMore}
-              className="px-8 py-3 bg-white border border-stone-200 rounded-full text-sm font-bold text-stone-600 hover:border-stone-400 hover:text-stone-900 transition-all shadow-sm active:scale-95"
-            >
-              Daha Fazla Ürün Göster
-            </button>
-          </div>
-        )}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {isAdmin && (
+            <div className="mb-8 flex flex-wrap items-center justify-between gap-4 bg-amber-50 border border-amber-200 p-4 rounded-xl shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse" />
+                <button 
+                  onClick={logout}
+                  className="text-sm font-bold text-amber-900 hover:underline"
+                  title="Admin modundan çıkmak için tıkla"
+                >
+                  ADMİN MODU AKTİF (Kapatmak için tıkla)
+                </button>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-stone-900 text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-stone-800 transition-all shadow-lg active:scale-95 flex items-center gap-2"
+              >
+                <span>+</span> Yeni Ürün Ekle
+              </button>
+            </div>
+          )}
+
+          <ProductGrid
+            products={filteredProducts}
+            categoryOrder={categoryOrder}
+            isAdmin={isAdmin}
+            onDelete={deleteProduct}
+            onUpdate={updateProduct}
+            onOrderUpdate={setProducts}
+            activeDiscount={activeDiscount}
+            visibleCategoryLimit={isAdmin ? 999 : visibleCategoryLimit}
+          />
+
+          {!isAdmin && filteredProducts.length > 0 && (
+            <div className="mt-12 flex justify-center">
+              {/* Eğer gösterilecek daha fazla kategori varsa buton çıkar */}
+              {visibleCategoryLimit < allCategories.length ? (
+                <button
+                  onClick={() => setVisibleCategoryLimit(prev => prev + 1)}
+                  className="bg-white border-2 border-stone-200 text-stone-900 px-10 py-4 rounded-full font-black text-xs uppercase tracking-widest hover:border-stone-900 hover:bg-stone-50 transition-all shadow-xl active:scale-95"
+                >
+                  Daha Fazla Ürün Göster ↓
+                </button>
+              ) : (
+                <p className="text-[10px] font-bold text-stone-300 uppercase tracking-widest">Tüm Ürünler Listelendi</p>
+              )}
+            </div>
+          )}
+
+          {loading && (
+            <div className="flex justify-center py-20">
+              <div className="w-8 h-8 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin" />
+            </div>
+          )}
+        </div>
       </main>
 
-      <References />
-      <Footer 
-        onLogoClick={handleLogoClick} 
-        isAdmin={isAdmin} 
-        activeDiscount={activeDiscount}
-        onApplyDiscount={applyCode}
-        discountError={discountError}
-      />
-
-      {/* Floating Action Button (Admin) */}
+      <Footer onLogoClick={handleLogoClick} applyCode={applyCode} discountError={discountError} />
+      
       {isAdmin && (
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-stone-900 text-white text-4xl pb-1.5 shadow-xl hover:bg-stone-700 transition-all flex items-center justify-center active:scale-95"
-          aria-label="Yeni Ürün Ekle"
-        >
-          +
-        </button>
-      )}
-
-      {showAddModal && (
         <AddProductModal
-          categories={existingCategories}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
           onAdd={addProduct}
-          onClose={() => setShowAddModal(false)}
+          categories={[...new Set(products.map((p) => p.category).filter(Boolean))]}
         />
       )}
     </div>

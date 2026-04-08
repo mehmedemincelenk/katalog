@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { GRID, sortCategories } from '../data/config';
 import { Product } from '../types';
 import ProductCard from './ProductCard';
@@ -11,6 +10,7 @@ interface ProductGridProps {
   onUpdate: (id: string, changes: Partial<Product>) => void;
   onOrderUpdate: (newOrder: Product[]) => void;
   activeDiscount?: { code: string; rate: number; category?: string } | null;
+  visibleCategoryLimit?: number;
 }
 
 export default function ProductGrid({
@@ -21,9 +21,8 @@ export default function ProductGrid({
   onUpdate,
   onOrderUpdate,
   activeDiscount,
+  visibleCategoryLimit = 999,
 }: ProductGridProps) {
-  const [draggedId, setDraggedId] = useState<string | null>(null);
-
   if (products.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-stone-400">
@@ -42,76 +41,54 @@ export default function ProductGrid({
   }, {});
 
   const sortedCategories = sortCategories(Object.keys(groupedProducts), categoryOrder);
+  
+  // Limitleme: Sadece ilk N kategoriyi göster (Admin değilse)
+  const displayedCategories = sortedCategories.slice(0, visibleCategoryLimit);
 
-  const reorder = (sourceId: string, targetId: string) => {
-    if (sourceId === targetId) return;
-    const sourceIdx = products.findIndex(p => p.id === sourceId);
-    const targetIdx = products.findIndex(p => p.id === targetId);
-    if (sourceIdx !== -1 && targetIdx !== -1) {
-      const sourceProduct = products[sourceIdx];
-      const targetProduct = products[targetIdx];
-      if (sourceProduct.category !== targetProduct.category) return;
+  // Sayısal Sıralama Değiştirme Mantığı
+  const handleOrderChange = (productId: string, newPosition: number) => {
+    const productToMove = products.find(p => p.id === productId);
+    if (!productToMove) return;
+
+    const categoryName = productToMove.category || 'KATEGORİSİZ / DİĞER';
+    const categoryProducts = products.filter(p => (p.category || 'KATEGORİSİZ / DİĞER') === categoryName);
+    
+    const oldGlobalIdx = products.findIndex(p => p.id === productId);
+    const targetProductInCat = categoryProducts[newPosition - 1];
+    const newGlobalIdx = products.findIndex(p => p.id === targetProductInCat.id);
+
+    if (oldGlobalIdx !== -1 && newGlobalIdx !== -1) {
       const newProducts = [...products];
-      newProducts.splice(sourceIdx, 1);
-      newProducts.splice(targetIdx, 0, sourceProduct);
+      newProducts.splice(oldGlobalIdx, 1);
+      newProducts.splice(newGlobalIdx, 0, productToMove);
       onOrderUpdate(newProducts);
     }
   };
 
-  const handleDragStart = (_e: React.DragEvent, id: string) => {
-    if (!isAdmin) return;
-    setDraggedId(id);
-    if (_e.dataTransfer) {
-      _e.dataTransfer.effectAllowed = 'move';
-    }
-  };
-
-  const handleDragEnter = (id: string) => {
-    if (!isAdmin || !draggedId || draggedId === id) return;
-    reorder(draggedId, id);
-  };
-
-  const handleTouchStart = (_e: React.TouchEvent, id: string) => {
-    if (!isAdmin) return;
-    setDraggedId(id);
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!isAdmin || !draggedId) return;
-    const touch = e.changedTouches[0];
-    const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
-    const targetId = targetEl?.closest('[data-product-id]')?.getAttribute('data-product-id');
-    if (targetId) reorder(draggedId, targetId);
-    setDraggedId(null);
-  };
-
   return (
     <div className="w-full flex flex-col">
-      {sortedCategories.map((catName) => (
-        <div key={catName} className="flex flex-col mb-8">
-          <h2 className={GRID.headerClass}>{catName}</h2>
+      {displayedCategories.map((catName) => (
+        <div key={catName} className="flex flex-col mb-12">
+          <div className="flex items-center gap-3 mb-4 px-1">
+            <h2 className="text-[13px] font-black text-stone-900 tracking-tighter uppercase">{catName}</h2>
+            <div className="flex-1 h-px bg-stone-200"></div>
+            <span className="text-[10px] font-bold text-stone-400">{groupedProducts[catName].length} ÜRÜN</span>
+          </div>
+          
           <div className={`grid ${GRID.colsClass} ${GRID.gapClass}`}>
-            {groupedProducts[catName].map((product) => (
-              <div
+            {groupedProducts[catName].map((product, idx) => (
+              <ProductCard
                 key={product.id}
-                onDragEnter={() => handleDragEnter(product.id)}
-                className={`transition-all duration-300 ease-in-out ${
-                  draggedId === product.id ? 'opacity-30 scale-95' : 'opacity-100 scale-100'
-                }`}
-              >
-                <ProductCard
-                  product={product}
-                  categories={sortedCategories}
-                  isAdmin={isAdmin}
-                  onDelete={onDelete}
-                  onUpdate={onUpdate}
-                  onDragStart={handleDragStart}
-                  onDragEnd={() => setDraggedId(null)}
-                  onTouchStart={handleTouchStart}
-                  onTouchEnd={handleTouchEnd}
-                  activeDiscount={activeDiscount}
-                />
-              </div>
+                product={product}
+                categories={sortedCategories}
+                isAdmin={isAdmin}
+                onDelete={onDelete}
+                onUpdate={onUpdate}
+                onOrderChange={handleOrderChange}
+                orderIndex={idx + 1}
+                itemsInCategory={groupedProducts[catName].length}
+                activeDiscount={activeDiscount}
+              />
             ))}
           </div>
         </div>

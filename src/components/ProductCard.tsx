@@ -27,11 +27,9 @@ interface ProductCardProps {
   isAdmin: boolean;
   onDelete: (id: string) => void;
   onUpdate: (id: string, changes: Partial<Product>) => void;
-  onDragStart?: (e: React.DragEvent, id: string) => void;
-  onDragEnd?: (e: React.DragEvent) => void;
-  onDrop?: (e: React.DragEvent, id: string) => void;
-  onTouchStart?: (e: React.TouchEvent, id: string) => void;
-  onTouchEnd?: (e: React.TouchEvent) => void;
+  onOrderChange?: (id: string, newOrderValue: number) => void;
+  orderIndex?: number;
+  itemsInCategory?: number;
   activeDiscount?: { code: string; rate: number; category?: string } | null;
 }
 
@@ -92,11 +90,9 @@ export default function ProductCard({
   isAdmin,
   onDelete,
   onUpdate,
-  onDragStart,
-  onDragEnd,
-  onDrop,
-  onTouchStart,
-  onTouchEnd,
+  onOrderChange,
+  orderIndex = 1,
+  itemsInCategory = 1,
   activeDiscount,
 }: ProductCardProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -187,20 +183,21 @@ export default function ProductCard({
   return (
     <article
       ref={cardRef as React.RefObject<HTMLDivElement>}
-      draggable={isAdmin}
-      onDragStart={(e) => onDragStart?.(e, product.id)}
-      onDragEnd={onDragEnd}
-      onDragOver={(e) => isAdmin && e.preventDefault()}
-      onDrop={(e) => onDrop?.(e, product.id)}
-      onTouchStart={(e) => onTouchStart?.(e, product.id)}
-      onTouchEnd={onTouchEnd}
-      onTouchMove={(e) => isAdmin && e.cancelable && e.preventDefault()}
       data-product-id={product.id}
-      className={`bg-white border ${product.inStock === false ? 'border-transparent bg-stone-50' : 'border-stone-200'} rounded-lg flex flex-col group hover:shadow-md transition-all duration-300 relative ${isAdmin ? 'touch-none cursor-move' : ''}`}
+      className={`bg-white border ${product.inStock === false ? 'border-transparent bg-stone-50' : 'border-stone-200'} rounded-lg flex flex-col group hover:shadow-md transition-all duration-300 relative`}
     >
+      {/* Sayısal Sıralama Dropdown (Admin) */}
       {isAdmin && (
-        <div className="absolute top-1 left-1 z-[15] bg-white/80 p-0.5 rounded shadow-sm border border-stone-200 text-stone-400">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M4 8h16M4 16h16" /></svg>
+        <div className="absolute top-2 left-2 z-[25]">
+          <select
+            value={orderIndex}
+            onChange={(e) => onOrderChange?.(product.id, parseInt(e.target.value, 10))}
+            className="appearance-none bg-stone-900 text-white text-[10px] font-black w-8 h-8 rounded-lg shadow-2xl border border-white/20 text-center cursor-pointer hover:bg-stone-800 transition-colors focus:outline-none"
+          >
+            {Array.from({ length: itemsInCategory }, (_, i) => (
+              <option key={i + 1} value={i + 1}>{i + 1}</option>
+            ))}
+          </select>
         </div>
       )}
 
@@ -211,7 +208,16 @@ export default function ProductCard({
           <div className="flex flex-col items-center gap-1 text-stone-300 select-none"><span className="text-5xl">{PLACEHOLDER_EMOJI}</span></div>
         )}
         <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-        {isAdmin && !isEditingCategory && <button onClick={(ev) => { ev.stopPropagation(); setIsEditingCategory(true); }} className={`absolute top-1.5 left-1.5 z-10 ${categoryClass} hover:ring-1 hover:ring-kraft-400`}>{product.category || 'KATEGORİSİZ'}</button>}
+        
+        {/* Kategori Çipi (Sağ Üst Köşeye Taşındı) */}
+        {isAdmin && !isEditingCategory && (
+          <button 
+            onClick={(ev) => { ev.stopPropagation(); setIsEditingCategory(true); }} 
+            className={`absolute top-2 right-2 z-10 ${categoryClass} hover:ring-2 hover:ring-kraft-400 shadow-lg backdrop-blur-sm bg-white/90`}
+          >
+            KATEGORİ
+          </button>
+        )}
         {isAdmin && isEditingCategory && (
           <div style={{ transform: `translate(calc(-50% + ${dragPos.x}px), ${dragPos.y}px)` }} className={`absolute ${CL.catPopoverOffsetTop} left-1/2 z-50 bg-white border border-stone-200 rounded-lg ${CL.catPopoverWidth} shadow-2xl flex flex-col items-stretch overflow-hidden`} onClick={(ev) => ev.stopPropagation()}>
             <div className="flex justify-between items-center p-3 pb-0 cursor-move bg-stone-50" onMouseDown={handleDragStartInternal}><span className="text-[10px] font-bold text-stone-600">Kategori Değiştir</span><button onClick={() => setIsEditingCategory(false)} className="text-stone-400 hover:text-stone-700">×</button></div>

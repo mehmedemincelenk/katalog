@@ -109,6 +109,7 @@ export default function SearchFilter({
                       <select
                         value={sortedList.indexOf(cat) + 1}
                         onChange={(e) => handleCategoryOrderChange(cat, parseInt(e.target.value, 10))}
+                        style={{ textAlignLast: 'center', padding: 0 }}
                         className="bg-stone-100 text-stone-900 text-[12px] font-black w-9 h-8 p-0 cursor-pointer focus:outline-none appearance-none rounded-l-full active:bg-stone-200 transition-colors text-center"
                       >
                         {sortedList.map((_, i) => (

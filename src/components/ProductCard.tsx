@@ -192,7 +192,8 @@ export default function ProductCard({
           <select
             value={orderIndex}
             onChange={(e) => onOrderChange?.(product.id, parseInt(e.target.value, 10))}
-            className="appearance-none bg-stone-900 text-white text-[11px] font-black w-7 h-7 rounded-lg shadow-2xl border border-white/20 text-center cursor-pointer hover:bg-stone-800 transition-all active:scale-90 focus:outline-none ring-2 ring-black/5 flex items-center justify-center p-0"
+            style={{ textAlignLast: 'center', padding: 0 }}
+            className="appearance-none bg-stone-900 text-white text-[11px] font-black w-7 h-7 rounded-lg shadow-2xl border border-white/20 text-center cursor-pointer hover:bg-stone-800 transition-all active:scale-90 focus:outline-none ring-2 ring-black/5"
           >
             {Array.from({ length: itemsInCategory }, (_, i) => (
               <option key={i + 1} value={i + 1} className="text-black">{i + 1}</option>

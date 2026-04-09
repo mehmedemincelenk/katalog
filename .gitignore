@@ -10,6 +10,10 @@ dist/
 # Yerel çalışma dosyaları ve loglar
 *.log
 .DS_Store
+prepared_products.json
+bulk-uploader.cjs
+import-products.cjs
+import-products.js
 
 # ÖNEMLİ: Gerçek şifrelerin olduğu .env dosyasını ASLA internete (Github) yollama!
 # Sadece .env.example (örnek şablon) yollanır.

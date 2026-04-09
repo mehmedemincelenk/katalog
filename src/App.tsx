@@ -5,7 +5,6 @@ import SearchFilter from './components/SearchFilter';
 import ProductGrid from './components/ProductGrid';
 import Footer from './components/Footer';
 import AddProductModal from './components/AddProductModal';
-import AdminToolbar from './components/AdminToolbar';
 import BulkActionsPanel from './components/BulkActionsPanel';
 import { useProducts } from './hooks/useProducts';
 import { useAdminMode } from './hooks/useAdminMode';
@@ -189,30 +188,6 @@ export default function App() {
     <div className={`min-h-screen flex flex-col ${UI.layout.bodyBg}`}>
       <Navbar settings={settings} />
       
-      {isAdmin && (
-        <AdminToolbar 
-          settings={settings} 
-          updateSetting={updateSetting} 
-          onAddClick={() => setIsModalOpen(true)}
-          isSelectMode={isSelectMode}
-          toggleSelectMode={() => { setIsSelectMode(!isSelectMode); setSelectedIds(new Set()); }}
-        />
-      )}
-
-      {isAdmin && isSelectMode && (
-        <BulkActionsPanel
-          selectedCount={getTargetIds().length}
-          categories={existingCategories}
-          onCancel={() => { setIsSelectMode(false); setSelectedIds(new Set()); }}
-          onDelete={handleBulkDelete}
-          onArchiveToggle={handleBulkArchive}
-          onStockToggle={handleBulkStock}
-          onChangeCategory={handleBulkCategory}
-          onChangeName={handleBulkName}
-          onChangePrice={handleBulkPrice}
-        />
-      )}
-      
       <main className="flex-grow">
         <HeroCarousel isAdmin={isAdmin} />
         
@@ -232,6 +207,7 @@ export default function App() {
             visibleCategoryLimit={isAdmin ? UI.layout.adminLimit : visibleCategoryLimit}
             search={search} activeCategories={activeCategories} onAddClick={() => setIsModalOpen(true)}
             isSelectMode={isSelectMode} selectedIds={selectedIds} onSelectToggle={toggleSelection}
+            settings={settings} updateSetting={updateSetting} toggleSelectMode={() => { setIsSelectMode(!isSelectMode); setSelectedIds(new Set()); }}
           />
 
           {/* ADMİN ÇIKIŞ BUTONU */}

@@ -1,17 +1,14 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { UI, LABELS, sortCategories } from '../data/config';
 import { Product } from '../types';
 import ProductCard from './ProductCard';
+import { CompanySettings } from '../hooks/useSettings';
+import { ActiveDiscount } from '../hooks/useDiscount';
 
 /**
  * PRODUCT GRID BİLEŞENİ (MAĞAZA MİMARİSİ)
  * -------------------------------------
  * Bir kurucu olarak bu bileşen senin "Dijital Reyon Yönetim" sistemindir.
- * 
- * 1. Reyonlaştırma: Ürünleri kategorilere göre otomatik gruplayarak müşterinin kafasının karışmasını önler.
- * 2. Performans (Lazy Load): "Daha Fazla Göster" mantığı ile sayfanın anında açılmasını sağlar.
- * 3. Dinamik Yapı: Sheets'e yeni bir ürün eklediğinde, eğer kategorisi yeniyse burada otomatik olarak yeni bir reyon açılır.
- * 4. Admin Ergonomisi: "Yeni Ürün Yükle" butonu ile mağazanı her an güncel tutmanı sağlar.
  */
 
 interface ProductGridProps {
@@ -29,19 +26,73 @@ interface ProductGridProps {
   isSelectMode?: boolean;
   selectedIds?: Set<string>;
   onSelectToggle?: (id: string) => void;
+  // Dinamik Ayarlar ve Toplu İşlemler İçin Eklenenler
+  settings?: CompanySettings;
+  updateSetting?: (key: keyof CompanySettings, value: string) => void;
+  toggleSelectMode?: () => void;
 }
+
+/**
+ * AdminActionGrid: Yönetim butonlarını "Yeni Ürün Ekle" tarzında bir ızgara olarak sunar.
+ */
+const AdminActionGrid = memo(({ 
+  settings, updateSetting, onAddClick, isSelectMode, toggleSelectMode 
+}: { 
+  settings: CompanySettings, updateSetting: (key: keyof CompanySettings, value: string) => void, 
+  onAddClick: () => void, isSelectMode: boolean, toggleSelectMode: () => void 
+}) => {
+  const promptUpdate = (key: keyof CompanySettings, title: string, currentValue: string) => {
+    const newVal = window.prompt(`${title} için yeni değer girin:`, currentValue);
+    if (newVal !== null && newVal.trim() !== '') {
+      updateSetting(key, newVal.trim());
+    }
+  };
+
+  const btnClass = "flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed border-stone-300 rounded-xl transition-all active:scale-[0.98] hover:border-stone-900 hover:text-stone-900 hover:bg-stone-50 group shadow-sm bg-white";
+  const iconClass = "text-2xl group-hover:scale-110 transition-transform";
+  const labelClass = "text-[10px] font-bold uppercase tracking-widest text-stone-500 group-hover:text-stone-900";
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-10">
+      <button onClick={() => promptUpdate('whatsapp', 'WhatsApp', settings.whatsapp)} className={btnClass}>
+        <span className={iconClass}>💬</span>
+        <span className={labelClass}>WhatsApp</span>
+      </button>
+      <button onClick={() => promptUpdate('address', 'Adres', settings.address)} className={btnClass}>
+        <span className={iconClass}>📍</span>
+        <span className={labelClass}>Adres</span>
+      </button>
+      <button onClick={() => promptUpdate('instagram', 'Instagram', settings.instagram)} className={btnClass}>
+        <span className={iconClass}>📸</span>
+        <span className={labelClass}>Instagram</span>
+      </button>
+      <button onClick={() => promptUpdate('title', 'Başlık', settings.title)} className={btnClass}>
+        <span className={iconClass}>🏷️</span>
+        <span className={labelClass}>Başlık</span>
+      </button>
+      <button onClick={() => promptUpdate('subtitle', 'Alt Başlık', settings.subtitle)} className={btnClass}>
+        <span className={iconClass}>👤</span>
+        <span className={labelClass}>Alt Başlık</span>
+      </button>
+      <button onClick={onAddClick} className={`${btnClass} border-stone-900 bg-stone-50`}>
+        <span className={`${iconClass} font-light`}>+</span>
+        <span className={`${labelClass} text-stone-900`}>{LABELS.newProductBtn}</span>
+      </button>
+      <button onClick={toggleSelectMode} className={`${btnClass} ${isSelectMode ? 'border-kraft-600 bg-kraft-50' : ''}`}>
+        <span className={iconClass}>{isSelectMode ? '✕' : '✅'}</span>
+        <span className={labelClass}>{isSelectMode ? 'Kapat' : 'Seç'}</span>
+      </button>
+    </div>
+  );
+});
 
 export default function ProductGrid({
   products, categoryOrder, isAdmin, onDelete, onUpdate, onOrderUpdate,
   activeDiscount, visibleCategoryLimit, search, activeCategories, onAddClick,
-  isSelectMode, selectedIds, onSelectToggle
+  isSelectMode = false, selectedIds, onSelectToggle,
+  settings, updateSetting, toggleSelectMode
 }: ProductGridProps) {
   
-  /**
-   * GRUPLAMA MANTIĞI (TEKNİK):
-   * Tüm ürün listesini tek tek gezer ve kategori isimlerine göre paketler oluşturur.
-   * Sonuç: { 'PEÇETE': [ürün1, ürün2], 'KÖPÜK': [ürün3] }
-   */
   const { groupedProducts, sortedCategories } = useMemo(() => {
     const grouped = products.reduce((acc: Record<string, Product[]>, product) => {
       const catName = product.category || 'KATEGORİSİZ / DİĞER';
@@ -50,12 +101,10 @@ export default function ProductGrid({
       return acc;
     }, {});
 
-    // Reyonların sayfa üzerindeki dikey sırasını 'config.ts'deki kurala göre belirler.
     const sorted = sortCategories(Object.keys(grouped), categoryOrder);
     return { groupedProducts: grouped, sortedCategories: sorted };
   }, [products, categoryOrder]);
 
-  // Boş Sonuç Ekranı (Kullanıcı için)
   if (products.length === 0 && !isAdmin) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-stone-400 animate-in fade-in duration-500">
@@ -65,22 +114,21 @@ export default function ProductGrid({
     );
   }
 
-  // LİMİTLEME: Kullanıcıyı boğmamak için reyonları azar azar açarız (Arama yapılmıyorsa).
   const isFiltering = search.trim() !== '' || activeCategories.length > 0;
   const displayedCategories = isFiltering ? sortedCategories : sortedCategories.slice(0, visibleCategoryLimit);
 
   return (
     <div className="w-full flex flex-col min-h-[400px]">
       
-      {/* ADMİN: Yeni Ürün Ekleme Paneli */}
-      {isAdmin && (
-        <button 
-          onClick={onAddClick}
-          className="w-full mb-8 py-4 border-2 border-dashed border-stone-300 rounded-xl flex items-center justify-center gap-3 text-stone-400 hover:border-stone-900 hover:text-stone-900 hover:bg-stone-50 transition-all active:scale-[0.99] group shadow-sm"
-        >
-          <span className="text-2xl font-light group-hover:scale-125 transition-transform">+</span>
-          <span className="text-xs font-bold uppercase tracking-widest">{LABELS.newProductBtn}</span>
-        </button>
+      {/* ADMİN: Yönetim Izgarası (Yeni Stil) */}
+      {isAdmin && settings && updateSetting && toggleSelectMode && (
+        <AdminActionGrid 
+          settings={settings} 
+          updateSetting={updateSetting} 
+          onAddClick={onAddClick}
+          isSelectMode={isSelectMode}
+          toggleSelectMode={toggleSelectMode}
+        />
       )}
 
       {/* Admin için boş mağaza uyarısı */}

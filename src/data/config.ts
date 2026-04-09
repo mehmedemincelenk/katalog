@@ -298,8 +298,8 @@ export const CARD_STYLE = {
   descColor: 'text-stone-500',
   descLeading: 'leading-tight',
   descMaxH: 'max-h-[36px] sm:max-h-[44px]',
-  adminEditBg: 'bg-amber-50',
-  adminEditBorder: 'border-amber-200',
+  adminEditBg: '',
+  adminEditBorder: 'border-transparent hover:border-stone-300',
   statusIcons: {
     outOfStock: '∅',
     archived: '📦'

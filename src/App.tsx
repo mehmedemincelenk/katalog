@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import HeroCarousel from './components/HeroCarousel';
 import SearchFilter from './components/SearchFilter';
@@ -41,6 +41,22 @@ export default function App() {
     }
   };
 
+  // APPLE STANDARD MOBİL DÜZENLEME (Tıklama Yutucu)
+  // Kullanıcı bir yeri düzenlerken (klavye açıkken) dışarıdaki bir butona yanlışlıkla basmasını engeller.
+  useEffect(() => {
+    if (!isAdmin) return;
+    const handlePointerDown = (e: PointerEvent) => {
+      const active = document.activeElement;
+      // Eğer tıklanan eleman aktif olan düzenleme alanı değilse ve bir düzenleme alanı aktifse
+      if (active && active.hasAttribute('contenteditable') && active !== e.target) {
+        e.preventDefault(); // Butonun tıklanmasını engelle
+        (active as HTMLElement).blur(); // Sadece klavyeyi kapat
+      }
+    };
+    document.addEventListener('pointerdown', handlePointerDown, { capture: true });
+    return () => document.removeEventListener('pointerdown', handlePointerDown, { capture: true });
+  }, [isAdmin]);
+
   return (
     <div className={`min-h-screen flex flex-col ${UI.layout.bodyBg}`}>
       <Navbar />
@@ -57,18 +73,6 @@ export default function App() {
 
         <div className={UI.layout.container}>
           
-          {/* ADMİN ÖZEL: TOPLU SİLME VE YÖNETİM BUTONLARI */}
-          {isAdmin && (
-            <div className="mb-6 flex justify-end gap-2">
-              <button 
-                onClick={deleteAllProducts}
-                className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-[10px] font-bold uppercase hover:bg-red-600 hover:text-white transition-all shadow-sm"
-              >
-                Tüm Ürünleri Sil 🗑️
-              </button>
-            </div>
-          )}
-
           <ProductGrid
             products={products} categoryOrder={categoryOrder} isAdmin={isAdmin}
             onDelete={deleteProduct} onUpdate={updateProduct} onOrderUpdate={reorderProductsInCategory}
@@ -115,7 +119,14 @@ export default function App() {
         </div>
       </main>
 
-      <Footer onLogoClick={handleLogoClick} isAdmin={isAdmin} activeDiscount={activeDiscount} onApplyDiscount={applyCode} discountError={discountError} />
+      <Footer 
+        onLogoClick={handleLogoClick} 
+        isAdmin={isAdmin} 
+        activeDiscount={activeDiscount} 
+        onApplyDiscount={applyCode} 
+        discountError={discountError} 
+        onDeleteAll={deleteAllProducts} 
+      />
       
       {isAdmin && (
         <AddProductModal

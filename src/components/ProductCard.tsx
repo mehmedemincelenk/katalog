@@ -200,6 +200,9 @@ const ProductCard = memo(({
   // İndirim Uygulama
   const isDiscountActive = activeDiscount && (!activeDiscount.category || activeDiscount.category === product.category);
   const displayPrice = isDiscountActive ? calculateDiscount(product.price, activeDiscount.rate) : product.price;
+  
+  // Fiyatın içinde ₺ işareti yoksa sonuna ekle
+  const formattedPrice = displayPrice.includes('₺') ? displayPrice : `${displayPrice} ₺`;
 
   return (
     <article ref={cardRef as React.RefObject<HTMLDivElement>} data-product-id={product.id} className={`bg-white border ${product.inStock === false ? 'border-transparent bg-stone-50' : 'border-stone-200'} rounded-lg flex flex-col group hover:shadow-md transition-all duration-300 relative`}>
@@ -251,7 +254,7 @@ const ProductCard = memo(({
         {/* FİYAT ALANI */}
         <div className="mt-auto">
           <div contentEditable={isAdmin} suppressContentEditableWarning onBlur={(e: any) => { let val = e.currentTarget.textContent?.trim() || ''; if (val && !val.startsWith('₺')) val = '₺' + val; updateField('price', val); }} onKeyDown={(e: any) => e.key === 'Enter' && (e.preventDefault(), e.currentTarget.blur())} className={`${s.priceSize} ${s.priceWeight} ${isDiscountActive ? s.discountColor : s.priceColor} transition-all duration-500 ${isAdmin ? `cursor-text focus:outline-none ${s.adminEditBg} px-0.5 rounded outline-none` : ''} ${product.inStock === false && !isAdmin ? 'line-through opacity-60 text-stone-500' : ''}`}>
-            {displayPrice}
+            {formattedPrice}
           </div>
         </div>
       </div>

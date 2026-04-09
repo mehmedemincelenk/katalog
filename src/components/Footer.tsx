@@ -18,6 +18,7 @@ interface FooterProps {
   activeDiscount?: ActiveDiscount | null;
   onApplyDiscount?: (code: string) => void;
   discountError?: string | null;
+  onDeleteAll?: () => void;
 }
 
 export default function Footer({ 
@@ -25,7 +26,8 @@ export default function Footer({
   isAdmin,
   activeDiscount,
   onApplyDiscount,
-  discountError
+  discountError,
+  onDeleteAll
 }: FooterProps) {
   // TEKNİK NOT: couponInput, kullanıcının o an yazdığı metni tutan "geçici" bir hafızadır.
   const [couponInput, setCouponInput] = useState('');
@@ -84,49 +86,60 @@ export default function Footer({
             </a>
           </div>
 
-          {/* 3. BÖLÜM: KUPON SİSTEMİ (Girişimci Dokunuşu) */}
-          {!isAdmin && (
-            <div className="flex flex-col items-center md:items-end gap-2.5">
-              <span className={`text-[10px] font-bold text-stone-300 uppercase ${f.style.tracking}`}>
-                {f.labels.advantageTitle}
-              </span>
-              <div className="flex gap-1 w-full max-w-[240px]">
-                <input
-                  type="text"
-                  value={couponInput}
-                  onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                  onKeyDown={(e) => e.key === 'Enter' && handleApply()}
-                  placeholder={activeDiscount ? f.labels.couponActive : f.labels.couponPlaceholder}
-                  className={`flex-1 px-3 py-2 border rounded-lg text-[11px] font-bold transition-all outline-none ${
-                    activeDiscount ? 'border-green-500 bg-green-50 text-green-700' : 
-                    discountError ? 'border-red-400 bg-red-50 text-red-700' : 'border-stone-200 text-stone-600 bg-white'
-                  }`}
-                />
+          {/* 3. BÖLÜM: KUPON VEYA ADMİN AYARLARI */}
+          <div className="flex flex-col items-center md:items-end gap-2.5">
+            {!isAdmin ? (
+              <>
+                <span className={`text-[10px] font-bold text-stone-300 uppercase ${f.style.tracking}`}>
+                  {f.labels.advantageTitle}
+                </span>
+                <div className="flex gap-1 w-full max-w-[240px]">
+                  <input
+                    type="text"
+                    value={couponInput}
+                    onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                    onKeyDown={(e) => e.key === 'Enter' && handleApply()}
+                    placeholder={activeDiscount ? f.labels.couponActive : f.labels.couponPlaceholder}
+                    className={`flex-1 px-3 py-2 border rounded-lg text-[11px] font-bold transition-all outline-none ${
+                      activeDiscount ? 'border-green-500 bg-green-50 text-green-700' : 
+                      discountError ? 'border-red-400 bg-red-50 text-red-700' : 'border-stone-200 text-stone-600 bg-white'
+                    }`}
+                  />
+                  <button 
+                    onClick={handleApply} 
+                    className={`${activeDiscount ? 'bg-green-600' : 'bg-stone-900'} text-white px-3 py-2 rounded-lg hover:opacity-90 active:scale-95 transition-all shadow-sm shrink-0`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </button>
+                </div>
+                
+                {/* BAŞARI DURUMU: Kupon kabul edildiğinde oran gösterilir. */}
+                {activeDiscount && (
+                  <div className="flex flex-col items-center md:items-end animate-in fade-in slide-in-from-top-1">
+                    <p className="text-[9px] font-bold text-green-600 uppercase tracking-tight">
+                      {f.labels.discountApplied(activeDiscount.rate)}
+                    </p>
+                    <p className="text-[8px] text-stone-400 font-medium">
+                      {f.labels.codeLabel(activeDiscount.code)}
+                    </p>
+                  </div>
+                )}
+                {/* HATA DURUMU: Yanlış kod girilirse uyarı verir. */}
+                {discountError && <p className="text-[9px] font-bold text-red-500 uppercase tracking-tight">{discountError}</p>}
+              </>
+            ) : (
+              <div className="flex flex-col items-end w-full h-full justify-end">
                 <button 
-                  onClick={handleApply} 
-                  className={`${activeDiscount ? 'bg-green-600' : 'bg-stone-900'} text-white px-3 py-2 rounded-lg hover:opacity-90 active:scale-95 transition-all shadow-sm shrink-0`}
+                  onClick={onDeleteAll}
+                  className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-[10px] font-bold uppercase hover:bg-red-600 hover:text-white transition-all shadow-sm"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
+                  Tüm Ürünleri Sil 🗑️
                 </button>
               </div>
-              
-              {/* BAŞARI DURUMU: Kupon kabul edildiğinde oran gösterilir. */}
-              {activeDiscount && (
-                <div className="flex flex-col items-center md:items-end animate-in fade-in slide-in-from-top-1">
-                  <p className="text-[9px] font-bold text-green-600 uppercase tracking-tight">
-                    {f.labels.discountApplied(activeDiscount.rate)}
-                  </p>
-                  <p className="text-[8px] text-stone-400 font-medium">
-                    {f.labels.codeLabel(activeDiscount.code)}
-                  </p>
-                </div>
-              )}
-              {/* HATA DURUMU: Yanlış kod girilirse uyarı verir. */}
-              {discountError && <p className="text-[9px] font-bold text-red-500 uppercase tracking-tight">{discountError}</p>}
-            </div>
-          )}
+            )}
+          </div>
           
         </div>
       </div>

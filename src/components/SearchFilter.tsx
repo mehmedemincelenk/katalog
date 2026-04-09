@@ -54,9 +54,9 @@ const CategoryChip = memo(({
     }`}>
       {/* SIRALAMA SEÇİCİ (Admin) veya SAYI (Müşteri) */}
       {isActualCategory && (
-        <div className="flex items-center shrink-0">
+        <div className="flex items-center shrink-0 h-full">
           {isAdmin ? (
-            <div className="relative w-9 h-8 bg-stone-100 border-r border-stone-200 flex items-center justify-center overflow-hidden">
+            <div className="relative w-8 h-full bg-stone-100 border-r border-stone-200 flex items-center justify-center overflow-hidden rounded-l-full">
               <select
                 value={currentIndex + 1}
                 onChange={(e) => onOrderChange(cat, parseInt(e.target.value, 10))}
@@ -67,7 +67,7 @@ const CategoryChip = memo(({
               </select>
             </div>
           ) : (
-            <span className={`text-[10px] font-black w-7 h-8 flex items-center justify-center rounded-l-full ${isSelected ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-50'}`}>
+            <span className={`text-[10px] font-black w-7 h-full flex items-center justify-center rounded-l-full ${isSelected ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-900'}`}>
               {productCount || 0}
             </span>
           )}

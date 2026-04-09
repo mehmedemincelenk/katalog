@@ -70,7 +70,7 @@ const CarouselSlide = memo(({
       )}
 
       {/* METİN KUTUSU (GLASSMORPHISM): Cam efekti ile yazıların her resim üzerinde okunmasını sağlar. */}
-      <div className={`absolute z-20 ${c.boxPositionMobile} ${c.boxPositionPC} ${c.boxWidthMobile} ${c.boxWidthPC} ${c.boxPaddingMobile} ${c.boxPaddingPC} ${c.boxRounding} ${c.boxBg} ${c.boxBorder} ${c.boxShadow}`}>
+      <div className={`absolute z-20 top-4 left-4 sm:top-8 sm:left-8 max-w-[80%] p-4 sm:p-6 rounded-xl bg-black/30 backdrop-blur-md border border-white/10 shadow-2xl`}>
         <h2
           className={`${c.titleColor} ${c.titleSizeMobile} ${c.titleSizePC} ${c.titleWeight} ${c.titleTracking} ${c.titleShadow} ${isAdmin ? 'cursor-text focus:outline-none bg-white/10 rounded px-1' : ''}`}
           contentEditable={isAdmin} suppressContentEditableWarning onBlur={(e) => handleBlur('label', e)} onKeyDown={handleKeyDown}

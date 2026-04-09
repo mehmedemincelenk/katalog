@@ -236,7 +236,7 @@ const ProductCard = memo(({
       )}
 
       {/* ÜRÜN GÖRSELİ */}
-      <div className={`relative w-full bg-stone-100 aspect-square flex items-center justify-center rounded-t-lg ${isAdmin ? 'cursor-pointer' : ''}`} onClick={() => isAdmin && fileInputRef.current?.click()}>
+      <div className={`relative w-full bg-stone-100 aspect-square flex items-center justify-center rounded-t-lg ${isAdmin && !isSelectMode ? 'cursor-pointer' : ''}`} onClick={() => isAdmin && !isSelectMode && fileInputRef.current?.click()}>
         {product.image && !imgError ? (
           <img src={getImageUrl(product.image) || ''} alt={product.name} onError={() => setImgError(true)} className={`w-full h-full object-cover rounded-t-lg transition-all duration-300 ${product.inStock === false ? 'grayscale opacity-60' : ''}`} draggable={false} loading="lazy" />
         ) : (

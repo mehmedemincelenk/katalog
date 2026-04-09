@@ -1,94 +1,106 @@
-// K.I.S.S. Akıllı Resim Sıkıştırma (Google Sheets Uyumlu)
-// Google Sheets hücre sınırı: 32.767 karakter.
-// Bu fonksiyon, resmin hem boyutunu hem de kalitesini bu sınıra göre otomatik ayarlar.
+/**
+ * IMAGE.TS (RESİM ATÖLYESİ VE OPTİMİZASYON)
+ * ---------------------------------------
+ * Bir kurucu olarak bu dosya senin "Kalite Kontrol ve Tasarruf" departmanındır.
+ * 
+ * 1. Verimlilik: Google Sheets'in hücre başına 32.767 karakter sınırı vardır. Bu dosya, 
+ *    yüklediğin resimleri bu sınıra sığacak şekilde otomatik olarak küçültür ve sıkıştırır.
+ * 2. Akıllı Yönetim: Resim çok büyükse kalitesini kademeli olarak düşürür, hala sığmıyorsa 
+ *    boyutunu yarıya indirerek her koşulda Sheets'e kaydedilmesini sağlar.
+ * 3. Hız ve Tasarruf: Küçültülmüş resimler sayesinde müşterilerin sitesi çok daha hızlı açılır 
+ *    ve internet paketlerinden daha az yer.
+ */
+
+import { TECH } from '../data/config';
 
 /**
- * getImageUrl
- *
- * Verilen yolu (path) kontrol eder ve geçerli bir URL döndürür.
- * Base64, tam URL veya yerel path desteği sağlar.
+ * getImageUrl: Verilen yolu kontrol eder ve geçerli bir internet adresi döndürür.
+ * Base64 (yüklenen) resimleri olduğu gibi, yerel dosyaları ise tam yoluyla hazırlar.
  */
 export const getImageUrl = (path: string | null | undefined): string | null => {
   if (!path) return null;
   if (path.startsWith('http') || path.startsWith('data:')) return path;
-  // Vite projesinde public klasöründeki resimler için BASE_URL eklenir
+  
+  // Sitenin çalıştığı ana klasörü (base url) alıp yolu temizler.
   const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   return `${baseUrl}${cleanPath}`;
 };
 
-/**
- * getPlaceholder
- *
- * Resim bulunamadığında veya hata verdiğinde gösterilecek emoji tabanlı placeholder.
- */
-export const PLACEHOLDER_EMOJI = '📦';
+// Resim olmayan ürünlerde görünecek varsayılan sembol.
+export const PLACEHOLDER_EMOJI = TECH.image.placeholderEmoji;
 
 /**
- * compressImage
- * ... (mevcut sıkıştırma kodu aşağıda devam eder)
+ * fileToImage: Ham dosyayı (file) sistemin işleyebileceği bir resim nesnesine çevirir.
  */
-export function compressImage(
-  file: File,
-  maxSize = 250,
-  quality = 0.6,
-): Promise<string> {
+const fileToImage = (file: File): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-
-        // 400x400 civarı bir boyut hem netlik hem de veri tasarrufu için idealdir.
-        if (width > height && width > maxSize) {
-          height = Math.round((height * maxSize) / width);
-          width = maxSize;
-        } else if (height > maxSize) {
-          width = Math.round((width * maxSize) / height);
-          height = maxSize;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          reject(new Error('Canvas context could not be created.'));
-          return;
-        }
-
-        // Beyaz zemin (Saydamlık hatalarını önler)
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, width, height);
-
-        // İlk deneme (varsayılan kaliteyle)
-        let dataUrl = canvas.toDataURL('image/jpeg', quality);
-
-        // Eğer hala 30.000 karakterden büyükse (Google Sheets sınırı 32k), kaliteyi daha da düşür
-        if (dataUrl.length > 30000) {
-          dataUrl = canvas.toDataURL('image/jpeg', 0.4);
-        }
-
-        // Kritik kontrol: Hala büyükse boyutu yarıya indir (En son çare)
-        if (dataUrl.length > 32000) {
-          canvas.width = Math.round(width / 2);
-          canvas.height = Math.round(height / 2);
-          const ctx2 = canvas.getContext('2d');
-          if (ctx2) {
-            ctx2.drawImage(img, 0, 0, canvas.width, canvas.height);
-            dataUrl = canvas.toDataURL('image/jpeg', 0.3);
-          }
-        }
-
-        resolve(dataUrl);
-      };
-      img.onerror = () => reject(new Error('Resim işlenemedi.'));
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Resim dosyası açılamadı.'));
       img.src = e.target?.result as string;
     };
-    reader.onerror = () => reject(new Error('Dosya okunamadı.'));
+    reader.onerror = () => reject(new Error('Dosya okuma hatası.'));
     reader.readAsDataURL(file);
   });
+};
+
+/**
+ * compressImage: ANA SIKIŞTIRMA MOTORU
+ * @param file - Yüklenen ham resim dosyası.
+ * @param maxSize - Hedef genişlik (piksel).
+ * @param quality - Hedef kalite (0.1 - 1.0 arası).
+ */
+export async function compressImage(
+  file: File,
+  maxSize = TECH.image.productSize,
+  quality = TECH.image.quality,
+): Promise<string> {
+  const img = await fileToImage(file);
+  const canvas = document.createElement('canvas');
+  let { width, height } = img;
+
+  // BOYUT HESAPLAMA: Resim çok genişse veya çok yüksekse orantılı olarak küçült.
+  if (width > height && width > maxSize) {
+    height = Math.round((height * maxSize) / width);
+    width = maxSize;
+  } else if (height > maxSize) {
+    width = Math.round((width * maxSize) / height);
+    height = maxSize;
+  }
+
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Grafik işlemcisi başlatılamadı.');
+
+  // Saydam (transparent) resimlerde siyah leke kalmaması için beyaz zemin atıyoruz.
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, width, height);
+  ctx.drawImage(img, 0, 0, width, height);
+
+  // İlk deneme: Belirlenen kalitede kaydet.
+  let dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+  // KONTROL 1: Karakter sınırı tehlikeye giriyorsa (30k+), kaliteyi düşür.
+  if (dataUrl.length > TECH.image.charLimitWarning) {
+    dataUrl = canvas.toDataURL('image/jpeg', TECH.image.qualityFallback);
+  }
+
+  // KONTROL 2 (KRİTİK): Hala sığmıyorsa (32k+), boyutu yarıya indir ve kaliteyi en dibe çek.
+  if (dataUrl.length > TECH.image.sheetCellLimit) {
+    canvas.width = Math.round(width / 2);
+    canvas.height = Math.round(height / 2);
+    const ctx2 = canvas.getContext('2d');
+    if (ctx2) {
+      ctx2.fillStyle = '#FFFFFF';
+      ctx2.fillRect(0, 0, canvas.width, canvas.height);
+      ctx2.drawImage(img, 0, 0, canvas.width, canvas.height);
+      dataUrl = canvas.toDataURL('image/jpeg', TECH.image.criticalQualityFallback);
+    }
+  }
+
+  return dataUrl;
 }

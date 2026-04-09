@@ -1,8 +1,33 @@
 // ============================================================
-// ÜRÜN VERİ TABANI (VARSAYILAN)
-// NOT: Gerçek veriler Google Sheets üzerinden çekilmektedir.
+// DEFAULT PRODUCTS (YEDEK ÜRÜN HAVUZU)
 // ============================================================
+/**
+ * KURUCU NOTU:
+ * Bu dosya senin mağazanın "Sigortası"dır. 
+ * 
+ * TEORİK MANTIK:
+ * Eğer Google Sheets bağlantısında bir sorun olursa veya internet kesilirse, 
+ * sitenin tamamen boş görünmemesi için bu listedeki ürünler devreye girer. 
+ * Buraya mağazanın en temel 3-5 ürününü eklersen, site her zaman "dolu" görünür.
+ * 
+ * TEKNİK MANTIK:
+ * 'DEFAULT_PRODUCTS' bir dizidir (Array). İçindeki her obje bir ürünü temsil eder.
+ */
 
 import { Product } from '../types';
 
-export const DEFAULT_PRODUCTS: Product[] = [];
+export const DEFAULT_PRODUCTS: Product[] = [
+  // Örnek: Eğer Sheets boşsa mağazada görünecek temel ürünler buraya eklenebilir.
+  /* 
+  {
+    id: 'starter-1',
+    name: 'Örnek Kraft Kutu',
+    category: 'Kargo Kutusu',
+    price: '₺10,00',
+    image: null,
+    description: 'Varsayılan başlangıç ürünü.',
+    inStock: true,
+    is_archived: false
+  }
+  */
+];

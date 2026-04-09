@@ -1,7 +1,15 @@
-import { useState, useEffect } from 'react';
-import { CAROUSEL } from '../data/config';
+import { useLocalStorage } from './useLocalStorage';
+import { CAROUSEL, STORAGE } from '../data/config';
 
-const STORAGE_KEY = 'toptanambalaj_carousel_v1';
+/**
+ * USE CAROUSEL HOOK (VİTRİN YÖNETİMİ)
+ * ----------------------------------
+ * Bir girişimci olarak bu dosya senin "Afiş Depondur".
+ * 
+ * 1. Hafıza Yönetimi: Afişlerde yapılan tüm değişiklikleri (yazı, resim) tarayıcıda saklar.
+ * 2. Akıllı Başlangıç: Eğer henüz hiç düzenleme yapmadıysan, 'config.ts'deki varsayılan afişleri yükler.
+ * 3. Merkezi Güncelleme: Admin panelinden yapılan bir değişiklikte, sadece ilgili afişi bulur ve günceller (Hız).
+ */
 
 interface Slide {
   id: number;
@@ -12,24 +20,20 @@ interface Slide {
 }
 
 export function useCarousel() {
-  const [slides, setSlides] = useState<Slide[]>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : CAROUSEL.slides;
-    } catch {
-      return CAROUSEL.slides;
-    }
-  });
+  /**
+   * useLocalStorage (TEKNİK):
+   * Afiş bilgilerini 'STORAGE.carouselSlides' anahtarıyla hafızaya bağlar.
+   * Bu sayede admin pencereyi kapatsa da yaptığı afiş düzenlemeleri kaybolmaz.
+   */
+  const [slides, setSlides] = useLocalStorage<Slide[]>(STORAGE.carouselSlides, CAROUSEL.slides);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(slides));
-    } catch (err) {
-      console.error('Carousel Storage Hatası:', err);
-      alert('Slayt görseli kaydedilemedi. Hafıza kotası dolmuş olabilir.');
-    }
-  }, [slides]);
-
+  /**
+   * updateSlide:
+   * @param id - Güncellenecek afişin numarası.
+   * @param changes - Değişen kısımlar (Sadece isim, sadece resim vb.)
+   * 
+   * MANTIK: Mevcut listeyi döner (map), id eşleşirse eski bilgiyi yeniyle harmanlar.
+   */
   const updateSlide = (id: number, changes: Partial<Slide>) => {
     setSlides((prev) =>
       prev.map((s) => (s.id === id ? { ...s, ...changes } : s)),

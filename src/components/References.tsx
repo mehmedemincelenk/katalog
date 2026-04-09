@@ -1,21 +1,38 @@
-import { REFERENCES } from '../data/config';
+import { REFERENCES, REFERENCES_UI } from '../data/config';
+
+/**
+ * REFERENCES BİLEŞENİ (STRATEJİK ANALİZ)
+ * -----------------------------------
+ * Bir girişimci olarak bu alan senin "Sosyal Kanıt" (Social Proof) merkezindir.
+ * 
+ * 1. Güven İnşası: Müşteri, bildiği markaları (PTT, Trendyol vb.) seninle yan yana gördüğünde bilinçaltında sana olan güveni artar.
+ * 2. Kurumsallık Algısı: Çalıştığın kurumlar, iş hacminin ve profesyonelliğinin bir göstergesidir.
+ * 3. Minimalizm: Logo yerine emoji kullanımı hem sayfa hızını artırır hem de modern bir hava katar.
+ */
 
 export default function References() {
+  const ui = REFERENCES_UI; // config.ts'deki tasarım ayarlarını aldık.
+
   return (
-    <section className="bg-stone-50 border-t border-stone-200 py-10">
+    <section className={`${ui.style.sectionBg} border-t ${ui.style.cardBorder} ${ui.style.sectionPadding}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* BAŞLIK: Sade ve otoriter bir ton kullanır. */}
         <h2 className="text-center text-xs font-bold uppercase tracking-widest text-stone-400 mb-6">
-          Referanslarımız &amp; Çalıştığımız Kurumlar
+          {ui.title}
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+        {/* LOGO IZGARASI: Mobil cihazlarda 2, masaüstünde 4 sütunlu düzen. */}
+        <div className={`grid grid-cols-2 md:grid-cols-4 ${ui.style.gridGap}`}>
           {REFERENCES.map((ref) => (
             <div
               key={ref.id}
-              className="flex flex-col items-center justify-center gap-1 bg-white border border-stone-200 rounded-lg py-4 px-2 hover:border-stone-400 active:scale-95 transition-all shadow-sm"
+              className={`flex flex-col items-center justify-center gap-1 ${ui.style.cardBg} border ${ui.style.cardBorder} rounded-lg py-4 px-2 ${ui.style.cardHover} active:scale-95 transition-all shadow-sm`}
             >
+              {/* Logo yerine şık ve hızlı emojiler. */}
               <span className="text-2xl" aria-hidden="true">
                 {ref.logo}
               </span>
+              {/* Marka Adı: Sade ve okunabilir. */}
               <span className="text-xs font-medium text-stone-500 text-center">
                 {ref.name}
               </span>

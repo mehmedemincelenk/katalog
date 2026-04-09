@@ -1,12 +1,20 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
+// Vite motorunun çalışma ayarlarını yapıyoruz.
+// https://vitejs.dev/config/
 export default defineConfig({
-  base: '/ekatalog_ta/',
+  // React eklentisini aktif ediyoruz ki .tsx dosyalarımızı anlayabilsin.
   plugins: [react()],
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './vitest.setup.js',
+  
+  // Sitemizi Github Pages gibi bir klasör altında yayınlayacaksak burayı ayarlarız.
+  // '/' demek sitemiz ana dizinde (orneksite.com) çalışacak demektir.
+  base: './',
+
+  // Proje dosyalarımızı daha hızlı bulmak ve düzenli tutmak için
+  // 'dist' klasörüne temiz bir çıktı almasını sağlıyoruz.
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
   },
-})
+});

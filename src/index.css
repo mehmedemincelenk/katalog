@@ -2,67 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * INDEX.CSS (GÖRSEL AKIŞ VE CANLILIK)
+ * ---------------------------------
+ * Bir kurucu olarak bu dosya sitenin "Karakter Analizidir".
+ * 
+ * 1. Kararlılık: 'body' içindeki temel renkler ve yazı tipleri marka duruşunu belirler.
+ * 2. Erişilebilirlik: Odaklanma (outline) kuralları, admin modunda temiz bir editörlük sunar.
+ * 3. Canlılık (Animasyonlar): Sitenin "ölü" bir resim değil, yaşayan bir organizma olduğunu hissettirir.
+ */
+
 body {
   margin: 0;
 }
 
 @layer base {
   body {
+    /* Sitenin genel zemin rengi ve ana yazı tipi */
     @apply bg-stone-50 text-stone-900 font-sans;
   }
 }
 
 @layer utilities {
-  /* Carousel fade animation */
+  /* CAROUSEL GEÇİŞİ: Afişler arası yumuşak geçiş (Config: ANIMATIONS.carouselFade) */
   .carousel-slide {
     transition: opacity 0.8s ease-in-out;
   }
 
-  /* Düzenlenebilir alanlar — SIFIR çerçeve kuralı */
+  /* ADMİN EDİTÖRÜ: Yazıların etrafındaki o çirkin mavi çerçeveyi kaldırır. */
   [contenteditable='true'],
   .admin-textarea {
     outline: none !important;
     cursor: text;
   }
 
-  /* Admin floating button pulse */
+  /* ADMİN BUTONU NEFES ALMA: Sağ alttaki admin butonunun dikkat çekmesini sağlar. 
+     (Config: ANIMATIONS.adminPulse) */
   @keyframes admin-pulse {
-    0%,
-    100% {
-      box-shadow: 0 0 0 0 rgba(180, 140, 80, 0.5);
-    }
-    50% {
-      box-shadow: 0 0 0 8px rgba(180, 140, 80, 0);
-    }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(180, 140, 80, 0.5); }
+    50% { box-shadow: 0 0 0 8px rgba(180, 140, 80, 0); }
   }
   .admin-fab {
     animation: admin-pulse 2s ease-in-out infinite;
   }
 
-  /* Marquee — ürün ismi taştığında sürekli kayan yazı */
+  /**
+   * MARQUEE (YATAY KAYAN YAZI): 
+   * Ürün ismi çok uzunsa kartı bozmaz, yana doğru akar.
+   * (Config: ANIMATIONS.marqueeScroll)
+   */
   @keyframes marquee-scroll {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
   }
   .marquee-track {
     animation: marquee-scroll 6s linear infinite;
     white-space: nowrap;
   }
 
-  /* Dikey oto-kaydırma — açıklama taştığında */
+  /**
+   * DİKEY OTO-KAYDIRMA: 
+   * Ürün açıklaması çok uzunsa dikey bir şerit gibi akar.
+   * (Config: ANIMATIONS.descriptionScroll)
+   */
   @keyframes desc-scroll {
-    0% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(-50%);
-    }
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
   }
   .desc-scroll-track {
     animation: desc-scroll 5s linear infinite;
   }
+
+  /* ÖZEL SCROLLBAR: Modern ve zarif kaydırma çubukları. */
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
 }

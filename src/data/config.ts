@@ -1,125 +1,182 @@
 // ============================================================
-// MERKEZ KONFİGÜRASYON — tüm sabit veriler burada tutulur
+// GİRİŞİMCİ KONTROL PANELİ (MERKEZ KONFİGÜRASYON)
 // ============================================================
+/**
+ * KURUCU NOTU:
+ * Bu dosya senin sitenin "Anayasası" ve "Kumanda Masası"dır.
+ * Bir değeri değiştirdiğinde tüm site saniyeler içinde o kurala uyar.
+ * Teknik bilgi gerekmez, sadece tırnak içindeki metinleri veya sayıları değiştirmen yeterlidir.
+ */
 
-// ----- Şirket -----
+// ----- 1. ŞİRKET BİLGİLERİ -----
 export const COMPANY = {
-  name: 'Toptan Ambalajcım', // Marka adı
-  tagline: 'ÖMER KÖSE', // Navbar altı etiket
-  phone: '+90 537 342 0161', // Telefon numarası
-  whatsappUrl: 'https://wa.me/905373420161', // WhatsApp doğrudan bağlantı
-  instagramUrl: 'https://www.instagram.com/toptanambalajcim', // Instagram bağlantısı
-  address: 'Mahmutbey Cd. No:10, Yenibosna / İstanbul', // Açık adres
-  email: 'info@toptanambalajcim.com', // E-posta
-  logoEmoji: '📦', // Logo sembolü
+  name: 'Toptan Ambalajcım',
+  tagline: 'ÖMER KÖSE',
+  phone: '+90 537 342 0161',
+  whatsappUrl: 'https://wa.me/905373420161',
+  instagramUrl: 'https://www.instagram.com/toptanambalajcim',
+  address: 'Mahmutbey Cd. No:10, Yenibosna / İstanbul',
+  email: 'info@toptanambalajcim.com',
+  logoEmoji: '📦',
 };
 
-// ----- Navbar -----
-export const NAVBAR = {
-  heightClass: 'h-12', // Bar yüksekliği
-  bgClass: 'bg-white', // Arka plan
-  borderClass: 'border-b border-stone-200', // Alt çizgi
-  shadowClass: 'shadow-sm', // Gölge yoğunluğu
-  // Logo
-  logoEmojiSize: 'text-[20px]', // Emoji boyutu
-  logoNameSize: 'text-[12px]', // Marka adı boyutu
-  logoNameWeight: 'font-bold', // Marka adı kalınlığı
-  logoTaglineSize: 'text-[10px]', // Tagline boyutu
-  logoTaglineColor: 'text-kraft-600', // Tagline rengi
-  // Telefon & WhatsApp kombinasyon butonu
-  phoneSize: 'text-[9px] sm:text-[11px]', // Telefon yazı boyutu
-  phoneWeight: 'font-semibold', // Telefon yazı kalınlığı
-  phoneColor: 'text-stone-900', // Telefon yazı rengi
-  phoneHoverColor: 'hover:text-kraft-700', // Telefon hover rengi
-  whatsappBtnSize: 'w-6 h-6 sm:w-8 sm:h-8', // Buton kare boyutu
-  whatsappIconSize: 'w-3.5 h-3.5 sm:w-4.5 sm:h-4.5', // İkon boyutu
-  whatsappBg: 'bg-stone-900', // Buton arka planı
-  whatsappHoverBg: 'hover:bg-stone-900', // Buton hover arka planı
-  whatsappRounded: 'rounded', // Köşe yuvarlama
-  // Instagram
-  instaIconSize: 'w-4 h-4 sm:w-5 sm:h-5',
-  instaColor: 'text-stone-900',
-  instaHoverColor: 'hover:text-pink-600',
-  // Adres
-  addressSize: 'text-[8px] sm:text-[11px]', // Adres yazı boyutu
-  addressColor: 'text-stone-600', // Adres yazı rengi
-  // Ayırıcı Çizgi (PC)
-  separatorClass: 'hidden sm:block w-px h-4 bg-stone-300 mx-2',
+// ----- 2. TASARIM VE YERLEŞİM AYARLARI (UI/UX) -----
+export const UI = {
+  colors: {
+    primary: 'kraft-600',
+    primaryDark: 'kraft-700',
+    adminBg: 'amber-50',
+    adminBorder: 'amber-200',
+    error: 'red-600',
+    success: 'green-600',
+  },
+  grid: {
+    cols: 'grid-cols-3 md:grid-cols-4 lg:grid-cols-6',
+    gap: 'gap-2',
+    sectionMargin: 'mb-12',
+  },
+  layout: {
+    bodyBg: 'bg-stone-50',
+    container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8',
+    adminLimit: 999,
+  },
+  category: {
+    initialVisible: 3,
+    desktopThreshold: 8,
+  },
 };
 
-// ----- Admin Modu -----
-export const ADMIN = {
-  triggerClicks: 7, // Kaç tıkla admin açılır (footer logosu - Kural: 7)
-  resetDelayMs: 2000, // Tık sayacı sıfırlama süresi (ms)
+// ----- 3. METİNLER VE ETİKETLER (DİL) -----
+export const LABELS = {
+  searchPlaceholder: 'Ürün ara…',
+  loadMoreBtn: 'Daha Fazla Ürün Göster ↓',
+  allProductsLoaded: 'Tüm Ürünler Listelendi',
+  noProductsFound: 'Aradığınız kriterde ürün bulunamadı.',
+  noProductsAdmin: 'Henüz hiç ürün eklenmemiş. Yukarıdaki butonu kullanarak başlayın.',
+  productCountSuffix: 'ÜRÜN',
+  adminModeActive: 'ADMİN',
+  adminCloseBtn: 'ADMİNİ KAPAT',
+  newProductBtn: 'Yeni Ürün Yükle',
+  deleteConfirm: 'Bu ürünü silmek istediğinize emin misiniz?',
+  catDeleteConfirm: (cat: string) => `${cat} reyonunu silmek istediğinize emin misiniz?`,
+  backBtn: 'GERİ',
+  saveError: 'Görsel işlenirken bir hata oluştu.',
+  discount: {
+    invalidRate: 'Geçersiz indirim oranı!',
+    invalidCode: 'Geçersiz kod!',
+  },
+  storage: {
+    quotaExceeded: 'LocalStorage doldu! Veri kaydedilemedi.',
+    quotaAlert: 'Tarayıcı hafızası dolu olduğu için verileriniz kaydedilemedi. Lütfen tarayıcı verilerini temizleyin.',
+    readError: (key: string) => `LocalStorage okuma hatası "${key}":`,
+  },
+  form: {
+    stockStatus: 'Stok Durumu',
+    productName: 'Ürün Adı *',
+    productNamePlaceholder: 'örn. Kraft Kargo Kutusu (M)',
+    category: 'Kategori *',
+    newCategoryPlaceholder: 'Veya yeni kategori yazın...',
+    price: 'Fiyat *',
+    pricePlaceholder: 'örn. ₺4,90',
+    description: 'Açıklama',
+    descriptionPlaceholder: 'Her satır ayrı bir madde olur...',
+    requiredFieldsError: 'Lütfen zorunlu alanları doldurun.',
+    cancelBtn: 'İptal',
+    submitBtn: 'Ekle',
+    selectImage: 'Resim Seç',
+    preview: 'Önizleme',
+  },
+  filter: {
+    allCategories: 'Tümü',
+    categoryBtn: '📂 Kategoriler',
+    showMore: (count: number) => `+${count} Daha`,
+    showLess: ' Daha Az',
+    newCategoryPrompt: 'Yeni kategori adı girin:',
+  },
+  adminActions: {
+    delete: 'SİL',
+    publish: 'YAYINLA',
+    archive: 'ARŞİVLE',
+    outOfStock: 'TÜKENDİ',
+    inStock: 'STOK',
+    categories: 'KATEGORİLER',
+    addDescription: '+ Açıklama ekle',
+    confirmDelete: 'Silinsin mi?',
+  }
 };
 
-// ----- İndirim Arayüzü -----
-export const DISCOUNT_UI = {
-  activeColor: 'text-blue-600', // İndirimli fiyat rengi
-  transitionClass: 'transition-all duration-500 ease-in-out', // Smooth geçiş efekti
+// ----- 4. TEKNİK AYARLAR (Performans & Limitler) -----
+export const TECH = {
+  searchDebounceMs: 300,
+  adminTriggerClicks: 7,
+  adminResetDelay: 2000,
+  image: {
+    productSize: 250,
+    modalUploadSize: 400,
+    heroSize: 1200,
+    quality: 0.6,
+    uploadQuality: 0.7,
+    sheetCellLimit: 32000,
+    placeholderEmoji: '📦',
+    qualityFallback: 0.4,
+    criticalQualityFallback: 0.3,
+    charLimitWarning: 30000,
+  },
+  discount: {
+    min: 1,
+    max: 99,
+    errorResetMs: 3000,
+  },
+  products: {
+    defaultCategory: 'Diğer',
+    defaultPrice: '0',
+    fallbackCategory: 'KATEGORİSİZ / DİĞER',
+  },
+  sheetActions: {
+    add: 'ADD',
+    update: 'UPDATE',
+    delete: 'DELETE',
+    reorderProducts: 'UPDATE_PRODUCT_ORDER',
+    reorderCategories: 'UPDATE_CATEGORY_ORDER',
+    renameCategory: 'RENAME_CATEGORY',
+    deleteCategory: 'DELETE_CATEGORY',
+    deleteAll: 'DELETE_ALL',
+  }
 };
 
-// ----- Veri Depolama -----
-export const STORAGE_KEY = 'toptanambalaj_products_v12'; // localStorage anahtarı
-
-// ----- UI / Modal Tasarımı -----
-export const MODAL = {
-  bgClass: 'bg-white',
-  maxWidthClass: 'max-w-sm',
-  roundingClass: 'rounded-xl',
-  shadowClass: 'shadow-2xl',
-  overlayBg: 'bg-black/50',
-};
-
-// ----- Carousel -----
+// ----- 5. AFİŞ (CAROUSEL) AYARLARI -----
 export const CAROUSEL = {
-  intervalMs: 4000, // Slayt geçiş süresi (ms)
-  swipeThreshold: 50, // Yana kaydırma parmak hassasiyeti (piksel)
-
-  // Dış Kasa (Kapsayıcı) ve Yükseklik Yaratıcıları
+  intervalMs: 4000,
+  swipeThreshold: 50,
+  boxBg: 'bg-black/25 backdrop-blur-md',
+  boxRounding: 'rounded-md',
+  boxPaddingMobile: 'p-2',
+  boxPaddingPC: 'sm:p-5',
+  titleColor: 'text-white',
+  subColor: 'text-white/90',
+  titleSizeMobile: 'text-[12px]',
+  titleSizePC: 'sm:text-xl lg:text-2xl',
+  titleWeight: 'font-extrabold',
+  subSizeMobile: 'text-[10px]',
+  subSizePC: 'text-[12px]',
+  navBtnStyle: 'absolute top-1/2 -translate-y-1/2 z-30 w-10 h-10 flex items-center justify-center bg-black/20 hover:bg-black/40 text-white rounded-full transition-all active:scale-90 backdrop-blur-sm',
+  navBtnLeft: 'left-4',
+  navBtnRight: 'right-4',
+  // Tasarım Ölçüleri
   heightMobile: 'h-64',
   heightTablet: 'sm:h-80',
   heightPC: 'lg:h-96',
   containerWidth: 'mx-auto max-w-7xl',
   containerPadding: 'px-4 sm:px-6 lg:px-8',
   containerMargin: 'mt-4',
-  roundedClass: 'rounded-md', // Köşe yuvarlama
-
-  // Slayt İndikatörleri (Alttaki Noktalar)
+  roundedClass: 'rounded-md',
+  // Slayt İndikatörleri
   dotPosition: 'bottom-3',
   dotGap: 'gap-1.5',
   dotSize: 'w-2 h-2',
   dotActive: 'bg-white scale-125',
   dotInactive: 'bg-white/50',
-
-  // Kutucuk (Glassmorphism) Görünümü
-  boxPositionMobile: 'bottom-8 left-2', // [MOBİL] Kutunun konumu
-  boxPositionPC: 'sm:bottom-10 sm:left-6', // [PC] Kutunun konumu
-  boxWidthMobile: 'max-w-[60%]', // [MOBİL] Kutu maksimum genişliği
-  boxWidthPC: 'sm:max-w-md', // [PC] Kutu maksimum genişliği
-  boxPaddingMobile: 'p-2', // [MOBİL] Kutu iç boşluğu
-  boxPaddingPC: 'sm:p-5', // [PC] Kutu iç boşluğu
-  boxRounding: 'rounded-md', // Köşe yuvarlama
-  boxBg: 'bg-black/25 backdrop-blur-md', // Arka plan
-  boxBorder: 'border border-white/20', // Kenarlık
-  boxShadow: 'shadow-2xl', // Derinlik gölgesi
-
-  // Ana Başlık (Label) Tasarımı
-  titleSizeMobile: 'text-[12px]', // [MOBİL] Başlık boyutu
-  titleSizePC: 'sm:text-xl lg:text-2xl', // [PC] Başlık boyutu
-  titleWeight: 'font-extrabold',
-  titleColor: 'text-white',
-  titleTracking: 'tracking-tight',
-  titleShadow: 'drop-shadow',
-
-  // Alt Metin (Sub) Tasarımı
-  subSizeMobile: 'text-[10px]', // [MOBİL] Alt metin boyutu
-  subSizePC: 'text-[12px]', // [PC] Alt metin boyutu
-  subWeight: 'font-medium',
-  subColor: 'text-white/90',
-  subLeading: 'leading-none',
-  subShadow: 'drop-shadow',
-
+  
   slides: [
     {
       id: 1,
@@ -145,13 +202,7 @@ export const CAROUSEL = {
   ],
 };
 
-// ----- Ürün Grid -----
-export const GRID = {
-  colsClass: 'grid-cols-3 md:grid-cols-4 lg:grid-cols-6', // Sütun sayısı
-  gapClass: 'gap-2', // Kart arası boşluk
-};
-
-// ----- Manuel Kategori Dizilim Önceliği -----
+// ----- 6. REYON SIRALAMASI -----
 export const CATEGORY_ORDER = [
   'TURŞU VE GIDA ÇEŞİTLERİ',
   'BAHARAT GRUBU',
@@ -166,22 +217,17 @@ export const CATEGORY_ORDER = [
   'HİJYEN SARF MALZEMELERİ',
 ];
 
-export const sortCategories = (
-  categoriesList: string[],
-  customOrder: string[] = CATEGORY_ORDER,
-): string[] => {
-  const order = customOrder || CATEGORY_ORDER;
-  return [...categoriesList].sort((a, b) => {
-    let indexA = order.indexOf(a);
-    let indexB = order.indexOf(b);
-    if (indexA === -1) indexA = 999;
-    if (indexB === -1) indexB = 999;
-    if (indexA === indexB) return a.localeCompare(b);
-    return indexA - indexB;
+export const sortCategories = (cats: string[], custom = CATEGORY_ORDER): string[] => {
+  return [...cats].sort((a, b) => {
+    let iA = custom.indexOf(a);
+    let iB = custom.indexOf(b);
+    if (iA === -1) iA = 999;
+    if (iB === -1) iB = 999;
+    return iA === iB ? a.localeCompare(b) : iA - iB;
   });
 };
 
-// ----- Referans Logoları -----
+// ----- 7. REFERANSLAR -----
 export const REFERENCES = [
   { id: 1, name: 'PTT Kargo', logo: '🟡' },
   { id: 2, name: 'MNG Kargo', logo: '🔴' },
@@ -193,38 +239,112 @@ export const REFERENCES = [
   { id: 8, name: 'Hepsiburada', logo: '🟥' },
 ];
 
-// ----- Ürün Kartı Tipografisi -----
-export const CARD_TYPOGRAPHY = {
-  // İsim (tek satır, yatay marquee)
-  nameFontSize: 'text-[10px] sm:text-[13px]', // Ürün adı yazı boyutu
-  nameWeight: 'font-semibold', // Ürün adı yazı kalınlığı
-  nameColor: 'text-stone-900', // Ürün adı yazı rengi
-  nameLeading: 'leading-snug', // Ürün adı satır yüksekliği
-
-  // Fiyat
-  priceFontSize: 'text-[12px] sm:text-[15px]', // Ürün fiyatı yazı boyutu
-  priceWeight: 'font-bold', // Ürün fiyatı yazı kalınlığı
-  priceColor: 'text-stone-900', // Ürün fiyatı yazı rengi
-
-  // Açıklama (çok satır, dikey dikey kaydırma)
-  descFontSize: 'text-[9px] sm:text-[11px]', // Açıklama yazı boyutu
-  descColor: 'text-stone-500', // Açıklama yazı rengi
-  descLeading: 'leading-tight', // Açıklama satır yüksekliği
-  descMaxHeight: 'max-h-[36px] sm:max-h-[44px]', // Açıklama alanı maksimum yüksekliği
-  descAreaHeight: 'h-[30px]', // Admin editöründeki açıklama kutusu yüksekliği
+export const REFERENCES_UI = {
+  title: 'Referanslarımız & Çalıştığımız Kurumlar',
+  style: {
+    sectionBg: 'bg-stone-50',
+    sectionPadding: 'py-10',
+    gridGap: 'gap-4',
+    cardBg: 'bg-white',
+    cardBorder: 'border-stone-200',
+    cardHover: 'hover:border-stone-400',
+  }
 };
 
-// ----- Ürün Kartı Boyut ve Boşluk Ölçüleri (Layout) -----
-export const CARD_LAYOUT = {
-  // İkonlar ve Rozetler
-  iconSmall: 'w-5 h-5', // 3-nokta (Aksiyon) ateşleme butonu
-  actionMenuAnchorR: 'right-1.5', // 3-nokta butonu sağ hizalaması
-  actionMenuAnchorB: 'bottom-1.5', // 3-nokta butonu alt hizalaması
+// ----- 8. NAVBAR AYARLARI -----
+export const NAVBAR = {
+  style: {
+    bg: 'bg-white',
+    border: 'border-b border-stone-200',
+    sticky: 'sticky top-0 z-50 shadow-sm',
+  },
+  logo: {
+    emojiSize: 'text-[20px]',
+    nameSize: 'text-[12px]',
+    nameWeight: 'font-bold',
+    taglineSize: 'text-[10px]',
+    taglineColor: 'text-kraft-600',
+  },
+  contact: {
+    phoneSize: 'text-[9px] sm:text-[11px]',
+    phoneWeight: 'font-semibold',
+    whatsappBg: 'bg-stone-900',
+    whatsappHover: 'hover:bg-stone-800',
+    whatsappRounded: 'rounded',
+    whatsappIconSize: 'w-3.5 h-3.5 sm:w-4.5 sm:h-4.5',
+    instaIconSize: 'w-4 h-4 sm:w-5 sm:h-5',
+    instaColor: 'text-stone-900',
+    instaHover: 'hover:text-pink-600',
+  },
+  address: {
+    size: 'text-[8px] sm:text-[11px]',
+    color: 'text-stone-600',
+    hoverColor: 'hover:text-stone-900',
+    separator: 'hidden sm:block w-px h-4 bg-stone-300 mx-2',
+  }
+};
 
-  // Boşluklar (Padding / Gap)
-  cardInfoPadding: 'px-2 py-2', // Ürün bilgileri dış çerçeve boşluğu
-  gapSmall: 'gap-1.5', // İç öğeler arası dar boşluk
+// ----- 9. ÜRÜN KARTI TİPOGRAFİSİ -----
+export const CARD_STYLE = {
+  nameSize: 'text-[10px] sm:text-[13px]',
+  nameWeight: 'font-semibold',
+  nameColor: 'text-stone-900',
+  nameLeading: 'leading-snug',
+  priceSize: 'text-[12px] sm:text-[15px]',
+  priceWeight: 'font-bold',
+  priceColor: 'text-stone-900',
+  discountColor: 'text-blue-600',
+  descSize: 'text-[9px] sm:text-[11px]',
+  descColor: 'text-stone-500',
+  descLeading: 'leading-tight',
+  descMaxH: 'max-h-[36px] sm:max-h-[44px]',
+  adminEditBg: 'bg-amber-50',
+  adminEditBorder: 'border-amber-200',
+  statusIcons: {
+    outOfStock: '∅',
+    archived: '📦'
+  }
+};
 
-  // Mantıksal Değerler
-  marqueeTolerance: 2, // Yatayda yanlara taşma hesaplanırken hesaba katılan tolerans (px)
+// ----- 10. FOOTER AYARLARI -----
+export const FOOTER = {
+  labels: {
+    locationTitle: 'LOKASYON',
+    advantageTitle: 'AVANTAJ',
+    couponActive: 'KUPON AKTİF',
+    couponPlaceholder: 'KUPON KODU',
+    discountApplied: (rate: number) => `İndirim Uygulandı: %${Math.round(rate * 100)}`,
+    codeLabel: (code: string) => `Kod: ${code}`,
+    rightsReserved: (name: string) => `© ${new Date().getFullYear()} ${name}. Tüm hakları saklıdır.`,
+  },
+  style: {
+    sectionGap: 'gap-10 md:gap-4',
+    tracking: 'tracking-[0.2em]',
+    mapBaseUrl: 'https://maps.google.com/?q=',
+  }
+};
+
+// ----- 11. ANİMASYON VE GEÇİŞ SÜRELERİ -----
+export const ANIMATIONS = {
+  carouselFade: '0.8s',
+  adminPulse: '2s',
+  marqueeScroll: '6s',
+  descriptionScroll: '5s',
+};
+
+// ----- 12. MODAL (PENCERE) TASARIMI -----
+export const MODAL = {
+  bgClass: 'bg-white',
+  maxWidthClass: 'max-w-sm',
+  roundingClass: 'rounded-xl',
+  shadowClass: 'shadow-2xl',
+  overlayBg: 'bg-black/50',
+};
+
+// ----- 13. DEPOLAMA (STORAGE) ANAHTARLARI -----
+export const STORAGE = {
+  productsCache: 'toptanambalaj_products_v13_final', // Versiyon v12 -> v13 (Zorunlu temizlik)
+  categoryOrder: 'toptanambalaj_order_v13',
+  carouselSlides: 'toptanambalaj_carousel_v13',
+  adminSession: 'admin_session_v13',
 };

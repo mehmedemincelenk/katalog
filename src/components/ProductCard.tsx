@@ -18,62 +18,89 @@ import { calculateDiscount } from '../utils/price';
 // --- YARDIMCI BİLEŞENLER ---
 
 /**
- * AdminActionMenu: Ürün yönetimini sağlayan sistem varsayılanı dropdown.
+ * AdminActionMenu: Ürün yönetimini sağlayan hibrit menü.
+ * PC'de özel dropdown, Mobilde sistem varsayılanı kullanılır.
  */
 const AdminActionMenu = memo(({ 
   product, categories, onDelete, onUpdate 
 }: { 
   product: Product, categories: string[], onDelete: (id: string) => void, onUpdate: (id: string, changes: Partial<Product>) => void 
 }) => {
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [showCustom, setShowCustom] = useState(false);
+  const [menuView, setMenuView] = useState<'main' | 'categories'>('main');
   const a = LABELS.adminActions;
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  // Custom menü dışına tıklama kontrolü
+  useEffect(() => {
+    const handleClickOutside = (ev: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(ev.target as Node)) setShowCustom(false);
+    };
+    if (showCustom) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showCustom]);
+
+  const handleAction = (action: () => void) => { action(); setShowCustom(false); };
+
+  // Mobil Select Değişimi
+  const handleNativeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
     if (!val) return;
-
-    if (val === 'DELETE') {
-      if (window.confirm(a.confirmDelete)) onDelete(product.id);
-    } else if (val === 'ARCHIVE') {
-      onUpdate(product.id, { is_archived: !product.is_archived });
-    } else if (val === 'STOCK') {
-      onUpdate(product.id, { inStock: !product.inStock });
-    } else if (val.startsWith('CAT:')) {
-      onUpdate(product.id, { category: val.replace('CAT:', '') });
-    }
-    
-    // Dropdown'ı sıfırla (Görsel temizlik için)
+    if (val === 'DELETE') { if (window.confirm(a.confirmDelete)) onDelete(product.id); }
+    else if (val === 'ARCHIVE') onUpdate(product.id, { is_archived: !product.is_archived });
+    else if (val === 'STOCK') onUpdate(product.id, { inStock: !product.inStock });
+    else if (val.startsWith('CAT:')) onUpdate(product.id, { category: val.replace('CAT:', '') });
     e.target.value = "";
   };
 
   return (
-    <div className="absolute right-1 bottom-1 z-30 group/admin">
-      <div className="relative flex items-center justify-center w-6 h-6 bg-stone-100 rounded-md border border-stone-200 group-hover/admin:bg-white group-hover/admin:border-stone-400 transition-all shadow-sm overflow-hidden">
-        {/* Görsel İkon (Dropdown'ın üzerinde durur) */}
-        <span className="pointer-events-none text-stone-400 group-hover/admin:text-stone-900 transition-colors">
+    <div className="absolute right-1 bottom-1 z-30">
+      
+      {/* 1. MASAÜSTÜ (CUSTOM) MENÜ - Sadece PC'de görünür */}
+      <div className="hidden lg:block relative" ref={menuRef}>
+        <button onClick={() => setShowCustom(!showCustom)} className={`w-6 h-6 flex items-center justify-center bg-stone-100 border border-stone-200 rounded-md hover:bg-white hover:border-stone-400 transition-all shadow-sm`}>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 text-stone-500"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
+        </button>
+
+        {showCustom && (
+          <div className="absolute bottom-full right-0 mb-2 w-48 bg-white/90 backdrop-blur-xl border border-stone-200 rounded-xl shadow-2xl py-1.5 z-50 animate-in fade-in zoom-in duration-150">
+            {menuView === 'main' ? (
+              <>
+                <button onClick={() => setMenuView('categories')} className="w-full text-left px-4 py-2.5 text-[12px] font-bold text-stone-800 hover:bg-stone-100 flex items-center justify-between border-b border-stone-100 uppercase"><span>{a.categories}</span> 🏷️</button>
+                <button onClick={() => handleAction(() => onUpdate(product.id, { inStock: !product.inStock }))} className="w-full text-left px-4 py-2.5 text-[12px] font-bold text-stone-800 hover:bg-stone-100 border-b border-stone-100 uppercase">{product.inStock ? '❌ ' + a.outOfStock : '✅ ' + a.inStock}</button>
+                <button onClick={() => handleAction(() => onUpdate(product.id, { is_archived: !product.is_archived }))} className="w-full text-left px-4 py-2.5 text-[12px] font-bold text-stone-800 hover:bg-stone-100 border-b border-stone-100 uppercase">{product.is_archived ? '📤 ' + a.publish : '📦 ' + a.archive}</button>
+                <button onClick={() => { if(window.confirm(a.confirmDelete)) handleAction(() => onDelete(product.id)); }} className="w-full text-left px-4 py-2.5 text-[12px] font-bold text-red-500 hover:bg-red-50 uppercase">🗑️ {a.delete}</button>
+              </>
+            ) : (
+              <div className="flex flex-col">
+                <button onClick={() => setMenuView('main')} className="w-full text-left px-3 py-2 text-[10px] font-black text-kraft-600 bg-stone-50 border-b border-stone-100 uppercase">← {LABELS.backBtn}</button>
+                <div className="max-h-48 overflow-y-auto py-1">
+                  {categories.map(cat => (<button key={cat} onClick={() => handleAction(() => onUpdate(product.id, { category: cat }))} className={`w-full text-left px-4 py-2 text-[11px] font-semibold hover:bg-stone-100 ${product.category === cat ? 'text-kraft-700 bg-kraft-50' : 'text-stone-600'}`}>{cat}</button>))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* 2. MOBİL (NATIVE) MENÜ - PC'de gizlenir */}
+      <div className="lg:hidden relative flex items-center justify-center w-6 h-6 bg-stone-100 rounded-md border border-stone-200 transition-all shadow-sm overflow-hidden">
+        <span className="pointer-events-none text-stone-400">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
         </span>
-        
-        {/* Gerçek Select Elemanı (Görünmez ama tıklanabilir) */}
-        <select 
-          onChange={handleChange}
-          value=""
-          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full appearance-none"
-        >
-          <option value="" disabled>Seçiniz...</option>
+        <select onChange={handleNativeChange} value="" className="absolute inset-0 opacity-0 cursor-pointer w-full h-full appearance-none">
+          <option value="" disabled>Seç...</option>
           <optgroup label="--- İŞLEMLER ---">
             <option value="STOCK">{product.inStock ? '❌ ' + a.outOfStock : '✅ ' + a.inStock}</option>
             <option value="ARCHIVE">{product.is_archived ? '📤 ' + a.publish : '📦 ' + a.archive}</option>
             <option value="DELETE">🗑️ {a.delete}</option>
           </optgroup>
           <optgroup label="--- REYON DEĞİŞTİR ---">
-            {categories.map(cat => (
-              <option key={cat} value={`CAT:${cat}`} disabled={product.category === cat}>
-                {product.category === cat ? '📍 ' : '🏷️ '} {cat}
-              </option>
-            ))}
+            {categories.map(cat => (<option key={cat} value={`CAT:${cat}`} disabled={product.category === cat}>{cat}</option>))}
           </optgroup>
         </select>
       </div>
+
     </div>
   );
 });

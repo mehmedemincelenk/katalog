@@ -205,20 +205,20 @@ const ProductCard = memo(({
   // Fiyatın içinde ₺ işareti yoksa sonuna ekle
   const formattedPrice = displayPrice.includes('₺') ? displayPrice : `${displayPrice} ₺`;
 
-  const handleCardClick = (e: React.MouseEvent) => {
-    if (isAdmin && isSelectMode) {
-      e.preventDefault();
-      onSelectToggle?.();
-    }
-  };
-
   return (
     <article 
       ref={cardRef as React.RefObject<HTMLDivElement>} 
       data-product-id={product.id} 
-      onClick={handleCardClick}
-      className={`bg-white border-2 ${isSelected ? 'border-kraft-600' : product.inStock === false ? 'border-transparent bg-stone-50' : 'border-stone-200'} rounded-lg flex flex-col group transition-all duration-300 relative ${isAdmin && isSelectMode ? 'cursor-pointer' : ''}`}
+      className={`bg-white border-2 ${isSelected ? 'border-kraft-600 shadow-lg' : product.inStock === false ? 'border-transparent bg-stone-50' : 'border-stone-200'} rounded-lg flex flex-col group transition-all duration-300 relative`}
     >
+      {/* SEÇİM ZIRHI (Sadece Admin ve Seçim Modu Aktifken) */}
+      {isAdmin && isSelectMode && (
+        <div 
+          onClick={(e) => { e.stopPropagation(); onSelectToggle?.(); }}
+          className="absolute inset-0 z-40 cursor-pointer rounded-lg bg-transparent"
+        />
+      )}
+
       {/* SIRA NUMARASI (Admin) */}
       {isAdmin && !isSelectMode && (
         <div className="absolute top-2 right-2 z-[25] hover:scale-105 active:scale-95 transition-transform">
@@ -246,13 +246,13 @@ const ProductCard = memo(({
       </div>
 
       {/* ÜRÜN BİLGİLERİ */}
-      <div className={`px-2 py-2 flex flex-col gap-0.5 flex-grow`}>
+      <div className={`px-2 py-2 flex flex-col gap-0.5 flex-grow ${isAdmin && isSelectMode ? 'pointer-events-none' : ''}`}>
         {/* ÜRÜN İSMİ (Düzenlenebilir) */}
-        <MarqueeText text={product.name} textClass={`${s.nameSize} ${s.nameWeight} ${s.nameColor} ${s.nameLeading} transition-all duration-300 ${product.inStock === false ? 'opacity-60 text-stone-500' : ''}`} isAdmin={isAdmin} editableProps={isAdmin ? { contentEditable: true, suppressContentEditableWarning: true, onBlur: (ev: any) => updateField('name', ev.currentTarget.textContent?.trim() || ''), onKeyDown: (e: any) => e.key === 'Enter' && (e.preventDefault(), e.currentTarget.blur()), className: `cursor-text focus:outline-none ${s.adminEditBg} px-0.5 rounded outline-none` } : {}} />
+        <MarqueeText text={product.name} textClass={`${s.nameSize} ${s.nameWeight} ${s.nameColor} ${s.nameLeading} transition-all duration-300 ${product.inStock === false ? 'opacity-60 text-stone-500' : ''}`} isAdmin={isAdmin} editableProps={isAdmin && !isSelectMode ? { contentEditable: true, suppressContentEditableWarning: true, onBlur: (ev: any) => updateField('name', ev.currentTarget.textContent?.trim() || ''), onKeyDown: (e: any) => e.key === 'Enter' && (e.preventDefault(), e.currentTarget.blur()), className: `cursor-text focus:outline-none ${s.adminEditBg} px-0.5 rounded outline-none` } : {}} />
         
         {/* ÜRÜN AÇIKLAMASI */}
         <div className="relative min-h-[24px]">
-          {isAdmin ? (
+          {isAdmin && !isSelectMode ? (
             isEditingDesc ? (
               <textarea ref={descAreaRef} value={tempDesc} onChange={(ev) => setTempDesc(ev.target.value)} onBlur={() => (setIsEditingDesc(false), updateField('description', tempDesc.trim()))} className={`w-full ${s.descSize} ${s.descColor} ${s.descLeading} ${s.adminEditBg} border border-amber-200 rounded px-1 py-0.5 focus:outline-none resize-none overflow-hidden block`} autoFocus />
             ) : (
@@ -265,14 +265,14 @@ const ProductCard = memo(({
 
         {/* FİYAT ALANI */}
         <div className="mt-auto">
-          <div contentEditable={isAdmin} suppressContentEditableWarning onBlur={(e: any) => { let val = e.currentTarget.textContent?.trim() || ''; if (val && !val.startsWith('₺')) val = '₺' + val; updateField('price', val); }} onKeyDown={(e: any) => e.key === 'Enter' && (e.preventDefault(), e.currentTarget.blur())} className={`${s.priceSize} ${s.priceWeight} ${isDiscountActive ? s.discountColor : s.priceColor} transition-all duration-500 ${isAdmin ? `cursor-text focus:outline-none ${s.adminEditBg} px-0.5 rounded outline-none` : ''} ${product.inStock === false && !isAdmin ? 'line-through opacity-60 text-stone-500' : ''}`}>
+          <div contentEditable={isAdmin && !isSelectMode} suppressContentEditableWarning onBlur={(e: any) => { let val = e.currentTarget.textContent?.trim() || ''; if (val && !val.startsWith('₺')) val = '₺' + val; updateField('price', val); }} onKeyDown={(e: any) => e.key === 'Enter' && (e.preventDefault(), e.currentTarget.blur())} className={`${s.priceSize} ${s.priceWeight} ${isDiscountActive ? s.discountColor : s.priceColor} transition-all duration-500 ${isAdmin && !isSelectMode ? `cursor-text focus:outline-none ${s.adminEditBg} px-0.5 rounded outline-none` : ''} ${product.inStock === false && !isAdmin ? 'line-through opacity-60 text-stone-500' : ''}`}>
             {formattedPrice}
           </div>
         </div>
       </div>
 
       {/* ADMİN AKSİYON MENÜSÜ */}
-      {isAdmin && (<AdminActionMenu product={product} categories={categories} onDelete={onDelete} onUpdate={onUpdate} />)}
+      {isAdmin && !isSelectMode && (<AdminActionMenu product={product} categories={categories} onDelete={onDelete} onUpdate={onUpdate} />)}
 
       {/* DURUM İKONLARI (Arşiv / Stok Yok) */}
       <div className="absolute inset-0 z-[5] pointer-events-none rounded-lg flex items-center justify-center gap-2">

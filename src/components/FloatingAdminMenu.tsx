@@ -88,9 +88,6 @@ export default function FloatingAdminMenu({
       {isOpen && (
         <div className="flex flex-col items-center gap-3 w-full animate-in slide-in-from-bottom-5 fade-in duration-300 pb-2 border-b border-white/20">
           
-          {/* KAPAT BUTONU (En üstte) */}
-          <FloatingButton onClick={() => { setIsOpen(false); setShowSettings(false); }} icon={ICONS.close} label="Kapat" variant="secondary" className="border-transparent hover:border-stone-200" />
-
           {/* SİTE AYARLARI */}
           {showSettings && !isSelectMode && (
             <div className="flex flex-col items-center gap-2 w-full pt-2">
@@ -103,32 +100,34 @@ export default function FloatingAdminMenu({
             </div>
           )}
 
-          {/* TOPLU İŞLEMLER (YAZI TABANLI) */}
+          {/* TOPLU İŞLEMLER (YAZI TABANLI, 2x2 IZGARA) */}
           {isSelectMode && selectedCount > 0 && (
             <div className="flex flex-col items-center gap-2 w-full pt-2">
-              <div className="bg-stone-900 text-white text-[10px] font-black px-4 py-2 rounded-full mb-1 shadow-lg">
+              <div className="bg-stone-900 text-white text-[10px] font-black px-4 py-2 rounded-full mb-2 shadow-lg">
                 {selectedCount} SEÇİLİ
               </div>
-              <FloatingButton onClick={() => onDelete?.()} icon={<span className="text-[11px] font-black tracking-widest uppercase">SİL</span>} showLabel={false} variant="secondary" className="!w-auto px-6 text-red-600 border-red-100" />
-              <FloatingButton onClick={() => onArchiveToggle?.()} icon={<span className="text-[11px] font-black tracking-widest uppercase">ARŞİV</span>} showLabel={false} variant="secondary" className="!w-auto px-6" />
-              <FloatingButton onClick={() => onStockToggle?.()} icon={<span className="text-[11px] font-black tracking-widest uppercase">STOK</span>} showLabel={false} variant="secondary" className="!w-auto px-6" />
-              
-              <div className="relative group/cat w-full flex justify-center">
-                <FloatingButton onClick={() => {}} icon={<span className="text-[11px] font-black tracking-widest uppercase">REYON</span>} showLabel={false} variant="secondary" className="!w-auto px-6" />
-                <select 
-                  onChange={(e) => { if(e.target.value) { onChangeCategory?.(e.target.value); e.target.value = ""; } }}
-                  value=""
-                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full appearance-none z-[5]"
-                >
-                  <option value="" disabled>Seç...</option>
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
+              <div className="grid grid-cols-2 gap-2 w-full">
+                <FloatingButton onClick={() => onDelete?.()} icon={<span className="text-[11px] font-black tracking-widest uppercase">SİL</span>} showLabel={false} variant="secondary" className="!w-full text-red-600 border-red-100" />
+                <FloatingButton onClick={() => onArchiveToggle?.()} icon={<span className="text-[11px] font-black tracking-widest uppercase">ARŞİV</span>} showLabel={false} variant="secondary" className="!w-full" />
+                <FloatingButton onClick={() => onStockToggle?.()} icon={<span className="text-[11px] font-black tracking-widest uppercase">STOK</span>} showLabel={false} variant="secondary" className="!w-full" />
+                
+                <div className="relative group/cat w-full">
+                  <FloatingButton onClick={() => {}} icon={<span className="text-[11px] font-black tracking-widest uppercase">REYON</span>} showLabel={false} variant="secondary" className="!w-full" />
+                  <select 
+                    onChange={(e) => { if(e.target.value) { onChangeCategory?.(e.target.value); e.target.value = ""; } }}
+                    value=""
+                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full appearance-none z-[5]"
+                  >
+                    <option value="" disabled>Seç...</option>
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
 
-              <FloatingButton onClick={() => onChangeName?.()} icon={<span className="text-[11px] font-black tracking-widest uppercase">AÇIKLAMA</span>} showLabel={false} variant="secondary" className="!w-auto px-6" />
-              <FloatingButton onClick={() => onChangePrice?.()} icon={<span className="text-[11px] font-black tracking-widest uppercase">FİYAT</span>} showLabel={false} variant="secondary" className="!w-auto px-6" />
+                <FloatingButton onClick={() => onChangeName?.()} icon={<span className="text-[11px] font-black tracking-widest uppercase">AÇIKLAMA</span>} showLabel={false} variant="secondary" className="!w-full" />
+                <FloatingButton onClick={() => onChangePrice?.()} icon={<span className="text-[11px] font-black tracking-widest uppercase">FİYAT</span>} showLabel={false} variant="secondary" className="!w-full" />
+              </div>
             </div>
           )}
 

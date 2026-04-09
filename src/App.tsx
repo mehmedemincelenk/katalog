@@ -5,7 +5,6 @@ import SearchFilter from './components/SearchFilter';
 import ProductGrid from './components/ProductGrid';
 import Footer from './components/Footer';
 import AddProductModal from './components/AddProductModal';
-import BulkActionsPanel from './components/BulkActionsPanel';
 import FloatingAdminMenu from './components/FloatingAdminMenu';
 import { useProducts } from './hooks/useProducts';
 import { useAdminMode } from './hooks/useAdminMode';
@@ -197,14 +196,8 @@ export default function App() {
           isSelectMode={isSelectMode}
           toggleSelectMode={() => { setIsSelectMode(!isSelectMode); setSelectedIds(new Set()); }}
           onLogout={logout}
-        />
-      )}
-
-      {isAdmin && isSelectMode && (
-        <BulkActionsPanel
           selectedCount={getTargetIds().length}
           categories={existingCategories}
-          onCancel={() => { setIsSelectMode(false); setSelectedIds(new Set()); }}
           onDelete={handleBulkDelete}
           onArchiveToggle={handleBulkArchive}
           onStockToggle={handleBulkStock}

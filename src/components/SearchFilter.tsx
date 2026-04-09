@@ -56,15 +56,18 @@ const CategoryChip = memo(({
       {isActualCategory && (
         <div className="flex items-center shrink-0">
           {isAdmin ? (
-            <select
-              value={currentIndex + 1}
-              onChange={(e) => onOrderChange(cat, parseInt(e.target.value, 10))}
-              className={`bg-stone-100 text-stone-900 text-[12px] font-black w-9 h-8 p-0 cursor-pointer appearance-none rounded-l-full text-center flex items-center justify-center focus:outline-none leading-none`}
-            >
-              {Array.from({ length: totalCount }, (_, i) => (<option key={i + 1} value={i + 1}>{i + 1}</option>))}
-            </select>
+            <div className="relative w-9 h-8 bg-stone-100 border-r border-stone-200 flex items-center justify-center overflow-hidden">
+              <select
+                value={currentIndex + 1}
+                onChange={(e) => onOrderChange(cat, parseInt(e.target.value, 10))}
+                className={`absolute inset-0 w-full h-full bg-transparent text-stone-900 text-[12px] font-black appearance-none text-center m-0 p-0 border-none outline-none cursor-pointer`}
+                style={{ textAlignLast: 'center', textIndent: '0', paddingLeft: '0' }}
+              >
+                {Array.from({ length: totalCount }, (_, i) => (<option key={i + 1} value={i + 1}>{i + 1}</option>))}
+              </select>
+            </div>
           ) : (
-            <span className={`text-[10px] font-black w-7 h-8 flex items-center justify-center rounded-l-full ${isSelected ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-500'}`}>
+            <span className={`text-[10px] font-black w-7 h-8 flex items-center justify-center rounded-l-full ${isSelected ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-50'}`}>
               {productCount || 0}
             </span>
           )}
@@ -108,12 +111,13 @@ export default function SearchFilter({
 
   useEffect(() => { setLocalSearch(search); }, [search]);
 
-  // Kategorileri ve ürün sayılarını hesapla
+  // Kategorileri ve ürün sayılarını hesapla (TÜM ÜRÜNLER ÜZERİNDEN)
   const { categories, sortedList, counts } = useMemo(() => {
+    // ÖNEMLİ: Filtrelenmiş değil, ana ürün listesinden kategorileri alıyoruz
+    // Böylece seçim yapılınca diğer kategoriler kaybolmaz.
     const dynamic = [...new Set(products.map((p) => p.category).filter(Boolean))];
     const sorted = sortCategories(dynamic, categoryOrder);
     
-    // Her kategori için ürün sayısını hesapla (Arşivlenmemiş olanlar)
     const stats: Record<string, number> = {};
     products.forEach(p => {
       if (!p.is_archived) {
@@ -126,7 +130,7 @@ export default function SearchFilter({
       categories: [LABELS.filter.allCategories, ...sorted],
       counts: stats
     };
-  }, [products, categoryOrder]);
+  }, [products, categoryOrder]); // Sadece ana ürün listesi veya sıralama değişince hesapla
 
   const visibleCategories = (showAll || isAdmin || isMenuOpen) ? categories : categories.slice(0, UI.category.desktopThreshold);
 

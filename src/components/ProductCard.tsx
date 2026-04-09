@@ -207,13 +207,16 @@ const ProductCard = memo(({
       {/* SIRA NUMARASI (Admin) */}
       {isAdmin && (
         <div className="absolute top-2 right-2 z-[25] hover:scale-105 active:scale-95 transition-transform">
-          <select 
-            value={orderIndex} 
-            onChange={(e) => onOrderChange?.(product.id, parseInt(e.target.value, 10))} 
-            className="appearance-none bg-white/90 backdrop-blur-md text-stone-900 text-[11px] font-black w-7 h-7 rounded-lg shadow-lg border border-stone-200 text-center flex items-center justify-center cursor-pointer focus:outline-none outline-none leading-none"
-          >
-            {Array.from({ length: itemsInCategory }, (_, i) => (<option key={i + 1} value={i + 1}>{i + 1}</option>))}
-          </select>
+          <div className="relative w-7 h-7 bg-white/90 backdrop-blur-md rounded-lg shadow-lg border border-stone-200 flex items-center justify-center overflow-hidden">
+            <select 
+              value={orderIndex} 
+              onChange={(e) => onOrderChange?.(product.id, parseInt(e.target.value, 10))} 
+              className="absolute inset-0 w-full h-full bg-transparent text-stone-900 text-[11px] font-black appearance-none text-center m-0 p-0 border-none outline-none cursor-pointer flex items-center justify-center"
+              style={{ textAlignLast: 'center', textIndent: '0', paddingLeft: '0' }}
+            >
+              {Array.from({ length: itemsInCategory }, (_, i) => (<option key={i + 1} value={i + 1}>{i + 1}</option>))}
+            </select>
+          </div>
         </div>
       )}
 

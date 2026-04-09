@@ -22,15 +22,11 @@ interface ProductGridProps {
   search: string;
   activeCategories: string[];
   onAddClick: () => void;
-  isSelectMode?: boolean;
-  selectedIds?: Set<string>;
-  onSelectToggle?: (id: string) => void;
 }
 
 export default function ProductGrid({
   products, categoryOrder, isAdmin, onDelete, onUpdate, onOrderUpdate,
-  activeDiscount, visibleCategoryLimit, search, activeCategories, onAddClick,
-  isSelectMode = false, selectedIds, onSelectToggle
+  activeDiscount, visibleCategoryLimit, search, activeCategories, onAddClick
 }: ProductGridProps) {
   
   const { groupedProducts, sortedCategories } = useMemo(() => {
@@ -93,9 +89,6 @@ export default function ProductGrid({
                 orderIndex={idx + 1}
                 itemsInCategory={groupedProducts[catName].length}
                 activeDiscount={activeDiscount}
-                isSelectMode={isSelectMode}
-                isSelected={selectedIds?.has(product.id) || (isSelectMode && activeCategories.includes(product.category))}
-                onSelectToggle={() => onSelectToggle?.(product.id)}
               />
             ))}
           </div>

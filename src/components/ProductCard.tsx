@@ -161,8 +161,7 @@ const DescriptionScroll = memo(({ lines, lineClass, maxHeightClass }: any) => {
 // --- ANA BİLEŞEN ---
 
 const ProductCard = memo(({
-  product, categories = [], isAdmin, onDelete, onUpdate, onOrderChange, orderIndex = 1, itemsInCategory = 1, activeDiscount,
-  isSelectMode, isSelected, onSelectToggle
+  product, categories = [], isAdmin, onDelete, onUpdate, onOrderChange, orderIndex = 1, itemsInCategory = 1, activeDiscount
 }: any) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cardRef = useRef<HTMLElement>(null);
@@ -209,36 +208,26 @@ const ProductCard = memo(({
     <article 
       ref={cardRef as React.RefObject<HTMLDivElement>} 
       data-product-id={product.id} 
-      className={`bg-white border-2 ${isSelected ? 'border-kraft-600 shadow-lg' : product.inStock === false ? 'border-transparent bg-stone-50' : 'border-stone-200'} rounded-lg flex flex-col group transition-all duration-300 relative`}
+      className={`bg-white border-2 ${product.inStock === false ? 'border-transparent bg-stone-50' : 'border-stone-200'} rounded-lg flex flex-col group transition-all duration-300 relative`}
     >
-      {/* SEÇİM ZIRHI (Sadece Admin ve Seçim Modu Aktifken) */}
-      {isAdmin && isSelectMode && (
-        <div 
-          onClick={(e) => { e.stopPropagation(); onSelectToggle?.(); }}
-          className="absolute inset-0 z-40 cursor-pointer rounded-lg bg-transparent"
-        />
-      )}
-
       {/* SIRA NUMARASI (Admin) */}
-      {isAdmin && !isSelectMode && (
-        <div className="absolute top-2 right-2 z-[25] hover:scale-105 active:scale-95 transition-transform">
-          <div className="relative w-7 h-7 bg-white/90 backdrop-blur-md rounded-lg shadow-lg border border-stone-200 flex items-center justify-center overflow-hidden">
-            <select 
-              value={orderIndex} 
-              onChange={(e) => onOrderChange?.(product.id, parseInt(e.target.value, 10))} 
-              className="absolute inset-0 w-full h-full bg-transparent text-stone-900 text-[11px] font-black appearance-none text-center m-0 p-0 border-none outline-none cursor-pointer flex items-center justify-center"
-              style={{ textAlignLast: 'center', textIndent: '0', paddingLeft: '0' }}
-            >
-              {Array.from({ length: itemsInCategory }, (_, i) => (<option key={i + 1} value={i + 1}>{i + 1}</option>))}
-            </select>
-          </div>
+      <div className={`absolute top-2 right-2 z-[25] transition-all duration-300 transform ${isAdmin ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}>
+        <div className="relative w-7 h-7 bg-white/90 backdrop-blur-md rounded-lg shadow-lg border border-stone-200 flex items-center justify-center overflow-hidden">
+          <select 
+            value={orderIndex} 
+            onChange={(e) => onOrderChange?.(product.id, parseInt(e.target.value, 10))} 
+            className="absolute inset-0 w-full h-full bg-transparent text-stone-900 text-[11px] font-black appearance-none text-center m-0 p-0 border-none outline-none cursor-pointer flex items-center justify-center"
+            style={{ textAlignLast: 'center', textIndent: '0', paddingLeft: '0' }}
+          >
+            {Array.from({ length: itemsInCategory }, (_, i) => (<option key={i + 1} value={i + 1}>{i + 1}</option>))}
+          </select>
         </div>
-      )}
+      </div>
 
       {/* ÜRÜN GÖRSELİ */}
-      <div className={`relative w-full bg-stone-100 aspect-square flex items-center justify-center rounded-t-lg ${isAdmin && !isSelectMode ? 'cursor-pointer' : ''}`} onClick={() => isAdmin && !isSelectMode && fileInputRef.current?.click()}>
+      <div className={`relative w-full bg-stone-100 aspect-square flex items-center justify-center rounded-t-lg transition-all duration-500 ${isAdmin ? 'cursor-pointer' : ''}`} onClick={() => isAdmin && fileInputRef.current?.click()}>
         {product.image && !imgError ? (
-          <img src={getImageUrl(product.image) || ''} alt={product.name} onError={() => setImgError(true)} className={`w-full h-full object-cover rounded-t-lg transition-all duration-300 ${product.inStock === false ? 'grayscale opacity-60' : ''}`} draggable={false} loading="lazy" />
+          <img src={getImageUrl(product.image) || ''} alt={product.name} onError={() => setImgError(true)} className={`w-full h-full object-cover rounded-t-lg transition-all duration-500 ${product.inStock === false ? 'grayscale opacity-60' : ''}`} draggable={false} loading="lazy" />
         ) : (
           <div className="flex flex-col items-center gap-1 text-stone-300 select-none"><span className="text-5xl">{PLACEHOLDER_EMOJI}</span></div>
         )}
@@ -246,13 +235,13 @@ const ProductCard = memo(({
       </div>
 
       {/* ÜRÜN BİLGİLERİ */}
-      <div className={`px-2 py-2 flex flex-col gap-0.5 flex-grow ${isAdmin && isSelectMode ? 'pointer-events-none' : ''}`}>
+      <div className={`px-2 py-2 flex flex-col gap-0.5 flex-grow`}>
         {/* ÜRÜN İSMİ (Düzenlenebilir) */}
-        <MarqueeText text={product.name} textClass={`${s.nameSize} ${s.nameWeight} ${s.nameColor} ${s.nameLeading} transition-all duration-300 ${product.inStock === false ? 'opacity-60 text-stone-500' : ''}`} isAdmin={isAdmin} editableProps={isAdmin && !isSelectMode ? { contentEditable: true, suppressContentEditableWarning: true, onBlur: (ev: any) => updateField('name', ev.currentTarget.textContent?.trim() || ''), onKeyDown: (e: any) => e.key === 'Enter' && (e.preventDefault(), e.currentTarget.blur()), className: `cursor-text focus:outline-none ${s.adminEditBg} px-0.5 rounded outline-none` } : {}} />
+        <MarqueeText text={product.name} textClass={`${s.nameSize} ${s.nameWeight} ${s.nameColor} ${s.nameLeading} transition-all duration-300 ${product.inStock === false ? 'opacity-60 text-stone-500' : ''}`} isAdmin={isAdmin} editableProps={isAdmin ? { contentEditable: true, suppressContentEditableWarning: true, onBlur: (ev: any) => updateField('name', ev.currentTarget.textContent?.trim() || ''), onKeyDown: (e: any) => e.key === 'Enter' && (e.preventDefault(), e.currentTarget.blur()), className: `cursor-text focus:outline-none ${s.adminEditBg} px-0.5 rounded outline-none` } : {}} />
         
         {/* ÜRÜN AÇIKLAMASI */}
         <div className="relative min-h-[24px]">
-          {isAdmin && !isSelectMode ? (
+          {isAdmin ? (
             isEditingDesc ? (
               <textarea ref={descAreaRef} value={tempDesc} onChange={(ev) => setTempDesc(ev.target.value)} onBlur={() => (setIsEditingDesc(false), updateField('description', tempDesc.trim()))} className={`w-full ${s.descSize} ${s.descColor} ${s.descLeading} ${s.adminEditBg} border border-amber-200 rounded px-1 py-0.5 focus:outline-none resize-none overflow-hidden block`} autoFocus />
             ) : (
@@ -265,14 +254,16 @@ const ProductCard = memo(({
 
         {/* FİYAT ALANI */}
         <div className="mt-auto">
-          <div contentEditable={isAdmin && !isSelectMode} suppressContentEditableWarning onBlur={(e: any) => { let val = e.currentTarget.textContent?.trim() || ''; if (val && !val.startsWith('₺')) val = '₺' + val; updateField('price', val); }} onKeyDown={(e: any) => e.key === 'Enter' && (e.preventDefault(), e.currentTarget.blur())} className={`${s.priceSize} ${s.priceWeight} ${isDiscountActive ? s.discountColor : s.priceColor} transition-all duration-500 ${isAdmin && !isSelectMode ? `cursor-text focus:outline-none ${s.adminEditBg} px-0.5 rounded outline-none` : ''} ${product.inStock === false && !isAdmin ? 'line-through opacity-60 text-stone-500' : ''}`}>
+          <div contentEditable={isAdmin} suppressContentEditableWarning onBlur={(e: any) => { let val = e.currentTarget.textContent?.trim() || ''; if (val && !val.startsWith('₺')) val = '₺' + val; updateField('price', val); }} onKeyDown={(e: any) => e.key === 'Enter' && (e.preventDefault(), e.currentTarget.blur())} className={`${s.priceSize} ${s.priceWeight} ${isDiscountActive ? s.discountColor : s.priceColor} transition-all duration-500 ${isAdmin ? `cursor-text focus:outline-none ${s.adminEditBg} px-0.5 rounded outline-none` : ''} ${product.inStock === false && !isAdmin ? 'line-through opacity-60 text-stone-500' : ''}`}>
             {formattedPrice}
           </div>
         </div>
       </div>
 
       {/* ADMİN AKSİYON MENÜSÜ */}
-      {isAdmin && !isSelectMode && (<AdminActionMenu product={product} categories={categories} onDelete={onDelete} onUpdate={onUpdate} />)}
+      <div className={`transition-all duration-300 ${isAdmin ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}>
+        <AdminActionMenu product={product} categories={categories} onDelete={onDelete} onUpdate={onUpdate} />
+      </div>
 
       {/* DURUM İKONLARI (Arşiv / Stok Yok) */}
       <div className="absolute inset-0 z-[5] pointer-events-none rounded-lg flex items-center justify-center gap-2">

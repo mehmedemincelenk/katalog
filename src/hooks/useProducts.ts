@@ -136,20 +136,6 @@ export function useProducts(
     syncWithSheet(TECH.sheetActions.delete, { id });
   }, [syncWithSheet]);
 
-  const bulkUpdate = useCallback(async (updates: { id: string; changes: Partial<Product> }[]) => {
-    setProducts(prev => {
-      const updateMap = new Map(updates.map(u => [u.id, u.changes]));
-      return prev.map(p => updateMap.has(p.id) ? { ...p, ...updateMap.get(p.id) } : p);
-    });
-    syncWithSheet('BULK_UPDATE', { updates });
-  }, [syncWithSheet]);
-
-  const bulkDelete = useCallback(async (ids: string[]) => {
-    if (!window.confirm(`${ids.length} ürünü silmek istediğinize emin misiniz?`)) return;
-    setProducts(prev => prev.filter(p => !ids.includes(p.id)));
-    syncWithSheet('BULK_DELETE', { ids });
-  }, [syncWithSheet]);
-
   const addProduct = useCallback(async (product: Omit<Product, 'id' | 'is_archived'>) => {
     // Yeni ürün eklendiğinde temizlik modunu zorla kapat.
     localStorage.removeItem('is_clearing_now');
@@ -207,8 +193,6 @@ export function useProducts(
     loading,
     updateProduct,
     deleteProduct,
-    bulkUpdate,
-    bulkDelete,
     deleteAllProducts,
     addProduct,
     reorderCategory,

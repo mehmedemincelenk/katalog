@@ -26,13 +26,11 @@ export default function App() {
   const [search, setSearch] = useState('');
   const [activeCategories, setActiveCategories] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSelectMode, setIsSelectMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const {
     products, categoryOrder, loading, addProduct, deleteProduct, updateProduct,
     renameCategory, removeCategoryFromProducts, existingCategories, reorderCategory, reorderProductsInCategory,
-    deleteAllProducts, bulkUpdate, bulkDelete
+    deleteAllProducts
   } = useProducts(search, activeCategories, isAdmin);
   
   const [visibleCategoryLimit, setVisibleCategoryLimit] = useState(UI.category.initialVisible);
@@ -63,147 +61,14 @@ export default function App() {
     return () => document.removeEventListener('pointerdown', handlePointerDown, { capture: true });
   }, [isAdmin]);
 
-  // Çoklu Seçim Modu İşlemleri
-  const toggleSelection = (id: string) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  const getTargetIds = () => {
-    const targets = new Set<string>();
-    // Eğer kategori seçiliyse, O kategorilerdeki ürünleri de hedeflere ekle
-    if (activeCategories.length > 0) {
-      products.forEach(p => {
-        if (activeCategories.includes(p.category)) targets.add(p.id);
-      });
-    }
-    // El ile seçilen kartları da ekle
-    selectedIds.forEach(id => targets.add(id));
-    return Array.from(targets);
-  };
-
-  const handleBulkDelete = () => {
-    const targets = getTargetIds();
-    if (targets.length === 0) return alert('Seçili ürün yok.');
-    bulkDelete(targets);
-    setSelectedIds(new Set());
-    setIsSelectMode(false);
-  };
-
-  const handleBulkArchive = () => {
-    const targets = getTargetIds();
-    if (targets.length === 0) return alert('Seçili ürün yok.');
-    // Varsayılan olarak hepsini arşivle veya tersine çevir. Basitçe arşivle (is_archived: true)
-    const updates = targets.map(id => ({ id, changes: { is_archived: true } }));
-    bulkUpdate(updates);
-    setSelectedIds(new Set());
-    setIsSelectMode(false);
-  };
-
-  const handleBulkStock = () => {
-    const targets = getTargetIds();
-    if (targets.length === 0) return alert('Seçili ürün yok.');
-    // Hepsini Tükendi yap (inStock: false) veya tam tersi. Mantıken durumu tersine çeviremeyiz çünkü farklı statüde ürünler olabilir. 
-    const updates = targets.map(id => ({ id, changes: { inStock: true } }));
-    bulkUpdate(updates);
-    setSelectedIds(new Set());
-    setIsSelectMode(false);
-  };
-
-  const handleBulkCategory = () => {
-    const targets = getTargetIds();
-    if (targets.length === 0) return alert('Seçili ürün yok.');
-    const cat = window.prompt(`Seçili ${targets.length} ürün için YENİ KATEGORİ yazın:`);
-    if (!cat?.trim()) return;
-    const updates = targets.map(id => ({ id, changes: { category: cat.trim() } }));
-    bulkUpdate(updates);
-    setSelectedIds(new Set());
-    setIsSelectMode(false);
-  };
-
-  const handleBulkName = () => {
-    const targets = getTargetIds();
-    if (targets.length === 0) return alert('Seçili ürün yok.');
-    const option = window.prompt(`Seçili ${targets.length} ürünün ismine metin ekleyin.\nFormat: [BAŞA VEYA SONA]::[METİN]\nÖrn:\nSONA:: (Yeni)\nBAŞA::İndirimli `);
-    if (!option || !option.includes('::')) return;
-    const [pos, text] = option.split('::');
-    
-    const updates = targets.map(id => {
-      const p = products.find(x => x.id === id);
-      if (!p) return null;
-      let newName = p.name;
-      if (pos.trim().toUpperCase() === 'BAŞA') newName = text + newName;
-      else if (pos.trim().toUpperCase() === 'SONA') newName = newName + text;
-      return { id, changes: { name: newName } };
-    }).filter(Boolean) as { id: string; changes: Partial<Product> }[];
-    
-    bulkUpdate(updates);
-    setSelectedIds(new Set());
-    setIsSelectMode(false);
-  };
-
-  const handleBulkPrice = () => {
-    const targets = getTargetIds();
-    if (targets.length === 0) return alert('Seçili ürün yok.');
-    const option = window.prompt(`Seçili ${targets.length} ürünün fiyatını değiştirin.\nÖrn: +10 (10 TL artırır), -5 (5 TL azaltır), %10 (Yüzde 10 artırır), -%20 (Yüzde 20 azaltır). Sadece sayı girerseniz o fiyatla eşitler.`);
-    if (!option?.trim()) return;
-    
-    const val = option.trim();
-    const isPercent = val.includes('%');
-    const isPlus = val.startsWith('+');
-    const isMinus = val.startsWith('-');
-    const numericVal = parseFloat(val.replace(/[^0-9.]/g, ''));
-    
-    if (isNaN(numericVal)) return;
-
-    const updates = targets.map(id => {
-      const p = products.find(x => x.id === id);
-      if (!p) return null;
-      let currentPrice = parseFloat(p.price.replace(/[^0-9,.]/g, '').replace(',', '.')) || 0;
-      let newPrice = currentPrice;
-      
-      if (isPercent) {
-        const diff = currentPrice * (numericVal / 100);
-        if (isPlus) newPrice += diff;
-        else if (isMinus) newPrice -= diff;
-      } else {
-        if (isPlus) newPrice += numericVal;
-        else if (isMinus) newPrice -= numericVal;
-        else newPrice = numericVal; // Sabit fiyat
-      }
-      
-      return { id, changes: { price: newPrice.toFixed(2).replace('.', ',') + ' ₺' } };
-    }).filter(Boolean) as { id: string; changes: Partial<Product> }[];
-    
-    bulkUpdate(updates);
-    setSelectedIds(new Set());
-    setIsSelectMode(false);
-  };
-
   return (
     <div className={`min-h-screen flex flex-col ${UI.layout.bodyBg}`}>
       <Navbar settings={settings} isAdmin={isAdmin} updateSetting={updateSetting} />
       
       {isAdmin && (
         <FloatingAdminMenu 
-          settings={settings} 
-          updateSetting={updateSetting} 
-          onAddClick={() => setIsModalOpen(true)}
-          isSelectMode={isSelectMode}
-          toggleSelectMode={() => { setIsSelectMode(!isSelectMode); setSelectedIds(new Set()); }}
           onLogout={logout}
-          selectedCount={getTargetIds().length}
-          categories={existingCategories}
-          onDelete={handleBulkDelete}
-          onArchiveToggle={handleBulkArchive}
-          onStockToggle={handleBulkStock}
-          onChangeCategory={handleBulkCategory}
-          onChangeName={handleBulkName}
-          onChangePrice={handleBulkPrice}
+          onAddClick={() => setIsModalOpen(true)}
         />
       )}
       
@@ -225,7 +90,6 @@ export default function App() {
             activeDiscount={activeDiscount} 
             visibleCategoryLimit={isAdmin ? UI.layout.adminLimit : visibleCategoryLimit}
             search={search} activeCategories={activeCategories} onAddClick={() => setIsModalOpen(true)}
-            isSelectMode={isSelectMode} selectedIds={selectedIds} onSelectToggle={toggleSelection}
           />
 
           {!isAdmin && products.length > 0 && (
@@ -242,12 +106,6 @@ export default function App() {
                   {LABELS.allProductsLoaded}
                 </p>
               )}
-            </div>
-          )}
-
-          {(loading || settingsLoading) && (
-            <div className="flex justify-center py-20">
-              <div className="w-8 h-8 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin" />
             </div>
           )}
         </div>

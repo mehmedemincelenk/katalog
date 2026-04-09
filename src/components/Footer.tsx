@@ -24,6 +24,7 @@ export default function Footer({
 }: FooterProps) {
   // TEKNİK NOT: couponInput, kullanıcının o an yazdığı metni tutan "geçici" bir hafızadır.
   const [couponInput, setCouponInput] = useState('');
+  const [isQRFullscreen, setIsQRFullscreen] = useState(false);
 
   const handleApply = () => {
     if (onApplyDiscount && couponInput.trim()) {
@@ -33,16 +34,36 @@ export default function Footer({
   };
 
   const f = FOOTER; // Kısa erişim için config alias
+  const currentUrl = window.location.href;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
 
   return (
-    <footer className="bg-white border-t border-stone-200 mt-16">
+    <footer className="bg-white border-t border-stone-200 mt-16 relative">
+      {/* TAM EKRAN QR MODAL */}
+      {isQRFullscreen && (
+        <div 
+          onClick={() => setIsQRFullscreen(false)}
+          className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-xl flex items-center justify-center cursor-pointer animate-in fade-in duration-300"
+        >
+          <div className="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center gap-6 animate-in zoom-in-95 duration-300">
+            <img src={qrUrl} alt="QR Code" className="w-64 h-64" />
+            <p className="font-bold text-stone-900 uppercase tracking-widest text-sm">Web Sitemize Gidin</p>
+            <p className="text-stone-400 text-[10px] uppercase">Kapatmak için herhangi bir yere tıklayın</p>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className={`grid grid-cols-1 md:grid-cols-3 ${f.style.sectionGap} items-start`}>
           
           {/* 1. BÖLÜM: MARKA VE TELİF */}
           <div className="flex flex-col items-center md:items-start gap-3">
             <button onClick={onLogoClick} className="flex items-center gap-2 group outline-none">
-              <span className="text-3xl group-active:scale-90 transition-transform">{DEFAULT_COMPANY.logoEmoji}</span>
+              {settings.logoEmoji?.startsWith('data:image') ? (
+                <img src={settings.logoEmoji} alt="Logo" className="w-10 h-10 object-contain rounded-lg group-active:scale-90 transition-transform" />
+              ) : (
+                <span className="text-3xl group-active:scale-90 transition-transform">{settings.logoEmoji || DEFAULT_COMPANY.logoEmoji}</span>
+              )}
               <div className="flex flex-col items-start leading-none text-left">
                 <span className="font-bold text-stone-900 tracking-tight text-lg">{settings.title}</span>
                 <span className="text-[11px] text-kraft-600 mt-0.5">{settings.subtitle}</span>
@@ -59,19 +80,33 @@ export default function Footer({
             </p>
           </div>
 
-          {/* 2. BÖLÜM: LOKASYON (Google Haritalar Entegrasyonu) */}
-          <div className="flex flex-col items-center gap-2 text-center">
-            <span className={`text-[10px] font-bold text-stone-300 uppercase ${f.style.tracking} mb-1`}>
-              {f.labels.locationTitle}
-            </span>
-            <a 
-              href={`${f.style.mapBaseUrl}${encodeURIComponent(settings.address)}`} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-xs text-stone-500 hover:text-stone-900 transition-colors max-w-[200px] leading-relaxed"
-            >
-              {settings.address}
-            </a>
+          {/* 2. BÖLÜM: LOKASYON & QR */}
+          <div className="flex flex-col items-center gap-4 text-center">
+            <div className="flex flex-col items-center gap-2">
+              <span className={`text-[10px] font-bold text-stone-300 uppercase ${f.style.tracking} mb-1`}>
+                {f.labels.locationTitle}
+              </span>
+              <a 
+                href={`${f.style.mapBaseUrl}${encodeURIComponent(settings.address)}`} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-xs text-stone-500 hover:text-stone-900 transition-colors max-w-[200px] leading-relaxed"
+              >
+                {settings.address}
+              </a>
+            </div>
+
+            {!isAdmin && (
+              <div className="flex flex-col items-center gap-2 mt-2">
+                <div 
+                  onClick={() => setIsQRFullscreen(true)}
+                  className="bg-stone-50 p-2 rounded-xl border border-stone-100 shadow-sm cursor-pointer hover:scale-105 transition-transform group"
+                >
+                  <img src={qrUrl} alt="QR Code" className="w-12 h-12 grayscale group-hover:grayscale-0 transition-all" />
+                </div>
+                <span className="text-[8px] font-bold text-stone-300 uppercase tracking-widest">Siteyi Paylaş</span>
+              </div>
+            )}
           </div>
 
           {/* 3. BÖLÜM: KUPON VEYA ADMİN AYARLARI */}
@@ -118,7 +153,7 @@ export default function Footer({
                 {discountError && <p className="text-[9px] font-bold text-red-500 uppercase tracking-tight">{discountError}</p>}
               </>
             ) : (
-              <div className="flex flex-col items-end w-full h-full justify-end">
+              <div className="flex flex-col items-center justify-center w-full h-full md:items-end">
                 <button 
                   onClick={onDeleteAll}
                   className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-[10px] font-bold uppercase hover:bg-red-600 hover:text-white transition-all shadow-sm"

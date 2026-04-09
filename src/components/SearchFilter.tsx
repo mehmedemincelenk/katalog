@@ -49,25 +49,25 @@ const CategoryChip = memo(({
   };
 
   return (
-    <div className={`flex items-center rounded-full border transition-all ${
+    <div className={`flex items-stretch rounded-full border transition-all overflow-hidden ${
       isSelected ? 'bg-stone-900 text-white border-stone-900 shadow-md scale-105' : 'bg-white text-stone-600 border-stone-300 hover:border-stone-500 active:scale-95'
     }`}>
       {/* SIRALAMA SEÇİCİ (Admin) veya SAYI (Müşteri) */}
       {isActualCategory && (
-        <div className="flex items-center shrink-0 h-full">
+        <div className="flex items-center shrink-0">
           {isAdmin ? (
-            <div className="relative w-8 h-full bg-stone-100 border-r border-stone-200 flex items-center justify-center overflow-hidden rounded-l-full">
+            <div className="relative w-10 h-full bg-white border-r border-stone-300 flex items-center justify-center overflow-hidden">
               <select
                 value={currentIndex + 1}
                 onChange={(e) => onOrderChange(cat, parseInt(e.target.value, 10))}
-                className={`absolute inset-0 w-full h-full bg-transparent text-stone-900 text-[12px] font-black appearance-none text-center m-0 p-0 border-none outline-none cursor-pointer`}
-                style={{ textAlignLast: 'center', textIndent: '0', paddingLeft: '0' }}
+                className="absolute inset-0 w-full h-full bg-white text-stone-900 text-[13px] font-black appearance-none text-center m-0 p-0 border-none outline-none cursor-pointer z-10"
+                style={{ textAlignLast: 'center' }}
               >
                 {Array.from({ length: totalCount }, (_, i) => (<option key={i + 1} value={i + 1}>{i + 1}</option>))}
               </select>
             </div>
           ) : (
-            <span className={`text-[10px] font-black w-7 h-full flex items-center justify-center rounded-l-full ${isSelected ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-900'}`}>
+            <span className={`text-[10px] font-black w-8 h-full flex items-center justify-center ${isSelected ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-900'}`}>
               {productCount || 0}
             </span>
           )}

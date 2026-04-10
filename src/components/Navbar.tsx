@@ -118,7 +118,7 @@ export default function Navbar({ settings, isAdmin, updateSetting }: NavbarProps
               {/* WhatsApp */}
               <div 
                 onClick={() => isAdmin && handleEdit(e, 'whatsapp', 'WhatsApp Numarası', settings.whatsapp)}
-                className={`flex items-center gap-1.5 px-2 py-1 ${n.contact.whatsappBg} ${n.contact.whatsappHover} ${n.contact.whatsappRounded} text-white transition-all active:scale-95 shadow-md ${isAdmin ? 'cursor-pointer ring-2 ring-green-200' : ''}`}
+                className={`flex items-center gap-1.5 px-2 py-1 ${n.contact.whatsappBg} ${n.contact.whatsappHover} ${n.contact.whatsappRounded} text-white transition-all active:scale-95 shadow-md ${isAdmin ? 'cursor-pointer hover:opacity-80' : ''}`}
               >
                 {!isAdmin ? (
                   <a href={`https://wa.me/${settings.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5">

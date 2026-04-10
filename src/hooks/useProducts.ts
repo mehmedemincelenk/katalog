@@ -176,8 +176,11 @@ export function useProducts(
       return mS && mC;
     });
 
-    // Alfabetik Sıralama (Türkçe Karakter Uyumlu)
-    return [...filtered].sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+    // Sıralama: Eğer arama veya kategori filtresi varsa alfabetik, yoksa doğal (manuel) sıra
+    if (term || activeCategories.length > 0) {
+      return [...filtered].sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+    }
+    return filtered;
   }, [products, search, activeCategories, isAdmin]);
 
   const existingCategories = useMemo(() => {

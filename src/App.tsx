@@ -21,6 +21,18 @@ export default function App() {
   
   const { activeDiscount, applyCode, error: discountError } = useDiscount();
   const { settings, updateSetting } = useSettings(isAdmin);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     if (isAdmin) {
@@ -65,6 +77,11 @@ export default function App() {
 
   return (
     <div className={`min-h-screen flex flex-col ${UI.layout.bodyBg}`}>
+      {!isOnline && (
+        <div className="bg-red-500 text-white text-[10px] font-black uppercase tracking-widest py-2 text-center sticky top-0 z-[100] animate-in slide-in-from-top duration-300">
+          ⚠️ İnternet Bağlantınız Kesildi. Bazı özellikler çalışmayabilir.
+        </div>
+      )}
       <Navbar settings={settings} isAdmin={isAdmin} updateSetting={updateSetting} />
       
       {isAdmin && (

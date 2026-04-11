@@ -23,6 +23,7 @@ export interface Product {
   description: string;  // Ürün açıklaması
   inStock: boolean;     // Stokta var mı? (Evet/Hayır)
   is_archived: boolean; // Mağazadan gizli mi? (Evet/Hayır)
+  sort_order?: number;  // Sıralama numarası
 }
 
 /**

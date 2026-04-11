@@ -120,6 +120,13 @@ export function useProducts(
   }, [products, updateProduct]);
 
   const addProduct = useCallback(async (product: Omit<Product, 'id' | 'is_archived'>, imageFile?: File) => {
+    // Calculate max sort_order for the given category to place the new product at the end
+    const categoryProducts = products.filter(p => p.category === product.category);
+    const maxSortOrder = categoryProducts.length > 0 
+      ? Math.max(...categoryProducts.map(p => p.sort_order || 0)) 
+      : 0;
+    const nextSortOrder = maxSortOrder + 1;
+
     const { data, error } = await supabase.from(TABLE_NAME).insert([{
       name: product.name,
       category: product.category,
@@ -127,14 +134,14 @@ export function useProducts(
       description: product.description,
       out_of_stock: !product.inStock,
       is_archived: false,
-      sort_order: 0
+      sort_order: nextSortOrder
     }]).select().single();
 
     if (data && !error) {
       if (imageFile) await uploadImage(data.id, imageFile);
       else fetchProducts(true);
     }
-  }, [uploadImage, fetchProducts]);
+  }, [uploadImage, fetchProducts, products]);
 
   const deleteProduct = useCallback(async (id: string) => {
     if (!window.confirm(LABELS.deleteConfirm)) return;

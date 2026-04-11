@@ -73,25 +73,17 @@ export default function Navbar({ settings, isAdmin, updateSetting }: NavbarProps
             {renderLogo()}
             <div className="flex flex-col">
               <div 
-                onClick={(e) => handleEdit(e, 'name', 'Şirket Adı', settings.name || settings.title)}
+                onClick={(e) => handleEdit(e, 'name', 'Şirket Adı', settings.name)}
                 className={`${n.logo.nameSize} ${n.logo.nameWeight} text-stone-900 leading-none tracking-tight ${isAdmin ? 'cursor-pointer hover:bg-stone-100 rounded px-1' : ''}`}
               >
-                {settings.name || settings.title}
+                {settings.name}
               </div>
               <div 
-                onClick={(e) => handleEdit(e, 'title', 'Başlık', settings.title)}
+                onClick={(e) => handleEdit(e, 'subtitle', 'Slogan / Alt Başlık', settings.subtitle)}
                 className={`${n.logo.taglineSize} ${n.logo.taglineColor} font-medium ${isAdmin ? 'cursor-pointer hover:bg-stone-100 rounded px-1 mt-0.5' : ''}`}
               >
-                {settings.title}
+                {settings.subtitle}
               </div>
-              {isAdmin && (
-                <div 
-                  onClick={(e) => handleEdit(e, 'subtitle', 'Alt Başlık (Slogan)', settings.subtitle)}
-                  className="text-[8px] text-stone-400 font-medium cursor-pointer hover:bg-stone-100 rounded px-1"
-                >
-                  {settings.subtitle || '+ Slogan Ekle'}
-                </div>
-              )}
             </div>
           </div>
 

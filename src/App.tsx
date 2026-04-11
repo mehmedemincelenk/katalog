@@ -6,27 +6,22 @@ import ProductGrid from './components/ProductGrid';
 import Footer from './components/Footer';
 import AddProductModal from './components/AddProductModal';
 import FloatingAdminMenu from './components/FloatingAdminMenu';
+import PinModal from './components/PinModal';
 import { useProducts } from './hooks/useProducts';
 import { useAdminMode } from './hooks/useAdminMode';
 import { useDiscount } from './hooks/useDiscount';
 import { useSettings } from './hooks/useSettings';
 import { UI, LABELS } from './data/config';
 
-/**
- * APP BİLEŞENİ (STRATEJİK ANALİZ)
- * ----------------------------
- * Bir kurucu olarak bu dosya senin "Genel Müdürlüğündür".
- */
 export default function App() {
-  const { isAdmin, handleLogoClick, logout } = useAdminMode();
+  const { 
+    isAdmin, handleLogoClick, logout, 
+    isPinModalOpen, setIsPinModalOpen, correctPin, onPinSuccess 
+  } = useAdminMode();
+  
   const { activeDiscount, applyCode, error: discountError } = useDiscount();
   const { settings, updateSetting } = useSettings(isAdmin);
 
-  /**
-   * ADMİN PANELİ SMOOTH SCROLL (UI/UX)
-   * ---------------------------------
-   * Admin moduna geçildiğinde sayfanın en üstüne yumuşak bir geçiş sağlar.
-   */
   useEffect(() => {
     if (isAdmin) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -55,16 +50,13 @@ export default function App() {
     }
   };
 
-  // APPLE STANDARD MOBİL DÜZENLEME (Tıklama Yutucu)
-  // Kullanıcı bir yeri düzenlerken (klavye açıkken) dışarıdaki bir butona yanlışlıkla basmasını engeller.
   useEffect(() => {
     if (!isAdmin) return;
     const handlePointerDown = (e: PointerEvent) => {
       const active = document.activeElement;
-      // Eğer tıklanan eleman aktif olan düzenleme alanı değilse ve bir düzenleme alanı aktifse
       if (active && active.hasAttribute('contenteditable') && active !== e.target) {
-        e.preventDefault(); // Butonun tıklanmasını engelle
-        (active as HTMLElement).blur(); // Sadece klavyeyi kapat
+        e.preventDefault();
+        (active as HTMLElement).blur();
       }
     };
     document.addEventListener('pointerdown', handlePointerDown, { capture: true });
@@ -137,6 +129,14 @@ export default function App() {
           onAdd={addProduct} categories={existingCategories}
         />
       )}
+
+      {/* PIN Giriş Modalı */}
+      <PinModal 
+        isOpen={isPinModalOpen}
+        correctPin={correctPin}
+        onSuccess={onPinSuccess}
+        onClose={() => setIsPinModalOpen(false)}
+      />
     </div>
   );
 }

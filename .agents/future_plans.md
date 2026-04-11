@@ -26,7 +26,16 @@ Bu liste, en acil/hızlı yapılacaklardan (MVP) başlayarak uzun vadeli SaaS he
 *   **Multi-tenant Mimari:** Altyapının "Herkes kendi kataloğunu açabilir" modeline taşınması.
 *   **Sektörel Şablonlar:** Gıda, tekstil, kozmetik gibi farklı sektörler için özelleşmiş tasarım temaları.
 
-## 6. Akıllı Katalog Özellikleri (İndirme ve AI)
+## 4. Hızlı Değer Katan Özellikler (Quick Wins - 1-2 Satır Kod)
+*   **PWA (Uygulama Modu):** Kataloğun telefona logo ile "Uygulama" olarak kurulabilmesi.
+*   **Yerel Paylaşım (Share API):** Ürünlerin telefonun kendi paylaşım menüsüyle (WhatsApp, Instagram vb.) profesyonelce paylaşılması.
+*   **Global Katalog (Google Translate):** Tek tıkla kataloğun tüm dünya dillerine çevrilmesi (İhracat potansiyeli).
+*   **Profesyonel Bildirimler (Sonner):** İşlemler sırasında şık ve güven verici bildirim balonları.
+*   **Analiz ve İzleme (PostHog):** Müşterilerin hangi ürünlere baktığını takip edip admin'e raporlama.
+*   **Tek Tıkla Ara:** İletişim bölümünde numara çevirmeden doğrudan arama butonu.
+*   **Facebook Pixel Entegrasyonu:** Müşterilerin sitedeki hareketlerine göre Instagram/Facebook üzerinden "yeniden hedefleme" (retargeting) reklamları yapılabilmesi.
+
+## 5. Akıllı Katalog Özellikleri (İndirme ve AI)
 *   **Çoklu Format Desteği:** Seçilen ürünlerin tek tıkla **PDF** (katalog formatında) veya **PNG** (sosyal medya paylaşımı için) olarak indirilmesi.
 *   **AI Broşür Oluşturucu:** Seçilen ürünleri analiz ederek profesyonel bir broşür tasarımını AI desteğiyle saniyeler içinde hazırlayan sistem.
 

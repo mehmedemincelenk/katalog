@@ -28,6 +28,26 @@ export function useProducts(
   const [categoryOrder, setCategoryOrder] = useLocalStorage<string[]>(STORAGE.categoryOrder, DEFAULT_ORDER);
   const [loading, setLoading] = useState(true);
 
+  // KATEGORİ SIRALAMASINI ÇEK
+  useEffect(() => {
+    const url = import.meta.env.VITE_SHEET_SCRIPT_URL;
+    if (!url) return;
+    
+    fetch(url + '?action=GET_SETTINGS')
+      .then(res => res.json())
+      .then(res => {
+        if (res.status === "Success" && res.data.CATEGORY_ORDER) {
+          try {
+            const remoteOrder = JSON.parse(res.data.CATEGORY_ORDER);
+            const sortedNames = remoteOrder.sort((a: any, b: any) => a.order - b.order).map((x: any) => x.name);
+            setCategoryOrder(sortedNames);
+          } catch (e) {
+            console.error("Category order parse error", e);
+          }
+        }
+      }).catch(e => console.error("Settings fetch error", e));
+  }, [setCategoryOrder]);
+
   // Cache Yazımı
   useEffect(() => {
     if (products.length >= 0) {

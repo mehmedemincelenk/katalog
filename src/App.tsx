@@ -22,6 +22,17 @@ export default function App() {
   const { activeDiscount, applyCode, error: discountError } = useDiscount();
   const { settings, updateSetting } = useSettings(isAdmin);
 
+  /**
+   * ADMİN PANELİ SMOOTH SCROLL (UI/UX)
+   * ---------------------------------
+   * Admin moduna geçildiğinde sayfanın en üstüne yumuşak bir geçiş sağlar.
+   */
+  useEffect(() => {
+    if (isAdmin) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [isAdmin]);
+
   const [search, setSearch] = useState('');
   const [activeCategories, setActiveCategories] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -7,6 +7,7 @@ export interface CompanySettings {
   instagram: string;
   title: string;
   subtitle: string;
+  name: string;
   logoEmoji: string;
 }
 
@@ -26,6 +27,7 @@ export function useSettings(isAdmin: boolean) {
       instagram: DEFAULT_COMPANY.instagramUrl,
       title: DEFAULT_COMPANY.name,
       subtitle: DEFAULT_COMPANY.tagline,
+      name: DEFAULT_COMPANY.name,
       logoEmoji: DEFAULT_COMPANY.logoEmoji,
     };
   });

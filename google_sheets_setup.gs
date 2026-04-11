@@ -178,6 +178,54 @@ function doPost(e) {
       return ContentService.createTextOutput("Success: Bulk Deleted").setMimeType(ContentService.MimeType.TEXT);
     }
 
+    // 10. ÜRÜN SIRALAMASINI KAYDET (BÜTÜN SAYFAYI YENİDEN YAZAR)
+    if (action === "UPDATE_PRODUCT_ORDER") {
+      var idList = data.idList; // ["id1", "id2", ...]
+      var rows = sheet.getDataRange().getValues();
+      var header = rows[0];
+      var productsMap = {};
+      
+      // Mevcut ürünleri ID'ye göre bir objeye al
+      for (var i = 1; i < rows.length; i++) {
+        productsMap[String(rows[i][0])] = rows[i];
+      }
+      
+      // Yeni sıralamaya göre satırları hazırla
+      var newRows = [header];
+      for (var j = 0; j < idList.length; j++) {
+        var id = String(idList[j]);
+        if (productsMap[id]) {
+          newRows.push(productsMap[id]);
+        }
+      }
+      
+      // Sayfayı temizle ve yeni sıralı veriyi yaz
+      sheet.clear();
+      sheet.getRange(1, 1, newRows.length, header.length).setValues(newRows);
+      return ContentService.createTextOutput("Success: Product Order Updated").setMimeType(ContentService.MimeType.TEXT);
+    }
+    
+    // 11. KATEGORİ SIRALAMASINI KAYDET (SETTINGS TABLOSUNA YAZAR)
+    if (action === "UPDATE_CATEGORY_ORDER") {
+      var orderList = data.orderList; // [{name: "cat1", order: 1}, ...]
+      var key = "CATEGORY_ORDER";
+      var value = JSON.stringify(orderList);
+      
+      var rows = settingsSheet.getDataRange().getValues();
+      var found = false;
+      for (var i = 1; i < rows.length; i++) {
+        if (rows[i][0] === key) {
+          settingsSheet.getRange(i + 1, 2).setValue(value);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        settingsSheet.appendRow([key, value]);
+      }
+      return ContentService.createTextOutput("Success: Category Order Updated").setMimeType(ContentService.MimeType.TEXT);
+    }
+
     return ContentService.createTextOutput("Unknown Action").setMimeType(ContentService.MimeType.TEXT);
   } catch (err) {
     return ContentService.createTextOutput("Error: " + err.toString()).setMimeType(ContentService.MimeType.TEXT);

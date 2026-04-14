@@ -2,53 +2,47 @@ import { useState, useCallback } from 'react';
 import { LABELS } from '../data/config';
 
 /**
- * USE LOCAL STORAGE HOOK (HAFIZA YÖNETİMİ)
- * --------------------------------------
- * Bir girişimci olarak bu dosya senin "Müşteri Dosyandır".
- * 
- * 1. Kalıcılık: Müşteri sepetini doldurduğunda veya sen admin modunu açtığında, 
- *    sayfa yenilense bile bu bilgilerin kaybolmamasını sağlar.
- * 2. Hata Toleransı: Eğer tarayıcıda bir okuma/yazma hatası olursa sistemi çökertmez, 
- *    güvenli bir şekilde varsayılan değerlere döner.
- * 3. Kapasite Kontrolü: Tarayıcı hafızası dolduğunda (nadir bir durumdur) kullanıcıya 
- *    anlayabileceği dilde uyarı vererek veri kaybını önler.
+ * USE LOCAL STORAGE HOOK (PERSISTENCE & DATA MANAGEMENT)
+ * -----------------------------------------------------------
+ * Ensures seamless data retention across browser sessions.
  */
-
-export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
+export function useLocalStorage<T>(storageKey: string, initialValue: T): [T, (updateValue: T | ((val: T) => T)) => void] {
   
-  // 1. Kurulum: Hafızada bu anahtara (key) ait bir veri var mı kontrol et.
-  const [storedValue, setStoredValue] = useState<T>(() => {
+  // Initialization: Retrieve existing data from persistent storage
+  const [persistedData, setPersistedData] = useState<T>(() => {
     try {
-      const item = window.localStorage.getItem(key);
-      // Varsa getir, yoksa senin belirlediğin başlangıç değerini kullan.
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      // Okuma hatası durumunda girişimci dostu log bas.
-      console.warn(LABELS.storage.readError(key), error);
+      const serializedItem = window.localStorage.getItem(storageKey);
+      // Logic Pattern: Parse existing data or fallback to specified default
+      return serializedItem ? JSON.parse(serializedItem) : initialValue;
+    } catch (readError) {
+      // Professional Feedback: Notify developer of read failures
+      console.warn(LABELS.storage.readError(storageKey), readError);
       return initialValue;
     }
   });
 
   /**
-   * setValue: Hem site içindeki bilgiyi (state) hem de tarayıcı hafızasını günceller.
+   * updatePersistedData: Synchronizes local state with physical browser storage.
+   * @param updateValue - The new data or a transformation function.
    */
-  const setValue = useCallback((value: T | ((val: T) => T)) => {
-    setStoredValue(prev => {
-      // React standardı: Yeni değeri eski değere bakarak hesapla.
-      const valueToStore = value instanceof Function ? value(prev) : value;
+  const updatePersistedData = useCallback((updateValue: T | ((val: T) => T)) => {
+    setPersistedData(previousData => {
+      // Standard Pattern: Calculate next state based on current value
+      const finalizedData = updateValue instanceof Function ? updateValue(previousData) : updateValue;
+      
       try {
-        // Tarayıcı hafızasına (fiziksel disk) yaz.
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
-      } catch (error) {
-        // ÖNEMLİ: Eğer hafıza dolmuşsa (QuotaExceededError) kullanıcıyı uyar.
-        if (error instanceof DOMException && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+        // Physical Write: Persist data to device storage
+        window.localStorage.setItem(storageKey, JSON.stringify(finalizedData));
+      } catch (writeError) {
+        // Critical Error Handling: Detect and notify when device storage is full (QuotaExceeded)
+        if (writeError instanceof DOMException && (writeError.name === 'QuotaExceededError' || writeError.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
           console.error(LABELS.storage.quotaExceeded);
           alert(LABELS.storage.quotaAlert);
         }
       }
-      return valueToStore;
+      return finalizedData;
     });
-  }, [key]);
+  }, [storageKey]);
 
-  return [storedValue, setValue];
+  return [persistedData, updatePersistedData];
 }

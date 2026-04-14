@@ -15,8 +15,13 @@ export interface CompanySettings {
 
 const STORE_SLUG = import.meta.env.VITE_STORE_SLUG;
 
-export function useSettings(isAdmin: boolean) {
-  const [settings, setSettings] = useState<CompanySettings>({
+/**
+ * USE SETTINGS HOOK (BRANDING & CONFIGURATION ENGINE)
+ * -----------------------------------------------------------
+ * Manages store-wide settings including contact info, branding assets, and display logic.
+ */
+export function useSettings(isAdministrativeModeActive: boolean) {
+  const [activeStoreSettings, setActiveStoreSettings] = useState<CompanySettings>({
     whatsapp: DEFAULT_COMPANY.phone,
     address: DEFAULT_COMPANY.address,
     instagram: DEFAULT_COMPANY.instagramUrl,
@@ -27,60 +32,73 @@ export function useSettings(isAdmin: boolean) {
     categoryOrder: DEFAULT_ORDER,
   });
 
-  const [loading, setLoading] = useState(true);
+  const [isSettingsDataLoading, setIsSettingsDataLoading] = useState(true);
 
-  const fetchSettings = useCallback(async () => {
-    setLoading(true);
-    const { data, error } = await supabase
+  /**
+   * synchronizeStoreSettings: Retrieves remote configuration from Supabase repository.
+   */
+  const synchronizeStoreSettings = useCallback(async () => {
+    setIsSettingsDataLoading(true);
+    const { data: storeConfig, error: fetchError } = await supabase
       .from('stores')
       .select('*')
       .eq('slug', STORE_SLUG)
       .single();
 
-    if (data && !error) {
-      setSettings({
-        whatsapp: data.phone || DEFAULT_COMPANY.phone,
-        address: data.address || DEFAULT_COMPANY.address,
-        instagram: data.instagram_url || DEFAULT_COMPANY.instagramUrl,
-        title: data.name || DEFAULT_COMPANY.name,
-        subtitle: data.tagline || DEFAULT_COMPANY.tagline,
-        name: data.name || DEFAULT_COMPANY.name,
-        logoEmoji: data.logo_url || DEFAULT_COMPANY.logoEmoji,
-        categoryOrder: data.category_order || DEFAULT_ORDER,
+    if (storeConfig && !fetchError) {
+      setActiveStoreSettings({
+        whatsapp: storeConfig.phone || DEFAULT_COMPANY.phone,
+        address: storeConfig.address || DEFAULT_COMPANY.address,
+        instagram: storeConfig.instagram_url || DEFAULT_COMPANY.instagramUrl,
+        title: storeConfig.name || DEFAULT_COMPANY.name,
+        subtitle: storeConfig.tagline || DEFAULT_COMPANY.tagline,
+        name: storeConfig.name || DEFAULT_COMPANY.name,
+        logoEmoji: storeConfig.logo_url || DEFAULT_COMPANY.logoEmoji,
+        categoryOrder: storeConfig.category_order || DEFAULT_ORDER,
       });
     }
-    setLoading(false);
+    setIsSettingsDataLoading(false);
   }, []);
 
   useEffect(() => {
-    fetchSettings();
-  }, [fetchSettings]);
+    synchronizeStoreSettings();
+  }, [synchronizeStoreSettings]);
 
-  const updateSetting = useCallback(async (key: keyof CompanySettings, value: any) => {
-    // Yerel state'i hemen güncelle (Optimistic Update)
-    setSettings(prev => ({ ...prev, [key]: value }));
+  /**
+   * modifyStoreConfiguration: Updates specific branding or contact fields.
+   * Uses optimistic UI updates for immediate feedback.
+   */
+  const modifyStoreConfiguration = useCallback(async (settingKey: keyof CompanySettings, newValue: any) => {
+    // Optimistic UI Update: Reflected immediately in the interface
+    setActiveStoreSettings(previousSettings => ({ ...previousSettings, [settingKey]: newValue }));
 
-    if (isAdmin) {
-      const payload: any = {};
-      if (key === 'whatsapp') payload.phone = value;
-      if (key === 'address') payload.address = value;
-      if (key === 'instagram') payload.instagram_url = value;
-      if (key === 'name' || key === 'title') payload.name = value;
-      if (key === 'subtitle') payload.tagline = value;
-      if (key === 'logoEmoji') payload.logo_url = value;
-      if (key === 'categoryOrder') payload.category_order = value;
+    if (isAdministrativeModeActive) {
+      const updatePayload: any = {};
+      
+      // Mapping logic: UI field keys to database column names
+      if (settingKey === 'whatsapp') updatePayload.phone = newValue;
+      if (settingKey === 'address') updatePayload.address = newValue;
+      if (settingKey === 'instagram') updatePayload.instagram_url = newValue;
+      if (settingKey === 'name' || settingKey === 'title') updatePayload.name = newValue;
+      if (settingKey === 'subtitle') updatePayload.tagline = newValue;
+      if (settingKey === 'logoEmoji') updatePayload.logo_url = newValue;
+      if (settingKey === 'categoryOrder') updatePayload.category_order = newValue;
 
-      const { error } = await supabase
+      const { error: persistenceError } = await supabase
         .from('stores')
-        .update(payload)
+        .update(updatePayload)
         .eq('slug', STORE_SLUG);
 
-      if (error) {
-        console.error('Update setting error', error);
-        fetchSettings();
+      if (persistenceError) {
+        console.error('Configuration persistence failed:', persistenceError);
+        synchronizeStoreSettings(); // Rollback to server state on failure
       }
     }
-  }, [isAdmin, fetchSettings]);
+  }, [isAdministrativeModeActive, synchronizeStoreSettings]);
 
-  return { settings, updateSetting, loading };
+  return { 
+    settings: activeStoreSettings, 
+    updateSetting: modifyStoreConfiguration, 
+    loading: isSettingsDataLoading 
+  };
 }

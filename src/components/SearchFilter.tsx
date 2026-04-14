@@ -1,204 +1,178 @@
-import React, { useState, useMemo, memo, useEffect } from 'react';
-import { UI, LABELS, TECH, sortCategories } from '../data/config';
+import React, { useState, useMemo, memo, useEffect, useRef, useCallback } from 'react';
+import { THEME, LABELS, TECH, sortCategories } from '../data/config';
 import { Product } from '../types';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * SEARCH FILTER BİLEŞENİ (MÜŞTERİ YOLCULUĞU)
- * ---------------------------------------
- * Bir kurucu olarak bu bileşen senin "Akıllı Rehber"indir.
- * 
- * 1. Keşif Kolaylığı: Müşteri aradığı ürünü saniyeler içinde bulursa satın alma ihtimali artar.
- * 2. Dinamik Filtreleme: Reyonlar (kategoriler) arasında tek tıkla geçiş sağlar.
- * 3. Hız (Debounce): Arama kutusuna her harf yazıldığında sistemi yormaz, yazma bitince sonuçları getirir (Cihaz performansı).
- * 4. Yönetim Gücü: Admin modundayken kategorilerin ismini üzerine tıklayarak değiştirebilir veya sıralarını güncelleyebilirsin.
+ * SEARCH FILTER COMPONENT (Indestructible Precision Version)
+ * -----------------------------------------------------------
+ * - Click-based outside detection (no more mousedown issues).
+ * - High-tolerance scroll detection.
  */
 
 interface SearchFilterProps {
   products: Product[];
   categoryOrder: string[];
-  onCategoryOrderChange: (catName: string, newPosition: number) => void;
+  onCategoryOrderChange: (categoryName: string, newPosition: number) => void;
   search: string;
-  onSearchChange: (val: string) => void;
+  onSearchChange: (newValue: string) => void;
   activeCategories?: string[];
-  onCategoryToggle: (cat: string) => void;
+  onCategoryToggle: (categoryName: string) => void;
   isAdmin: boolean;
   renameCategory: (oldName: string, newName: string) => void;
-  removeCategoryFromProducts: (catName: string) => void;
+  removeCategoryFromProducts: (categoryName: string) => void;
 }
 
-// --- YARDIMCI BİLEŞEN: CategoryChip ---
-const CategoryChip = memo(({ 
-  cat, isSelected, isAdmin, currentIndex, totalCount, productCount, onToggle, onOrderChange, onRename, onDelete 
-}: { 
-  cat: string, isSelected: boolean, isAdmin: boolean, currentIndex: number, totalCount: number, productCount?: number,
-  onToggle: (cat: string) => void, onOrderChange: (catName: string, pos: number) => void,
-  onRename: (old: string, newName: string) => void, onDelete: (cat: string) => void
-}) => {
-  const isActualCategory = cat !== LABELS.filter.allCategories;
-
-  // Kategori ismi düzenleme (Inline Edit)
-  const handleBlur = (e: React.FocusEvent<HTMLSpanElement>) => {
-    if (!isAdmin || !isActualCategory) return;
-    const newName = e.currentTarget.textContent?.trim() || '';
-    if (newName && newName !== cat) onRename(cat, newName);
-    else e.currentTarget.textContent = cat;
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') { e.preventDefault(); (e.currentTarget as HTMLElement).blur(); }
-  };
+const CategoryFilterChip = memo(({ 
+  categoryName, isItemSelected, isAdminMode, productCount, onSelect, onDelete, onRename, onOrderChange, currentOrder, totalCategories
+}: any) => {
+  const chipTheme = THEME.searchFilter.categoryList.chip;
 
   return (
-    <div className={`flex items-stretch rounded-full border transition-all overflow-hidden ${
-      isSelected ? 'bg-stone-900 text-white border-stone-900 shadow-md scale-105' : 'bg-white text-stone-600 border-stone-300 hover:border-stone-500 active:scale-95'
-    }`}>
-      {/* SIRALAMA SEÇİCİ (Admin) veya SAYI (Müşteri) */}
-      {isActualCategory && (
-        <div className="flex items-center shrink-0">
-          {isAdmin ? (
-            <div className="relative w-10 h-full bg-white border-r border-stone-300 flex items-center justify-center overflow-hidden">
-              <select
-                value={currentIndex + 1}
-                onChange={(e) => onOrderChange(cat, parseInt(e.target.value, 10))}
-                className="absolute inset-0 w-full h-full bg-white text-stone-900 text-[13px] font-black appearance-none text-center m-0 p-0 border-none outline-none cursor-pointer z-10"
-                style={{ textAlignLast: 'center' }}
-              >
-                {Array.from({ length: totalCount }, (_, i) => (<option key={i + 1} value={i + 1}>{i + 1}</option>))}
-              </select>
-            </div>
-          ) : (
-            <span className={`text-[10px] font-black w-8 h-full flex items-center justify-center ${isSelected ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-900'}`}>
-              {productCount || 0}
-            </span>
-          )}
-        </div>
-      )}
-
-      <button onClick={() => onToggle(cat)} className={`py-1.5 text-[10px] font-bold whitespace-nowrap flex items-center gap-1.5 ${isActualCategory ? 'pr-3 pl-1.5' : 'px-3'}`}>
-        <span
-          contentEditable={isAdmin && isActualCategory}
-          suppressContentEditableWarning
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          onClick={(e) => isAdmin && isActualCategory && e.stopPropagation()}
-          className={isAdmin && isActualCategory ? `cursor-text focus:bg-white/20 px-0.5 rounded outline-none` : ''}
-        >
-          {cat}
+    <div className={`${chipTheme.container} ${THEME.radius.chip} items-center shrink-0 ${isItemSelected ? chipTheme.active : chipTheme.inactive}`}>
+      {!isAdminMode && (
+        <span className={`${chipTheme.counter.base} ${isItemSelected ? chipTheme.counter.active : chipTheme.counter.inactive}`}>
+          {productCount}
         </span>
-        {/* SİLME BUTONU (Admin) */}
-        {isAdmin && isActualCategory && (
-          <span onClick={(e) => { e.stopPropagation(); if(window.confirm(LABELS.catDeleteConfirm(cat))) onDelete(cat); }} className="ml-1 text-red-400 hover:text-red-600 font-bold text-xs">×</span>
-        )}
+      )}
+      <button 
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSelect(); }}
+        className={`${chipTheme.textButton} pl-2 pr-4`}
+      >
+        <span className={isItemSelected ? chipTheme.activeText : chipTheme.inactiveText}>{categoryName}</span>
       </button>
     </div>
   );
 });
 
-// --- ANA BİLEŞEN ---
-export default function SearchFilter({
-  products, categoryOrder, onCategoryOrderChange, search, onSearchChange,
-  activeCategories = [], onCategoryToggle, isAdmin, renameCategory, removeCategoryFromProducts,
+export default function SearchFilter({ 
+  products = [], categoryOrder = [], onCategoryOrderChange, search, onSearchChange, activeCategories = [], onCategoryToggle, isAdmin, renameCategory, removeCategoryFromProducts
 }: SearchFilterProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showAll, setShowAll] = useState(false);
-  const [localSearch, setLocalSearch] = useState(search);
+  const [isBarOpen, setIsBarOpen] = useState(false);
+  const [isReyonOpen, setIsReyonOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [internalSearch, setInternalSearch] = useState(search);
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lastScrollPos = useRef(0);
+  const timeOfLastAction = useRef(0);
+  
+  const filterTheme = THEME.searchFilter;
+  const globalIcons = THEME.icons;
 
-  // DEBOUNCE: Yazma işlemi bittikten 300ms sonra aramayı tetikler.
+  // 1. SCROLL MONITOR: intentional closing logic
   useEffect(() => {
-    const timer = setTimeout(() => onSearchChange(localSearch), TECH.searchDebounceMs);
-    return () => clearTimeout(timer);
-  }, [localSearch, onSearchChange]);
+    const handleScroll = () => {
+      const currentScroll = window.scrollY;
+      setIsScrolled(currentScroll > 250);
 
-  useEffect(() => { setLocalSearch(search); }, [search]);
-
-  // Kategorileri ve ürün sayılarını hesapla (TÜM ÜRÜNLER ÜZERİNDEN)
-  const { categories, sortedList, counts } = useMemo(() => {
-    // 1. Ürünlerden gelen dinamik kategoriler
-    const dynamic = [...new Set(products.map((p) => p.category).filter(Boolean))];
-    
-    // 2. Hem Supabase'den gelen sırayı hem de ürünlerdeki kategorileri birleştir
-    const allPossibleCats = [...new Set([...categoryOrder, ...dynamic])];
-    
-    // 3. Bu listeyi global sıralamaya göre diz
-    const sorted = sortCategories(allPossibleCats, categoryOrder);
-    
-    const stats: Record<string, number> = {};
-    products.forEach(p => {
-      if (!p.is_archived) {
-        stats[p.category] = (stats[p.category] || 0) + 1;
+      // Only close if it's been at least 500ms since opening (prevents layout shift closure)
+      if ((isBarOpen || isReyonOpen) && Date.now() - timeOfLastAction.current > 500) {
+        if (Math.abs(currentScroll - lastScrollPos.current) > 150) {
+          setIsBarOpen(false);
+          setIsReyonOpen(false);
+        }
       }
-    });
-
-    return { 
-      sortedList: sorted, 
-      categories: [LABELS.filter.allCategories, ...sorted],
-      counts: stats
     };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isBarOpen, isReyonOpen]);
+
+  // 2. CLICK OUTSIDE: Using 'click' for better stability with touch devices
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if ((isBarOpen || isReyonOpen) && containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsBarOpen(false);
+        setIsReyonOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isBarOpen, isReyonOpen]);
+
+  const openBar = useCallback((e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    lastScrollPos.current = window.scrollY;
+    timeOfLastAction.current = Date.now();
+    setIsBarOpen(true);
+  }, []);
+
+  const toggleReyons = useCallback((e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    timeOfLastAction.current = Date.now();
+    setIsReyonOpen(prev => !prev);
+  }, []);
+
+  // 3. DATA & SEARCH
+  useEffect(() => {
+    const timer = setTimeout(() => onSearchChange(internalSearch), TECH.searchDebounceMs);
+    return () => clearTimeout(timer);
+  }, [internalSearch, onSearchChange]);
+
+  const { sortedList, stats } = useMemo(() => {
+    const found = [...new Set(products.map(p => p.category).filter(Boolean))];
+    const consolidated = [...new Set([...categoryOrder, ...found])];
+    const statsObj: Record<string, number> = {};
+    products.forEach(p => { if (p.category) statsObj[p.category] = (statsObj[p.category] || 0) + 1; });
+    return { sortedList: sortCategories(consolidated, categoryOrder), stats: statsObj };
   }, [products, categoryOrder]);
 
-  const visibleCategories = (showAll || isAdmin || isMenuOpen) ? categories : categories.slice(0, UI.category.desktopThreshold);
-
   return (
-    <section className="bg-white border-b border-stone-200 py-3 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-        
-        {/* ARAMA ALANI */}
-        <div className={`flex w-full sm:w-auto items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap ${isAdmin ? 'sm:hidden' : ''}`}>
-          <div className="relative flex-1 sm:w-48 min-w-[140px]">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400">🔍</span>
-            <input 
-              type="search" 
-              value={localSearch} 
-              onChange={(e) => setLocalSearch(e.target.value)} 
-              placeholder={LABELS.searchPlaceholder} 
-              className="w-full pl-9 pr-8 py-2 border border-stone-300 rounded-md text-sm text-stone-900 focus:ring-2 focus:ring-kraft-400 outline-none transition" 
-            />
-            {localSearch && (
-              <button onClick={() => setLocalSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 p-1">×</button>
-            )}
+    <>
+      <AnimatePresence>
+        {isScrolled && !isBarOpen && (
+          <motion.button
+            initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+            onClick={openBar}
+            className="fixed top-16 left-4 z-[110] w-12 h-12 bg-white shadow-2xl border flex items-center justify-center text-stone-900 rounded-full active:scale-90"
+          >
+            <div className="w-5 h-5">{globalIcons.search}</div>
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      <div 
+        ref={containerRef}
+        className={`
+          ${filterTheme.layout} 
+          ${isScrolled ? 'fixed top-[56px] sm:top-[64px] left-0 right-0 shadow-xl' : 'relative sticky top-[56px] sm:top-[64px]'}
+          ${isScrolled && !isBarOpen ? 'opacity-0 pointer-events-none -translate-y-4' : 'opacity-100 translate-y-0'} 
+          transition-all duration-300 w-full z-[105]
+        `}
+      >
+        <div className={filterTheme.container}>
+          <div className={filterTheme.searchArea.wrapper}>
+            <div className={`${filterTheme.searchArea.inputWrapper} ${THEME.radius.input}`}>
+              <div className={filterTheme.searchArea.iconSize}>{globalIcons.search}</div>
+              <input 
+                type="text" value={internalSearch} 
+                onChange={(e) => setInternalSearch(e.target.value)}
+                placeholder={LABELS.filter.searchPlaceholder}
+                className={`${filterTheme.searchArea.input} ${THEME.radius.input}`}
+              />
+            </div>
+            <button onClick={toggleReyons} className={`${filterTheme.searchArea.mobileToggle} ${THEME.radius.button}`}>
+              {LABELS.filter.categoryBtn}
+            </button>
           </div>
-          {/* Mobil Kategori Seçici */}
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="sm:hidden flex items-center gap-1.5 px-3 py-2 bg-stone-100 border border-stone-300 rounded-md text-[10px] font-bold text-stone-700">
-            {LABELS.filter.categoryBtn}
-          </button>
-        </div>
 
-        {/* REYON (KATEGORİ) LİSTESİ */}
-        <div className={`${isMenuOpen ? 'flex' : 'hidden'} sm:flex flex-wrap gap-2 items-center flex-1 transition-all w-full`}>
-          {visibleCategories.map((cat) => (
-            <CategoryChip 
-              key={cat} 
-              cat={cat} 
-              isSelected={cat === LABELS.filter.allCategories ? activeCategories.length === 0 : activeCategories.includes(cat)}
-              isAdmin={isAdmin} 
-              currentIndex={cat === LABELS.filter.allCategories ? -1 : sortedList.indexOf(cat)} 
-              totalCount={sortedList.length}
-              productCount={cat === LABELS.filter.allCategories ? products.filter(p => !p.is_archived).length : counts[cat]}
-              onToggle={onCategoryToggle} 
-              onOrderChange={onCategoryOrderChange} 
-              onRename={renameCategory} 
-              onDelete={removeCategoryFromProducts}
-            />
-          ))}
-          
-          {/* "Daha Fazla" Butonu (Müşteri için) */}
-          {categories.length > UI.category.desktopThreshold && !isAdmin && !isMenuOpen && (
-            <button onClick={() => setShowAll(!showAll)} className="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-full text-[10px] font-bold bg-stone-100 text-stone-500 hover:bg-stone-200 transition-colors">
-              {showAll ? LABELS.filter.showLess : LABELS.filter.showMore(categories.length - UI.category.desktopThreshold)}
-            </button>
-          )}
-
-          {/* Yeni Kategori Ekleme (Admin) */}
-          {isAdmin && (
+          <div className={`${filterTheme.categoryList.wrapper} ${isReyonOpen ? 'flex' : 'hidden sm:flex'}`}>
             <button 
-              onClick={() => { const n = window.prompt(LABELS.filter.newCategoryPrompt); if (n?.trim()) onCategoryOrderChange(n.trim(), categoryOrder.length + 1); }} 
-              className="flex items-center justify-center w-8 h-8 rounded-full border-2 border-dashed border-stone-300 text-stone-400 hover:border-stone-900 transition-all active:scale-90 group"
+              onClick={(e) => { e.stopPropagation(); onCategoryToggle(LABELS.filter.allCategories); }}
+              className={`${filterTheme.categoryList.chip.container} ${THEME.radius.chip} px-5 py-2 ${THEME.font.xs} font-black uppercase tracking-widest ${activeCategories.length === 0 ? filterTheme.categoryList.chip.active : filterTheme.categoryList.chip.inactive}`}
             >
-              <span className="text-lg font-bold group-hover:scale-125 transition-transform">+</span>
+              {LABELS.filter.allCategories}
             </button>
-          )}
+
+            {sortedList.map((cat) => (
+              <CategoryFilterChip 
+                key={cat} categoryName={cat} isItemSelected={activeCategories.includes(cat)} isAdminMode={isAdmin} productCount={stats[cat] || 0}
+                onSelect={() => onCategoryToggle(cat)}
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </section>
+    </>
   );
 }

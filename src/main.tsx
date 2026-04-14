@@ -16,9 +16,7 @@ import App from './App';
  *    ve tarayıcıya "Bunu göster" talimatı verilir.
  */
 
-// Tarayıcıdaki 'root' isimli boş kutuyu bul ve React motorunu içine yerleştir.
 createRoot(document.getElementById('root')!).render(
-  // <StrictMode>: Geliştirme sürecinde "sigorta" görevi görür, hataları erkenden yakalar.
   <StrictMode>
     <App />
   </StrictMode>,

@@ -1,93 +1,110 @@
-import { TECH } from '../data/config';
+import { TECH, LABELS, THEME } from '../data/config';
 
-export const getImageUrl = (path: string | null | undefined): string | null => {
-  if (!path) return null;
-  if (path.startsWith('http') || path.startsWith('data:')) return path;
+/**
+ * resolveVisualAssetUrl: Harmonizes raw storage paths into valid public URLs.
+ */
+export const resolveVisualAssetUrl = (assetPath: string | null | undefined): string | null => {
+  if (!assetPath) return null;
+  // Early exit if the path is already an absolute URL or data URI
+  if (assetPath.startsWith('http') || assetPath.startsWith('data:')) return assetPath;
   
-  const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  return `${baseUrl}${cleanPath}`;
+  const applicationBaseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const standardizedPath = assetPath.startsWith('/') ? assetPath : `/${assetPath}`;
+  return `${applicationBaseUrl}${standardizedPath}`;
 };
 
-export const PLACEHOLDER_EMOJI = TECH.image.placeholderEmoji;
+// Centralized placeholder for products without images
+export const PLACEHOLDER_VISUAL_SYMBOL = TECH.storage.placeholderEmoji;
 
-const fileToImage = (file: File): Promise<HTMLImageElement> => {
+/**
+ * transformFileToVisualElement: Asynchronously converts a raw File object to an HTML Image.
+ */
+const transformFileToVisualElement = (visualFile: File): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = () => reject(new Error('Resim dosyası açılamadı.'));
-      img.src = e.target?.result as string;
+    const fileReader = new FileReader();
+    fileReader.onload = (event) => {
+      const visualElement = new Image();
+      visualElement.onload = () => resolve(visualElement);
+      visualElement.onerror = () => reject(new Error(LABELS.errors.imageLoad));
+      visualElement.src = event.target?.result as string;
     };
-    reader.onerror = () => reject(new Error('Dosya okuma hatası.'));
-    reader.readAsDataURL(file);
+    fileReader.onerror = () => reject(new Error(LABELS.errors.fileRead));
+    fileReader.readAsDataURL(visualFile);
   });
 };
 
 /**
- * processDualImage: Tek bir dosyadan HQ ve LQ kopyaları üretir.
+ * processDualQualityVisuals: Generates high-definition and preview-optimized copies from a single file.
  */
-export async function processDualImage(file: File): Promise<{ hq: Blob, lq: Blob }> {
-  const img = await fileToImage(file);
+export async function processDualQualityVisuals(visualFile: File): Promise<{ hq: Blob, lq: Blob }> {
+  const visualElement = await transformFileToVisualElement(visualFile);
   
-  const createCopy = (maxSize: number, quality: number): Promise<Blob> => {
+  /**
+   * generateOptimizedBlob: Resizes and compresses the image into a specific Blob tier.
+   */
+  const generateOptimizedBlob = (maximumDimension: number, compressionQuality: number): Promise<Blob> => {
     return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      let { width, height } = img;
+      const drawingCanvas = document.createElement('canvas');
+      let { width: originalWidth, height: originalHeight } = visualElement;
 
-      if (width > height && width > maxSize) {
-        height = Math.round((height * maxSize) / width);
-        width = maxSize;
-      } else if (height > maxSize) {
-        width = Math.round((width * maxSize) / height);
-        height = maxSize;
+      // Aspect-Ratio Preserving Downscaling Logic
+      if (originalWidth > originalHeight && originalWidth > maximumDimension) {
+        originalHeight = Math.round((originalHeight * maximumDimension) / originalWidth);
+        originalWidth = maximumDimension;
+      } else if (originalHeight > maximumDimension) {
+        originalWidth = Math.round((originalWidth * maximumDimension) / originalHeight);
+        originalHeight = maximumDimension;
       }
 
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, width, height);
-        ctx.drawImage(img, 0, 0, width, height);
+      drawingCanvas.width = originalWidth;
+      drawingCanvas.height = originalHeight;
+      const drawingContext = drawingCanvas.getContext('2d');
+      
+      if (drawingContext) {
+        // Fallback Background: Prevents transparency issues in JPEGs
+        drawingContext.fillStyle = THEME.colors.visualFallback;
+        drawingContext.fillRect(0, 0, originalWidth, originalHeight);
+        drawingContext.drawImage(visualElement, 0, 0, originalWidth, originalHeight);
       }
       
-      canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', quality);
+      drawingCanvas.toBlob((optimizedBlob) => resolve(optimizedBlob!), 'image/jpeg', compressionQuality);
     });
   };
 
-  const hq = await createCopy(TECH.image.hqSize, TECH.image.uploadQuality);
-  const lq = await createCopy(TECH.image.lqSize, TECH.image.quality);
+  // Tier 1: High-Definition Asset for Zoom/Detail views
+  const highDefinitionAsset = await generateOptimizedBlob(TECH.storage.productHqWidth, TECH.storage.hqQuality);
+  
+  // Tier 2: Lightweight Preview Asset for Catalog/Grid views
+  const previewLightweightAsset = await generateOptimizedBlob(TECH.storage.productLqWidth, TECH.storage.lqQuality);
 
-  return { hq, lq };
+  return { hq: highDefinitionAsset, lq: previewLightweightAsset };
 }
 
 /**
- * compressImage: Eski bileşenler için geriye dönük uyumluluk sağlar.
- * Gelen dosyayı sıkıştırıp Base64 string döner.
+ * compressVisualToDataUri: Legacy-compatible compression for immediate Base64 feedback.
  */
-export async function compressImage(file: File, maxSize: number, quality: number): Promise<string> {
-  const img = await fileToImage(file);
-  const canvas = document.createElement('canvas');
-  let { width, height } = img;
+export async function compressVisualToDataUri(visualFile: File, maximumDimension: number, compressionQuality: number): Promise<string> {
+  const visualElement = await transformFileToVisualElement(visualFile);
+  const drawingCanvas = document.createElement('canvas');
+  let { width: originalWidth, height: originalHeight } = visualElement;
 
-  if (width > height && width > maxSize) {
-    height = Math.round((height * maxSize) / width);
-    width = maxSize;
-  } else if (height > maxSize) {
-    width = Math.round((width * maxSize) / height);
-    maxSize = maxSize;
+  if (originalWidth > originalHeight && originalWidth > maximumDimension) {
+    originalHeight = Math.round((originalHeight * maximumDimension) / originalWidth);
+    originalWidth = maximumDimension;
+  } else if (originalHeight > maximumDimension) {
+    originalWidth = Math.round((originalWidth * maximumDimension) / originalHeight);
+    originalHeight = maximumDimension;
   }
 
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d');
-  if (ctx) {
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, width, height);
-    ctx.drawImage(img, 0, 0, width, height);
+  drawingCanvas.width = originalWidth;
+  drawingCanvas.height = originalHeight;
+  const drawingContext = drawingCanvas.getContext('2d');
+  
+  if (drawingContext) {
+    drawingContext.fillStyle = THEME.colors.visualFallback;
+    drawingContext.fillRect(0, 0, originalWidth, originalHeight);
+    drawingContext.drawImage(visualElement, 0, 0, originalWidth, originalHeight);
   }
   
-  return canvas.toDataURL('image/jpeg', quality);
+  return drawingCanvas.toDataURL('image/jpeg', compressionQuality);
 }

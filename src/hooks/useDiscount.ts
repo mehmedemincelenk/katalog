@@ -7,64 +7,74 @@ export type ActiveDiscount = {
 };
 
 /**
- * USE DISCOUNT HOOK (AVANTAJ YÖNETİMİ)
- * ----------------------------------
- * Bir girişimci olarak bu dosya senin "Müşteri Sadakat" motorundur.
- * 
- * 1. Dinamik Kurgu: Sabit kuponlar yerine, kodun sonuna eklenen sayı kadar indirim yapar (Örn: HOŞGELDİN10 -> %10).
- * 2. Güvenlik: İndirim oranlarını 'config.ts'deki sınırlar (TECH.discount.min/max) içinde tutar.
- * 3. Kullanıcı Geri Bildirimi: Hatalı girişlerde (yazı girilmesi, aşırı oran vb.) şık hata mesajları üretir.
+ * USE DISCOUNT HOOK (LOYALTY & PROMOTION ENGINE)
+ * -----------------------------------------------------------
+ * Manages customer promotion codes and dynamic discount calculation.
  */
 export function useDiscount() {
-  const [activeDiscount, setActiveDiscount] = useState<ActiveDiscount | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [currentlyActiveDiscount, setCurrentlyActiveDiscount] = useState<ActiveDiscount | null>(null);
+  const [promotionErrorMessage, setPromotionErrorMessage] = useState<string | null>(null);
+  const errorResetTimer = useRef<NodeJS.Timeout | null>(null);
 
-  // Temizlik: Bileşen kapandığında arka planda çalışan hata zamanlayıcısını durdurur.
+  // Lifecycle Cleanup: Ensure timers are cleared on unmount
   useEffect(() => {
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+    return () => { if (errorResetTimer.current) clearTimeout(errorResetTimer.current); };
   }, []);
 
   /**
-   * applyCode: Girilen metni analiz eder ve indirim uygular.
-   * @param input - Müşterinin yazdığı kupon metni.
+   * processPromotionCode: Validates input and extracts the discount rate.
+   * @param rawInput - The raw string entered by the customer.
    */
-  const applyCode = useCallback((input: string) => {
-    const code = input.toUpperCase().trim();
+  const processPromotionCode = useCallback((rawInput: string) => {
+    const sanitizedCode = rawInput.toUpperCase().trim();
     
-    // Varsa eski hata zamanlayıcısını iptal et.
-    if (timerRef.current) clearTimeout(timerRef.current);
+    if (errorResetTimer.current) clearTimeout(errorResetTimer.current);
 
-    // Boş giriş yapıldıysa her şeyi sıfırla.
-    if (!code) {
-      setActiveDiscount(null);
-      setError(null);
+    // Reset workflow if input is cleared
+    if (!sanitizedCode) {
+      setCurrentlyActiveDiscount(null);
+      setPromotionErrorMessage(null);
       return;
     }
 
-    // REGEX: Yazının sonundaki rakamları ayıkla.
-    const match = code.match(/(\d+)$/);
+    // Logic Token: Extract numerical value from the end of the code (e.g., WELCOME10 -> 10)
+    const discountMatch = sanitizedCode.match(/(\d+)$/);
 
-    if (match && match[1]) {
-      const discountPercent = parseInt(match[1], 10);
+    if (discountMatch && discountMatch[1]) {
+      const parsedDiscountRate = parseInt(discountMatch[1], 10);
 
-      // Oran Kontrolü: Belirlediğin sınırlar dışındaysa hata ver.
-      if (discountPercent >= TECH.discount.min && discountPercent <= TECH.discount.max) {
-        setActiveDiscount({ code, rate: discountPercent / 100 });
-        setError(null);
+      // Boundary Validation: Ensure rate is within professional technical limits
+      if (parsedDiscountRate >= TECH.discount.min && parsedDiscountRate <= TECH.discount.max) {
+        setCurrentlyActiveDiscount({ 
+          code: sanitizedCode, 
+          rate: parsedDiscountRate / 100 
+        });
+        setPromotionErrorMessage(null);
       } else {
-        setActiveDiscount(null);
-        setError(LABELS.discount.invalidRate);
-        // Hatayı 3 saniye sonra ekrandan kaldır.
-        timerRef.current = setTimeout(() => setError(null), TECH.discount.errorResetMs);
+        setCurrentlyActiveDiscount(null);
+        setPromotionErrorMessage(LABELS.discount.invalidRate);
+        
+        // UX Pattern: Transient error feedback
+        errorResetTimer.current = setTimeout(
+          () => setPromotionErrorMessage(null), 
+          TECH.discount.errorResetMs
+        );
       }
     } else {
-      // Rakam içermeyen girişler geçersiz sayılır.
-      setActiveDiscount(null);
-      setError(LABELS.discount.invalidCode);
-      timerRef.current = setTimeout(() => setError(null), TECH.discount.errorResetMs);
+      // Input Validation: Codes without numerical suffixes are invalid
+      setCurrentlyActiveDiscount(null);
+      setPromotionErrorMessage(LABELS.discount.invalidCode);
+      
+      errorResetTimer.current = setTimeout(
+        () => setPromotionErrorMessage(null), 
+        TECH.discount.errorResetMs
+      );
     }
   }, []);
 
-  return { activeDiscount, applyCode, error };
+  return { 
+    activeDiscount: currentlyActiveDiscount, 
+    applyCode: processPromotionCode, 
+    error: promotionErrorMessage 
+  };
 }

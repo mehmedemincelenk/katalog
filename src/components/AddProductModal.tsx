@@ -1,209 +1,288 @@
-import React, { useState, memo } from 'react';
-import { LABELS, MODAL } from '../data/config';
+import React, { useState, memo, useCallback } from 'react';
+import { LABELS, THEME } from '../data/config';
 import { Product } from '../types';
+import Button from './Button';
 
 /**
- * ADD PRODUCT MODAL
- * ----------------------------------
- * Yeni ürün ekleme kapısı. Resimler artık doğrudan Supabase Storage'a gider.
+ * ADD PRODUCT MODAL COMPONENT (100% Tokenized & Professional English)
+ * -----------------------------------------------------------
+ * Orchestrates the product creation workflow. Fully managed via THEME.
  */
 
 interface AddProductModalProps {
-  isOpen: boolean;
-  categories: string[];
-  onAdd: (product: Omit<Product, 'id' | 'is_archived'>, imageFile?: File) => void;
-  onClose: () => void;
+  isModalOpen: boolean;
+  availableCategories: string[];
+  onProductAddition: (productData: Omit<Product, 'id' | 'is_archived'>, imageFile?: File) => void;
+  onModalClose: () => void;
 }
 
-const EMPTY_FORM = {
-  name: '',
-  category: '',
-  newCategory: '',
-  price: '',
-  description: '',
-  imageFile: null as File | null,
-  inStock: true,
+const INITIAL_FORM_STATE = {
+  productName: '',
+  selectedCategory: '',
+  customCategoryName: '',
+  productPrice: '',
+  productDescription: '',
+  selectedImageFile: null as File | null,
+  isProductInStock: true,
 };
 
-// --- YARDIMCI BİLEŞENLER ---
+// --- INTERNAL UI SUB-COMPONENTS ---
 
-const FormInput = memo(({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) => (
-  <div>
-    <label className="block text-xs font-semibold text-stone-600 mb-1">{label}</label>
-    <input
-      {...props}
-      className="w-full border border-stone-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-kraft-400 transition outline-none"
-    />
-  </div>
-));
-
-const ImagePicker = memo(({ previewUrl, onFileChange }: { previewUrl: string | null, onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
-  <div className="flex flex-col items-center gap-2">
-    <div className="w-20 h-20 shrink-0 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center overflow-hidden shadow-inner">
-      {previewUrl ? (
-        <img src={previewUrl} alt={LABELS.form.preview} className="w-full h-full object-cover" />
-      ) : (
-        <span className="text-3xl text-stone-300">📷</span>
-      )}
+const FormInput = memo(({ labelText, ...inputProperties }: { labelText: string } & React.InputHTMLAttributes<HTMLInputElement>) => {
+  const theme = THEME.addProductModal;
+  return (
+    <div>
+      <label className={theme.typography.label}>{labelText}</label>
+      <input {...inputProperties} className={theme.inputField} />
     </div>
-    <label className="cursor-pointer text-xs font-bold text-kraft-700 hover:text-kraft-900 transition-colors border border-kraft-200 px-4 py-1.5 rounded-full bg-kraft-50/50 uppercase tracking-tight">
-      {LABELS.form.selectImage}
-      <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
-    </label>
-  </div>
-));
+  );
+});
 
-const CategorySelector = memo(({ categories, selected, newCategory, onSelect, onNewCategoryChange }: { 
-  categories: string[], 
-  selected: string, 
-  newCategory: string,
-  onSelect: (cat: string) => void,
-  onNewCategoryChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-}) => (
-  <div>
-    <label className="block text-xs font-semibold text-stone-600 mb-2">{LABELS.form.category}</label>
-    {categories.length > 0 && (
-      <div className="flex flex-wrap gap-1.5 mb-3">
-        {categories.map((cat) => (
-          <button 
-            key={cat} 
-            type="button" 
-            onClick={() => onSelect(cat)} 
-            className={`px-3 py-1 text-[10px] font-bold rounded-full border transition-all ${selected === cat && !newCategory ? 'bg-stone-900 text-white border-stone-900 shadow-md' : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'}`}
-          >
-            {cat}
-          </button>
-        ))}
+const ProductImagePicker = memo(({ imagePreviewUrl, onFileSelectionChange }: { imagePreviewUrl: string | null, onFileSelectionChange: (event: React.ChangeEvent<HTMLInputElement>) => void }) => {
+  const theme = THEME.addProductModal.imagePicker;
+  return (
+    <div className={theme.wrapper}>
+      <div className={theme.frame}>
+        {imagePreviewUrl ? (
+          <img src={imagePreviewUrl} alt={LABELS.form.preview} className="w-full h-full object-cover" />
+        ) : (
+          <span className="text-3xl text-stone-300">📷</span>
+        )}
       </div>
-    )}
-    <input 
-      name="newCategory" 
-      type="text" 
-      value={newCategory} 
-      onChange={onNewCategoryChange} 
-      placeholder={LABELS.form.newCategoryPlaceholder} 
-      className="w-full border border-stone-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-kraft-400 transition outline-none italic" 
-    />
-  </div>
-));
+      <label className={theme.button}>
+        {LABELS.form.selectImage}
+        <input type="file" accept="image/*" className="hidden" onChange={onFileSelectionChange} />
+      </label>
+    </div>
+  );
+});
+
+const ProductCategorySelector = memo(({ categories, currentSelection, customCategory, onCategorySelect, onCustomCategoryChange }: { 
+  categories: string[], 
+  currentSelection: string, 
+  customCategory: string,
+  onCategorySelect: (category: string) => void,
+  onCustomCategoryChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const theme = THEME.addProductModal;
+  const visibleCategories = isExpanded ? categories : categories.slice(0, 4);
+
+  return (
+    <div>
+      <label className={theme.typography.categoryLabel}>{LABELS.form.category}</label>
+      {categories.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {visibleCategories.map((category) => (
+            <button 
+              key={category} 
+              type="button" 
+              onClick={() => onCategorySelect(category)} 
+              className={currentSelection === category && !customCategory ? theme.categoryChipActive : theme.categoryChipInactive}
+            >
+              {category}
+            </button>
+          ))}
+          {categories.length > 4 && !isExpanded && (
+            <button 
+              type="button" 
+              onClick={() => setIsExpanded(true)} 
+              className={theme.categoryShowMore}
+            >
+              +{categories.length - 4} Daha
+            </button>
+          )}
+        </div>
+      )}
+      <input 
+        name="customCategoryName" 
+        type="text" 
+        value={customCategory} 
+        onChange={onCustomCategoryChange} 
+        placeholder={LABELS.form.newCategoryPlaceholder} 
+        className={`${theme.inputField} italic`} 
+      />
+    </div>
+  );
+});
 
 export default function AddProductModal({
-  isOpen,
-  categories = [],
-  onAdd,
-  onClose,
+  isModalOpen,
+  availableCategories = [],
+  onProductAddition,
+  onModalClose,
 }: AddProductModalProps) {
-  const [form, setForm] = useState(EMPTY_FORM);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formState, setFormState] = useState(INITIAL_FORM_STATE);
+  const [temporaryImagePreviewUrl, setTemporaryImagePreviewUrl] = useState<string | null>(null);
+  const [formErrorMessage, setFormErrorMessage] = useState('');
+  const [isSubmittingData, setIsSubmittingData] = useState(false);
 
-  if (!isOpen) return null;
+  const theme = THEME.addProductModal;
 
-  const handleClose = () => {
-    if (isSubmitting) return; // Yükleme sırasında kapattırma
-    setForm(EMPTY_FORM);
-    setPreviewUrl(null);
-    setError('');
-    onClose();
-  };
+  const handleCloseAndReset = useCallback(() => {
+    if (isSubmittingData) return;
+    setFormState(INITIAL_FORM_STATE);
+    setTemporaryImagePreviewUrl(null);
+    setFormErrorMessage('');
+    onModalClose();
+  }, [isSubmittingData, onModalClose]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ 
-      ...prev, 
+  const handleFormInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setFormState(previousState => ({ 
+      ...previousState, 
       [name]: value,
-      category: name === 'newCategory' && value.trim() ? '' : prev.category 
+      selectedCategory: name === 'customCategoryName' && value.trim() ? '' : previousState.selectedCategory 
     }));
-    setError('');
-  };
+    setFormErrorMessage('');
+  }, []);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleCategorySelection = useCallback((category: string) => {
+    setFormState(previousState => ({ ...previousState, selectedCategory: category, customCategoryName: '' }));
+  }, []);
+
+  const handleImageFileSelection = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
     
-    setForm(prev => ({ ...prev, imageFile: file }));
-    
-    // Geçici önizleme
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-  };
+    setFormState(previousState => ({ ...previousState, selectedImageFile: file }));
+    const localUrl = URL.createObjectURL(file);
+    setTemporaryImagePreviewUrl(localUrl);
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isSubmitting) return;
+  const handleProductSubmission = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (isSubmittingData) return;
 
-    const finalCategory = form.newCategory.trim() || form.category.trim();
+    const finalizedCategory = formState.customCategoryName.trim() || formState.selectedCategory.trim();
     
-    if (!form.name.trim() || !finalCategory || !form.price.trim()) {
-      setError(LABELS.form.requiredFieldsError);
+    if (!formState.productName.trim() || !finalizedCategory || !formState.productPrice.trim()) {
+      setFormErrorMessage(LABELS.form.requiredFieldsError);
       return;
     }
 
-    setIsSubmitting(true);
+    setIsSubmittingData(true);
     try {
-      await onAdd({
-        name: form.name.trim(),
-        category: finalCategory,
-        price: form.price.trim(),
-        description: form.description.trim(),
+      await onProductAddition({
+        name: formState.productName.trim(),
+        category: finalizedCategory,
+        price: formState.productPrice.trim(),
+        description: formState.productDescription.trim(),
         image: null,
-        inStock: form.inStock,
-      }, form.imageFile || undefined);
-      handleClose();
-    } catch (err) {
-      setError("Ürün eklenirken bir hata oluştu.");
+        inStock: formState.isProductInStock,
+      }, formState.selectedImageFile || undefined);
+      handleCloseAndReset();
+    } catch (error) {
+      setFormErrorMessage("Ürün eklenirken bir hata oluştu.");
     } finally {
-      setIsSubmitting(false);
+      setIsSubmittingData(false);
     }
   };
 
+  if (!isModalOpen) return null;
+
   return (
-    <div className={`fixed inset-0 z-[100] flex items-center justify-center ${MODAL.overlayBg} backdrop-blur-sm px-4 py-8`} role="dialog">
-      <div className={`${MODAL.bgClass} w-full ${MODAL.maxWidthClass} ${MODAL.roundingClass} ${MODAL.shadowClass} flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200`}>
+    <div className={theme.overlay} role="dialog">
+      <div className={theme.container} onClick={event => event.stopPropagation()}>
         
-        <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
-          <h2 className="text-sm font-black text-stone-900 uppercase tracking-tight">{LABELS.newProductBtn}</h2>
-          <button type="button" onClick={handleClose} disabled={isSubmitting} className="text-stone-400 hover:text-stone-900 transition-colors text-2xl leading-none disabled:opacity-30">×</button>
+        <div className={theme.header}>
+          <h2 className="text-sm font-black text-stone-900 uppercase tracking-widest">{LABELS.newProductBtn}</h2>
+          <Button 
+            onClick={handleCloseAndReset} 
+            disabled={isSubmittingData} 
+            icon={THEME.icons.close}
+            variant="ghost"
+            size="sm"
+            className={theme.headerButton}
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-5 overflow-y-auto custom-scrollbar">
-          <ImagePicker previewUrl={previewUrl} onFileChange={handleImageChange} />
+        <form onSubmit={handleProductSubmission} className={theme.body}>
+          <ProductImagePicker imagePreviewUrl={temporaryImagePreviewUrl} onFileSelectionChange={handleImageFileSelection} />
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 shadow-inner">
-              <label className="text-xs font-bold text-stone-700 uppercase" htmlFor="add-instock">{LABELS.form.stockStatus}</label>
-              <input id="add-instock" type="checkbox" checked={form.inStock} onChange={(e) => setForm(p => ({ ...p, inStock: e.target.checked }))} className="w-5 h-5 text-stone-900 border-stone-300 rounded-lg focus:ring-0 cursor-pointer" />
+          <div className={theme.formGap}>
+            <div className={theme.stockToggle}>
+              <label className="text-xs font-bold text-stone-700 uppercase tracking-wide" htmlFor="product-stock-checkbox">
+                {LABELS.form.stockStatus}
+              </label>
+              <input 
+                id="product-stock-checkbox" 
+                type="checkbox" 
+                checked={formState.isProductInStock} 
+                onChange={(e) => setFormState(p => ({ ...p, isProductInStock: e.target.checked }))} 
+                className={theme.checkbox} 
+              />
             </div>
 
-            <FormInput label={LABELS.form.productName} name="name" value={form.name} onChange={handleChange} placeholder={LABELS.form.productNamePlaceholder} required disabled={isSubmitting} />
+            <FormInput 
+              labelText={LABELS.form.productName} 
+              name="productName" 
+              value={formState.productName} 
+              onChange={handleFormInputChange} 
+              placeholder={LABELS.form.productNamePlaceholder} 
+              required 
+              disabled={isSubmittingData} 
+            />
             
-            <CategorySelector categories={categories} selected={form.category} newCategory={form.newCategory} onSelect={(cat) => setForm(p => ({ ...p, category: cat, newCategory: '' }))} onNewCategoryChange={handleChange} />
+            <ProductCategorySelector 
+              categories={availableCategories} 
+              currentSelection={formState.selectedCategory} 
+              customCategory={formState.customCategoryName} 
+              onCategorySelect={handleCategorySelection} 
+              onCustomCategoryChange={handleFormInputChange} 
+            />
 
-            <FormInput label={LABELS.form.price} name="price" value={form.price} onChange={handleChange} placeholder={LABELS.form.pricePlaceholder} required disabled={isSubmitting} />
+            <FormInput 
+              labelText={LABELS.form.price} 
+              name="productPrice" 
+              value={formState.productPrice} 
+              onChange={handleFormInputChange} 
+              placeholder={LABELS.form.pricePlaceholder} 
+              required 
+              disabled={isSubmittingData} 
+            />
             
             <div>
-              <label className="block text-xs font-semibold text-stone-600 mb-1">{LABELS.form.description}</label>
-              <textarea name="description" value={form.description} onChange={handleChange} rows={3} disabled={isSubmitting} className="w-full border border-stone-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-kraft-400 transition outline-none disabled:bg-stone-50" placeholder={LABELS.form.descriptionPlaceholder} />
+              <label className={theme.typography.label}>{LABELS.form.description}</label>
+              <textarea 
+                name="productDescription" 
+                value={formState.productDescription} 
+                onChange={handleFormInputChange} 
+                rows={3} 
+                disabled={isSubmittingData} 
+                className={`${theme.inputField} resize-none overflow-hidden block`} 
+                placeholder={LABELS.form.descriptionPlaceholder} 
+              />
             </div>
           </div>
 
-          {error && (
-            <div className={`bg-red-50 text-red-600 text-[10px] font-bold uppercase p-2 rounded-lg text-center border border-red-100`}>
-              {error}
+          {formErrorMessage && (
+            <div className={theme.typography.errorBadge}>
+              {formErrorMessage}
             </div>
           )}
 
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={handleClose} disabled={isSubmitting} className="flex-1 py-3 border border-stone-200 rounded-xl text-xs font-bold text-stone-500 hover:bg-stone-50 transition uppercase disabled:opacity-50">{LABELS.form.cancelBtn}</button>
-            <button type="submit" disabled={isSubmitting} className="flex-1 py-3 bg-stone-900 text-white rounded-xl text-xs font-bold hover:bg-stone-800 transition shadow-lg uppercase tracking-widest flex items-center justify-center gap-2 disabled:bg-stone-600">
-              {isSubmitting ? (
-                <>
-                  <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>EKLENİYOR...</span>
-                </>
-              ) : LABELS.form.submitBtn}
-            </button>
+          <div className={theme.footer}>
+            <Button 
+              onClick={handleCloseAndReset} 
+              disabled={isSubmittingData}
+              mode="rectangle"
+              variant="secondary"
+              className={theme.footerCancel}
+            >
+              {LABELS.form.cancelBtn}
+            </Button>
+            
+            <Button 
+              type="submit"
+              disabled={isSubmittingData}
+              mode="rectangle"
+              variant="primary"
+              className={theme.footerSubmit}
+              icon={isSubmittingData ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : null}
+            >
+              {isSubmittingData ? 'EKLENİYOR...' : LABELS.form.submitBtn}
+            </Button>
           </div>
         </form>
       </div>

@@ -1,41 +1,34 @@
 import { describe, it, expect, vi } from 'vitest';
-import { compressImage } from './image';
+import { compressVisualToDataUri } from './image';
 
 /**
- * IMAGE.TEST.TS (KALİTE GÜVENCE LABORATUVARI)
- * -----------------------------------------
- * Bir kurucu olarak bu dosya senin "Hata Erken Uyarı Sistemin"dir.
- * 
- * 1. Otomatik Denetim: Yazdığımız resim sıkıştırma fonksiyonu gerçekten çalışıyor mu? 
- *    Bu dosya, sahte bir resim yükleyerek sistemi test eder.
- * 2. Simülasyon: Tarayıcı ortamını taklit ederek (Mocking), gerçek bir kullanıcı 
- *    resim yüklediğinde arkada neler olacağını önceden görürüz.
- * 3. Güvence: İleride kodda bir değişiklik yaptığımızda, bu testler sayesinde 
- *    eski özelliklerin bozulup bozulmadığını saniyeler içinde anlarız.
+ * IMAGE TEST SUITE (QUALITY ASSURANCE)
+ * -----------------------------------------------------------
+ * Validates core visual processing mechanisms in a simulated browser environment.
  */
 
-// SAHTE TARAYICI AYARI: Test ortamında gerçek bir ekran olmadığı için 
-// resim oluşturma özelliklerini taklit ediyoruz.
+// MOCK BROWSER ENVIRONMENT: Simulate canvas support for headless test execution
 if (typeof HTMLCanvasElement.prototype.toDataURL === 'undefined') {
   HTMLCanvasElement.prototype.toDataURL = vi.fn(
-    () => 'data:image/jpeg;base64,mock',
+    () => 'data:image/jpeg;base64,mock_data',
   );
 }
 
-describe('Görsel İşleme Testleri', () => {
+describe('Visual Processing Tier (A-Level English Refactor)', () => {
   /**
-   * TEST 1: Sıkıştırma motoru bir cevap dönüyor mu?
+   * TEST: Asynchronous Compression Workflow
    */
-  it('compressImage fonksiyonu bir söz (promise) döndürmeli', () => {
-    const mockFile = new File([''], 'test.png', { type: 'image/png' });
-    const result = compressImage(mockFile);
+  it('compressVisualToDataUri should return a valid promise resolution', () => {
+    const mockVisualFile = new File([''], 'test_asset.png', { type: 'image/png' });
+    const compressionResult = compressVisualToDataUri(mockVisualFile, 200, 0.8);
     
-    // İşlemin başarılı bir şekilde başladığını ve cevap beklediğimizi doğrula.
-    expect(result).toBeInstanceOf(Promise);
+    // Validate that the operation returns a Promise (indicating async processing)
+    expect(compressionResult).toBeInstanceOf(Promise);
   });
 
   /**
-   * NOT: Daha karmaşık testler (gerçek boyut küçültme vb.) için gerçek 
-   * grafik işlemcisi gereklidir. Şu anki test, temel mekanizmanın sağlamlığını kanıtlar.
+   * ARCHITECTURAL NOTE: 
+   * Further deep integration tests (actual dimension checking) require a real 
+   * hardware-accelerated GPU context or a more complex canvas mock.
    */
 });

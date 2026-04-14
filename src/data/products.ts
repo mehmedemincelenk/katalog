@@ -6,9 +6,8 @@
  * Bu dosya senin mağazanın "Sigortası"dır. 
  * 
  * TEORİK MANTIK:
- * Eğer Google Sheets bağlantısında bir sorun olursa veya internet kesilirse, 
+ * Eğer veritabanı bağlantısında bir sorun olursa veya internet kesilirse, 
  * sitenin tamamen boş görünmemesi için bu listedeki ürünler devreye girer. 
- * Buraya mağazanın en temel 3-5 ürününü eklersen, site her zaman "dolu" görünür.
  * 
  * TEKNİK MANTIK:
  * 'DEFAULT_PRODUCTS' bir dizidir (Array). İçindeki her obje bir ürünü temsil eder.

@@ -1,0 +1,1 @@
+Facebook, Insta, WP componentleri tasarımı kullanılacak eğer orada olan bir özellik bizde de varsa.

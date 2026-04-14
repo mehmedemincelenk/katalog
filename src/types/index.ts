@@ -7,7 +7,7 @@
  *    Bu dosya, sistemin bu kurala uymasını garanti eder.
  * 2. Hata Önleyici: Eğer bir ürünün fiyatını girmeyi unutursan, TypeScript motoru 
  *    seni buradaki kurallara bakarak anında uyarır.
- * 3. Veri Yapısı: Sheets'ten gelen karmaşık verilerin, site içinde hangi 
+ * 3. Veri Yapısı: Veritabanından gelen verilerin, site içinde hangi 
  *    isimlerle (id, name, price vb.) dolaşacağını belirler.
  */
 

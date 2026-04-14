@@ -6,10 +6,6 @@
  * INDEX.CSS (GÖRSEL AKIŞ VE CANLILIK)
  * ---------------------------------
  * Bir kurucu olarak bu dosya sitenin "Karakter Analizidir".
- * 
- * 1. Kararlılık: 'body' içindeki temel renkler ve yazı tipleri marka duruşunu belirler.
- * 2. Erişilebilirlik: Odaklanma (outline) kuralları, admin modunda temiz bir editörlük sunar.
- * 3. Canlılık (Animasyonlar): Sitenin "ölü" bir resim değil, yaşayan bir organizma olduğunu hissettirir.
  */
 
 body {
@@ -24,7 +20,7 @@ body {
 }
 
 @layer utilities {
-  /* CAROUSEL GEÇİŞİ: Afişler arası yumuşak geçiş (Config: ANIMATIONS.carouselFade) */
+  /* CAROUSEL GEÇİŞİ: Afişler arası yumuşak geçiş */
   .carousel-slide {
     transition: opacity 0.8s ease-in-out;
   }
@@ -36,8 +32,17 @@ body {
     cursor: text;
   }
 
-  /* ADMİN BUTONU NEFES ALMA: Sağ alttaki admin butonunun dikkat çekmesini sağlar. 
-     (Config: ANIMATIONS.adminPulse) */
+  /* HATA TİTREŞİMİ: Apple tarzı PIN hata efekti */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+  }
+  .animate-shake {
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+  }
+
+  /* ADMİN BUTONU NEFES ALMA: Sağ alttaki admin butonunun dikkat çekmesini sağlar. */
   @keyframes admin-pulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(180, 140, 80, 0.5); }
     50% { box-shadow: 0 0 0 8px rgba(180, 140, 80, 0); }
@@ -49,7 +54,6 @@ body {
   /**
    * MARQUEE (YATAY KAYAN YAZI): 
    * Ürün ismi çok uzunsa kartı bozmaz, yana doğru akar.
-   * (Config: ANIMATIONS.marqueeScroll)
    */
   @keyframes marquee-scroll {
     0% { transform: translateX(0); }
@@ -58,19 +62,6 @@ body {
   .marquee-track {
     animation: marquee-scroll 6s linear infinite;
     white-space: nowrap;
-  }
-
-  /**
-   * DİKEY OTO-KAYDIRMA: 
-   * Ürün açıklaması çok uzunsa dikey bir şerit gibi akar.
-   * (Config: ANIMATIONS.descriptionScroll)
-   */
-  @keyframes desc-scroll {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-50%); }
-  }
-  .desc-scroll-track {
-    animation: desc-scroll 5s linear infinite;
   }
 
   /* ÖZEL SCROLLBAR: Modern ve zarif kaydırma çubukları. */

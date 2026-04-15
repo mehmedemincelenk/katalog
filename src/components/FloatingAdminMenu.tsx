@@ -9,13 +9,11 @@ import Button from './Button';
  */
 
 interface FloatingAdminMenuProps {
-  onAdminLogout: () => void;
   onProductAddTrigger: () => void;
   onBulkUpdateTrigger?: () => void;
 }
 
 export default function FloatingAdminMenu({ 
-  onAdminLogout, 
   onProductAddTrigger,
   onBulkUpdateTrigger
 }: FloatingAdminMenuProps) {
@@ -71,15 +69,6 @@ export default function FloatingAdminMenu({
           ${menuTheme.innerActions} 
           ${isMenuExpanded ? menuTheme.actionsActive : menuTheme.actionsInactive}
         `}>
-          <Button 
-            onClick={() => handleManagementAction(onAdminLogout)}
-            icon={globalIcons.power}
-            variant="danger"
-            size="sm"
-            mode="circle"
-            aria-label="Logout"
-          />
-
           {onBulkUpdateTrigger && (
             <Button 
               onClick={() => handleManagementAction(onBulkUpdateTrigger)}

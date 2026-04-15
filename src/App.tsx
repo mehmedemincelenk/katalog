@@ -149,7 +149,6 @@ export default function App() {
       {isAdmin && (
         <>
           <FloatingAdminMenu 
-            onAdminLogout={logout}
             onProductAddTrigger={() => setIsAddModalOpen(true)}
             onBulkUpdateTrigger={() => setIsBulkUpdateModalOpen(true)}
           />

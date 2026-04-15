@@ -44,7 +44,6 @@ export default function Footer({ isAdmin, activeDiscount, onApplyDiscount, disco
           {/* COUPON SECTION */}
           {!isAdmin && (
             <div className={footerTheme.coupons.wrapper}>
-              <span className={footerTheme.coupons.label}>İNDİRİM KODU</span>
               <div className="w-full">
                 <div className={footerTheme.coupons.inputWrapper}>
                   <input 

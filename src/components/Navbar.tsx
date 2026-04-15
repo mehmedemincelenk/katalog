@@ -69,7 +69,6 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, onLogout, isAdmin, se
             <div className={theme.brand.textWrapper}>
               <div className="flex items-center">
                 <span className={theme.brand.name}>{settings.title}</span>
-                {isAdmin && <span className={theme.brand.adminBadge}>ADMIN</span>}
               </div>
               <span className={theme.brand.tagline}>{settings.subtitle}</span>
             </div>

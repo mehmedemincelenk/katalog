@@ -96,6 +96,7 @@ export default function App() {
       <Navbar 
         onLogoPointerDown={handleLogoPointerDown} 
         onLogoPointerUp={handleLogoPointerUp}
+        onLogout={logout}
         isAdmin={isAdmin} 
         settings={settings}
       />

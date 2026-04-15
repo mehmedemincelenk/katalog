@@ -12,13 +12,20 @@ import { CompanySettings } from '../hooks/useSettings';
 interface NavbarProps {
   onLogoPointerDown: () => void;
   onLogoPointerUp: () => void;
+  onLogout: () => void;
   isAdmin: boolean;
   settings: CompanySettings;
 }
 
-const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, settings }: NavbarProps) => {
+const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, onLogout, isAdmin, settings }: NavbarProps) => {
   const theme = THEME.navbar;
   const globalIcons = THEME.icons;
+
+  const handleLogoClick = () => {
+    if (isAdmin) {
+      onLogout();
+    }
+  };
 
   const handleWhatsAppAction = () => {
     const storeWhatsAppNumber = settings.whatsapp || import.meta.env.VITE_WHATSAPP_NUMBER || '';
@@ -41,6 +48,7 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, settings }: 
               onPointerDown={onLogoPointerDown}
               onPointerUp={onLogoPointerUp}
               onPointerLeave={onLogoPointerUp}
+              onClick={handleLogoClick}
               className={`${theme.brand.logoWrapper} select-none touch-none cursor-default`}
               style={{ 
                 userSelect: 'none', 

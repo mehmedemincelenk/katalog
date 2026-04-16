@@ -115,9 +115,18 @@ export default function SearchFilter({
 
   const [internalSearch, setInternalSearch] = useState(search);
   const [visibleLimit, setVisibleLimit] = useState(6);
+  const [isMobile, setIsMobile] = useState(false);
   
   const filterTheme = THEME.searchFilter;
   const globalIcons = THEME.icons;
+
+  // Screen size detection
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => onSearchChange(internalSearch), TECH.searchDebounceMs);
@@ -132,8 +141,9 @@ export default function SearchFilter({
     return { sortedList: sortCategories(consolidated, categoryOrder), stats: statsObj };
   }, [products, categoryOrder]);
 
-  const visibleCategories = sortedList.slice(0, visibleLimit);
-  const hasMore = sortedList.length > visibleLimit;
+  // Logic: Show all on mobile, paginated on desktop
+  const visibleCategories = isMobile ? sortedList : sortedList.slice(0, visibleLimit);
+  const hasMore = !isMobile && sortedList.length > visibleLimit;
 
   return (
     <div className="w-full bg-white border-b border-stone-100 py-3 relative z-40">
@@ -151,7 +161,10 @@ export default function SearchFilter({
         </div>
 
         <div className="relative mt-3 sm:mt-0 sm:ml-4 flex-1 min-w-0 flex items-center">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1 -mx-1 flex-1">
+          <div className={`
+            flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1 -mx-1 flex-1
+            ${isMobile ? 'flex-nowrap' : ''}
+          `}>
             <style dangerouslySetInnerHTML={{ __html: `.no-scrollbar::-webkit-scrollbar { display: none; }` }} />
             
             <button 
@@ -179,7 +192,7 @@ export default function SearchFilter({
               />
             ))}
 
-            {/* SHOW MORE BUTTON (Sadece PC'de daha belirgin, mobilde liste sonunda) */}
+            {/* SHOW MORE BUTTON (Sadece PC'de aktif) */}
             {hasMore && (
               <button 
                 onClick={() => setVisibleLimit(prev => prev + 4)}

@@ -30,18 +30,22 @@ export default function LandingPage() {
           {/* PRICING & TRUST SECTION */}
           <div className="pt-10 flex flex-col items-center space-y-6">
             <div className="text-center flex flex-col items-center">
-              <p className="text-stone-400 font-black text-[10px] uppercase tracking-[0.25em] mb-1">aylık bir koli bandı fiyatına</p>
-              <p className="text-6xl md:text-8xl font-black text-green-600 tracking-tighter leading-none">
-                ₺200<span className="text-lg font-bold opacity-70 ml-1">/ay</span>
-              </p>
+              <div className="w-fit">
+                <p className="text-stone-400 font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.45em] -mb-1 text-justify after:content-[''] after:inline-block after:w-full">
+                  aylık bir koli bandı fiyatına
+                </p>
+                <p className="text-6xl md:text-8xl font-black text-green-600 tracking-tighter leading-none">
+                  ₺200<span className="text-lg font-bold opacity-70 ml-1">/ay</span>
+                </p>
+              </div>
               <p className="mt-4 text-[10px] font-bold text-stone-300 uppercase tracking-widest">Cayma bedeli yok, istediğiniz zaman iptal edin.</p>
             </div>
 
             {/* SETUP ASSISTANCE BADGE */}
-            <div className="bg-stone-50 border border-stone-100 px-6 py-4 rounded-3xl flex items-start md:items-center gap-4 animate-in fade-in zoom-in duration-700 delay-300">
-               <span className="text-xl flex-shrink-0 mt-0.5 md:mt-0">✅</span>
+            <div className="bg-stone-50 border border-stone-100 px-6 py-4 rounded-3xl flex items-center gap-4 animate-in fade-in zoom-in duration-700 delay-300">
+               <span className="text-xl flex-shrink-0">✅</span>
                <p className="text-sm font-bold text-stone-900 leading-tight text-left">
-                 Ürün/Hizmet listenizi atın, <span className="text-green-600 underline decoration-2 underline-offset-4">kataloğunuzu biz kuralım siz yönetin.</span>
+                 Ürün/Hizmet listenizi bize atın, <span className="text-green-600 underline decoration-2 underline-offset-4">kataloğunuzu biz kuralım siz kolayca yönetin.</span>
                </p>
             </div>
           </div>
@@ -63,7 +67,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer className="pb-12 text-center border-t border-stone-100 pt-12 flex flex-col items-center gap-4">
+      <footer className="pb-6 text-center border-t border-stone-100 pt-6 flex flex-col items-center gap-4">
         <p className="text-[10px] font-black text-stone-300 uppercase tracking-[0.5em]">
           ekatalog.site © 2026 — <span className="text-red-600">#</span>MİLLİTEKNOLOJİHAMLESİ
         </p>

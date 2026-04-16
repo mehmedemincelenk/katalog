@@ -1,7 +1,24 @@
-import { THEME } from '../data/config';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Button from './Button';
 
+const MIDDLE_PHRASES = [
+  "bir koli bandı ",
+  "büyük boy çay  ",
+  "sadece 5L süt  ",
+  "bi bardak kahve"
+];
+
 export default function LandingPage() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % MIDDLE_PHRASES.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-stone-900 selection:text-white">
       {/* STICKY PROMO BAR */}
@@ -18,7 +35,7 @@ export default function LandingPage() {
           </h1>
           
           <p className="max-w-2xl mx-auto text-base md:text-lg text-stone-500 font-medium leading-relaxed">
-            Fiyatlar zamlanınca kataloglarınızı tek tek güncellemekle gibi angarya maliyetlerle artık uğraşmayın, ekatalogunuzdan fiyatlarınızı saniyeler içinde güncelleyin.
+            Fiyatlar zamlandığında kataloglarınızı tek tek güncellemek gibi angarya maliyetlere veda edin, ekatalogunuzdan fiyatlarınızı saniyeler içinde güncelleyin.
           </p>
 
           <div className="pt-2 flex justify-center">
@@ -30,13 +47,28 @@ export default function LandingPage() {
           {/* PRICING & TRUST SECTION */}
           <div className="pt-10 flex flex-col items-center space-y-6">
             <div className="text-center flex flex-col items-center">
-              <div className="w-fit">
+              <div className="w-fit flex flex-col items-center">
                 <p className="text-6xl md:text-8xl font-black text-green-600 tracking-tighter leading-none">
-                  ₺200<span className="text-lg font-bold opacity-70 ml-1">/ay</span>
+                  ₺200<span className="text-lg font-bold opacity-70 ml-1"> / ay</span>
                 </p>
-                <p className="text-stone-400 font-black text-[7px] md:text-[9px] uppercase tracking-[0.32em] md:tracking-[0.48em] -mt-1 md:-mt-2 text-justify after:content-[''] after:inline-block after:w-full">
-                  aylık bir koli bandı fiyatına
-                </p>
+                <div className="flex items-center text-stone-400 font-black text-[7px] md:text-[9px] uppercase tracking-[0.32em] md:tracking-[0.48em] -mt-1 md:-mt-2 whitespace-nowrap">
+                  <span>aylık&nbsp;</span>
+                  <div className="relative h-3 md:h-4 w-[65px] md:w-[85px] overflow-hidden inline-block translate-y-[1px]">
+                    <AnimatePresence mode="wait">
+                      <motion.span
+                        key={MIDDLE_PHRASES[index]}
+                        initial={{ x: 20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: -20, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        className="absolute inset-0 flex items-center justify-start"
+                      >
+                        {MIDDLE_PHRASES[index].replace(/ /g, "\u00a0")}
+                      </motion.span>
+                    </AnimatePresence>
+                  </div>
+                  <span>&nbsp;fiyatına</span>
+                </div>
               </div>
               <p className="mt-4 text-[10px] font-bold text-stone-300 uppercase tracking-widest">Cayma bedeli yok, istediğiniz zaman iptal edin.</p>
             </div>

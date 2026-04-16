@@ -61,6 +61,33 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* FEATURES GRID SECTION */}
+      <section className="py-24 px-4 bg-white border-t border-stone-100">
+        <div className="max-w-6xl mx-auto space-y-16">
+          <div className="text-center space-y-4">
+            <h2 className="text-4xl font-black text-stone-900 tracking-tight uppercase">Neler Yapabilirsiniz?</h2>
+            <p className="text-stone-400 font-bold uppercase tracking-widest text-[10px]">Dükkanınızı yönetmek hiç bu kadar kolay olmamıştı.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { title: "Kolay Yönetim Paneli", desc: "Telefonunuzdan saniyeler içinde ürün ekleyin, silin veya bilgilerini güncelleyin.", icon: "📱" },
+              { title: "Toplu Fiyat Güncelleme", desc: "Tüm dükkana veya seçtiğiniz reyona tek tıkla yüzde bazlı zam veya indirim uygulayın.", icon: "📈" },
+              { title: "WhatsApp Entegrasyonu", desc: "Müşterileriniz ürün seçtiğinde sipariş listesi doğrudan cebinize, WhatsApp'a gelsin.", icon: "💬" },
+              { title: "Sınırsız Reyon Düzeni", desc: "Ürünlerinizi istediğiniz gibi gruplayın, reyonların sırasını parmağınızla sürükleyerek değiştirin.", icon: "🗂️" },
+              { title: "Işık Hızında Performans", desc: "Müşterileriniz beklemeyi sevmez. Kataloğunuz her telefonda takılmadan, anında açılır.", icon: "⚡" },
+              { title: "Göz Alıcı Tasarım", desc: "Karmaşık menüler yok. Sadece ürünleriniz ve markanız ön planda. Sade ve profesyonel.", icon: "💎" }
+            ].map((f, i) => (
+              <div key={i} className="bg-stone-50 p-8 rounded-[2rem] border border-stone-100 hover:bg-stone-900 hover:text-white transition-all duration-500 group">
+                <div className="text-3xl mb-6 group-hover:scale-110 transition-transform duration-500">{f.icon}</div>
+                <h3 className="text-xl font-black tracking-tight mb-3">{f.title}</h3>
+                <p className="text-stone-500 group-hover:text-stone-400 font-medium text-sm leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* FINAL CTA */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto bg-stone-900 rounded-[3.5rem] p-12 md:p-24 text-center space-y-12 shadow-2xl relative overflow-hidden">

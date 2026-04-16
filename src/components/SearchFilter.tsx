@@ -1,11 +1,13 @@
 import React, { useState, useMemo, memo, useEffect, useRef, useCallback } from 'react';
 import { THEME, LABELS, TECH, sortCategories } from '../data/config';
 import { Product } from '../types';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * SEARCH FILTER COMPONENT (Minimalist Pagination Version)
+ * SEARCH FILTER COMPONENT (Smart Hybrid Version)
  * -----------------------------------------------------------
- * Simple, efficient, and professional. One row, manual scroll, "Show More" logic.
+ * Mobile: Toggle button + Full list (Original Flow)
+ * Desktop: Single row + Pagination (+ More Button)
  */
 
 interface SearchFilterProps {
@@ -114,19 +116,11 @@ export default function SearchFilter({
 }: SearchFilterProps) {
 
   const [internalSearch, setInternalSearch] = useState(search);
-  const [visibleLimit, setVisibleLimit] = useState(6);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobileReyonOpen, setIsMobileReyonOpen] = useState(false);
+  const [visibleLimitPC, setVisibleLimitPC] = useState(6);
   
   const filterTheme = THEME.searchFilter;
   const globalIcons = THEME.icons;
-
-  // Screen size detection
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 640);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => onSearchChange(internalSearch), TECH.searchDebounceMs);
@@ -141,13 +135,13 @@ export default function SearchFilter({
     return { sortedList: sortCategories(consolidated, categoryOrder), stats: statsObj };
   }, [products, categoryOrder]);
 
-  // Logic: Show all on mobile, paginated on desktop
-  const visibleCategories = isMobile ? sortedList : sortedList.slice(0, visibleLimit);
-  const hasMore = !isMobile && sortedList.length > visibleLimit;
+  const pcVisibleCategories = sortedList.slice(0, visibleLimitPC);
+  const hasMorePC = sortedList.length > visibleLimitPC;
 
   return (
     <div className="w-full bg-white border-b border-stone-100 py-3 relative z-40">
       <div className={filterTheme.container}>
+        {/* TOP BAR: Search + Mobile Toggle */}
         <div className={filterTheme.searchArea.wrapper}>
           <div className={`${filterTheme.searchArea.inputWrapper} ${THEME.radius.input}`}>
             <div className={filterTheme.searchArea.iconSize}>{globalIcons.search}</div>
@@ -158,13 +152,60 @@ export default function SearchFilter({
               className={`${filterTheme.searchArea.input} ${THEME.radius.input}`}
             />
           </div>
+          
+          {/* MOBILE ONLY: Categories Toggle Button */}
+          <button 
+            onClick={() => setIsMobileReyonOpen(!isMobileReyonOpen)} 
+            className={`${filterTheme.searchArea.mobileToggle} ${THEME.radius.button} sm:hidden flex items-center justify-center gap-2`}
+          >
+            {LABELS.filter.categoryBtn}
+            <span className={`transition-transform duration-300 ${isMobileReyonOpen ? 'rotate-180' : ''}`}>
+              {globalIcons.chevronDown}
+            </span>
+          </button>
         </div>
 
-        <div className="relative mt-3 sm:mt-0 sm:ml-4 flex-1 min-w-0 flex items-center">
-          <div className={`
-            flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1 -mx-1 flex-1
-            ${isMobile ? 'flex-nowrap' : ''}
-          `}>
+        {/* MOBILE VIEW: Expandable List */}
+        <AnimatePresence>
+          {isMobileReyonOpen && (
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="sm:hidden overflow-hidden mt-3"
+            >
+              <div className="flex flex-wrap gap-2 py-1">
+                <button 
+                  onClick={() => { onCategoryToggle(LABELS.filter.allCategories); setIsMobileReyonOpen(false); }}
+                  className={`
+                    ${filterTheme.categoryList.chip.container} ${THEME.radius.chip} px-5 py-2.5 ${THEME.font.xs} font-black uppercase tracking-widest transition-all
+                    ${activeCategories.length === 0 ? filterTheme.categoryList.chip.active : filterTheme.categoryList.chip.inactive}
+                  `}
+                >
+                  {LABELS.filter.allCategories}
+                </button>
+                {sortedList.map((cat) => (
+                  <CategoryFilterChip 
+                    key={cat} 
+                    categoryName={cat} 
+                    isItemSelected={activeCategories.includes(cat)} 
+                    isAdminMode={isAdmin} 
+                    productCount={stats[cat] || 0}
+                    onSelect={(c) => { onCategoryToggle(c); /* Optionally auto-close */ }}
+                    onRename={renameCategory}
+                    onOrderChange={onCategoryOrderChange}
+                    currentOrder={sortedList.indexOf(cat) + 1}
+                    totalCategories={sortedList.length}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* DESKTOP VIEW: Single Row + Pagination */}
+        <div className="hidden sm:flex mt-3 items-center w-full">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1 -mx-1 flex-1">
             <style dangerouslySetInnerHTML={{ __html: `.no-scrollbar::-webkit-scrollbar { display: none; }` }} />
             
             <button 
@@ -177,7 +218,7 @@ export default function SearchFilter({
               {LABELS.filter.allCategories}
             </button>
 
-            {visibleCategories.map((cat) => (
+            {pcVisibleCategories.map((cat) => (
               <CategoryFilterChip 
                 key={cat} 
                 categoryName={cat} 
@@ -192,10 +233,9 @@ export default function SearchFilter({
               />
             ))}
 
-            {/* SHOW MORE BUTTON (Sadece PC'de aktif) */}
-            {hasMore && (
+            {hasMorePC && (
               <button 
-                onClick={() => setVisibleLimit(prev => prev + 4)}
+                onClick={() => setVisibleLimitPC(prev => prev + 4)}
                 className={`
                   shrink-0 px-6 py-2.5 border-2 border-dashed border-stone-200 text-stone-400 font-black text-[10px] uppercase tracking-widest rounded-full 
                   hover:border-stone-900 hover:text-stone-900 transition-all active:scale-95

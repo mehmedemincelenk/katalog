@@ -5,7 +5,9 @@
  */
 
 export const getActiveStoreSlug = (): string => {
-  const hostname = window.location.hostname;
+  if (typeof window === 'undefined') return 'main-site';
+
+  const hostname = window.location.hostname.toLowerCase();
   
   // 1. Yerel geliştirme (localhost)
   if (
@@ -13,20 +15,18 @@ export const getActiveStoreSlug = (): string => {
     hostname === '127.0.0.1' || 
     hostname.startsWith('192.168.')
   ) {
-    // ÖNCELİK: Varsa env, yoksa kesinlikle 'toptanambalajcim'
     const envSlug = import.meta.env.VITE_STORE_SLUG;
     return (envSlug && envSlug !== 'toptan-ambalajcim') ? envSlug : 'toptanambalajcim';
   }
 
+  // 2. Ana Domain Kontrolü (ekatalog.site veya www.ekatalog.site)
+  // Sadece iki parça varsa (ekatalog.site) veya üç parça olup başı www ise
   const parts = hostname.split('.');
   
-  // 2. Ana Domain Kontrolü (örn: ekatalog.site veya www.ekatalog.site)
-  // Eğer subdomain yoksa veya www ise senin ana satış sayfanın slug'ını döner.
-  if (parts.length <= 2 || parts[0] === 'www') {
-    return 'main-site'; // Buraya kendi tanıtım sayfan için bir slug belirle
+  if (parts.length <= 2 || (parts.length === 3 && parts[0] === 'www')) {
+    return 'main-site';
   }
 
-  // 3. SaaS Subdomain Kontrolü (örn: musteri1.ekatalog.site)
-  // parts: ['musteri1', 'ekatalog', 'site'] -> return 'musteri1'
+  // 3. SaaS Subdomain (musteri.ekatalog.site)
   return parts[0]; 
 };

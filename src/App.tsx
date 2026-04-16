@@ -20,7 +20,9 @@ import { getActiveStoreSlug } from './utils/store';
 const CURRENT_SLUG = getActiveStoreSlug();
 
 export default function App() {
-  // 1. LANDING PAGE CHECK: If on root domain or specifically main-site, show marketing page instantly
+  const CURRENT_SLUG = getActiveStoreSlug();
+
+  // 1. LANDING PAGE CHECK: Show marketing page instantly with ZERO hook overhead
   if (CURRENT_SLUG === 'main-site') {
     return <LandingPage />;
   }

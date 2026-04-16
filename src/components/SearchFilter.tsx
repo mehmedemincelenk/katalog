@@ -155,8 +155,24 @@ export default function SearchFilter({
   }, [onCategoryToggle]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
 
-  // SCROLL SYNC: Ensure the selected category is always visible
+  // SCROLL SYNC & ARROW VISIBILITY
+  const updateArrows = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setShowLeftArrow(scrollLeft > 10);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  }, []);
+
+  useEffect(() => {
+    updateArrows();
+    window.addEventListener('resize', updateArrows);
+    return () => window.removeEventListener('resize', updateArrows);
+  }, [updateArrows, sortedList]);
+
   useEffect(() => {
     if (scrollContainerRef.current) {
       const activeItem = scrollContainerRef.current.querySelector('.active-category');
@@ -166,8 +182,42 @@ export default function SearchFilter({
     }
   }, [activeCategories]);
 
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 200;
+      scrollContainerRef.current.scrollBy({ 
+        left: direction === 'left' ? -scrollAmount : scrollAmount, 
+        behavior: 'smooth' 
+      });
+    }
+  };
+
+  // MOUSE DRAG SCROLLING
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setStartX(e.pageX - (scrollContainerRef.current?.offsetLeft || 0));
+    setScrollLeft(scrollContainerRef.current?.scrollLeft || 0);
+  };
+
+  const handleMouseLeave = () => setIsDragging(false);
+  const handleMouseUp = () => setIsDragging(false);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - (scrollContainerRef.current?.offsetLeft || 0);
+    const walk = (x - startX) * 2;
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+    }
+  };
+
   return (
-    <div className="w-full bg-white border-b border-stone-100 py-3 relative">
+    <div className="w-full bg-white border-b border-stone-100 py-3 relative z-40">
       <div className={filterTheme.container}>
         <div className={filterTheme.searchArea.wrapper}>
           <div className={`${filterTheme.searchArea.inputWrapper} ${THEME.radius.input}`}>
@@ -184,10 +234,28 @@ export default function SearchFilter({
           </button>
         </div>
 
-        <div className="relative mt-3 sm:mt-0 sm:ml-4 flex-1 min-w-0">
+        <div className="relative mt-3 sm:mt-0 sm:ml-4 flex-1 min-w-0 group/scroll">
+          {/* LEFT ARROW */}
+          {showLeftArrow && (
+            <button 
+              onClick={() => scroll('left')}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 flex items-center justify-center bg-white/90 backdrop-blur shadow-lg border border-stone-100 rounded-full text-stone-900 hidden sm:flex transition-opacity hover:bg-white"
+            >
+              <span className="w-4 h-4">{globalIcons.chevronLeft}</span>
+            </button>
+          )}
+
           <div 
             ref={scrollContainerRef}
-            className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 px-1 -mx-1"
+            onScroll={updateArrows}
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+            className={`
+              flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 px-1 -mx-1
+              ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}
+            `}
             style={{ 
               msOverflowStyle: 'none', 
               scrollbarWidth: 'none',
@@ -224,10 +292,20 @@ export default function SearchFilter({
               </div>
             ))}
           </div>
+
+          {/* RIGHT ARROW */}
+          {showRightArrow && (
+            <button 
+              onClick={() => scroll('right')}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 flex items-center justify-center bg-white/90 backdrop-blur shadow-lg border border-stone-100 rounded-full text-stone-900 hidden sm:flex transition-opacity hover:bg-white"
+            >
+              <span className="w-4 h-4">{globalIcons.chevronRight}</span>
+            </button>
+          )}
           
-          {/* GRADIENT OVERLAYS: Fade effect for scrolling indicator */}
-          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10 hidden sm:block"></div>
-          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none z-10 hidden sm:block"></div>
+          {/* GRADIENT OVERLAYS */}
+          <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white via-white/40 to-transparent pointer-events-none z-10 hidden sm:block"></div>
+          <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white via-white/40 to-transparent pointer-events-none z-10 hidden sm:block"></div>
         </div>
       </div>
     </div>

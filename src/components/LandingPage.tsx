@@ -11,8 +11,9 @@ export default function LandingPage() {
             E-Kataloğunuz<br />Bugün Hazır.
           </h1>
           
-          <p className="max-w-lg mx-auto text-xl text-stone-500 font-medium leading-relaxed">
-            Ürünlerinizi sergileyin, WhatsApp'tan sipariş alın.<br />Karmaşık sistemlere veda edin.
+          <p className="max-w-2xl mx-auto text-xl text-stone-500 font-medium leading-relaxed">
+            Yüz binlerce liralık karmaşık web siteleri ve eski usul kataloglar yerine;<br />
+            ayda sadece 200₺’ye, kullanımı en basit haliyle size özel e-kataloğunuz.
           </p>
 
           <div className="flex flex-col items-center pt-4">
@@ -41,22 +42,37 @@ export default function LandingPage() {
       {/* THE VALUE SECTION */}
       <section className="py-24 px-4 bg-stone-50/50 border-t border-stone-100">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          <div className="space-y-8">
+          <div className="space-y-8 order-2 md:order-1">
             <h2 className="text-4xl md:text-5xl font-black text-stone-900 tracking-tighter leading-tight text-center md:text-left">
               Size Özel Web Adresi.<br />
-              <span className="text-stone-400">markaniz.ekatalog.site</span>
+              <span className="text-green-600 block mt-2 text-2xl md:text-3xl">markaniz.ekatalog.site</span>
             </h2>
-            <p className="text-stone-500 font-medium text-lg text-center md:text-left">Müşterilerinize PDF göndermeyin. Onlara dükkanınıza özel, profesyonel bir link verin.</p>
+            <p className="text-stone-500 font-medium text-lg text-center md:text-left">Bastırdığınız kataloglar fiyatlar değişince çöp olmasın. Dükkanınıza özel linkle her şey anında güncel kalsın.</p>
             <ul className="space-y-4 text-stone-900 font-black text-xs uppercase tracking-widest flex flex-col items-center md:items-start">
-              <li className="flex items-center gap-3">✓ 24 Saat Açık Vitrin</li>
-              <li className="flex items-center gap-3">✓ WhatsApp Sipariş Hattı</li>
-              <li className="flex items-center gap-3">✓ Kartvizitlere Tam Uyum</li>
+              <li className="flex items-center gap-3 text-left w-full sm:w-auto">
+                <span className="w-6 h-6 rounded-full bg-stone-900 text-white flex items-center justify-center text-[10px]">✓</span>
+                Katalog Bastırma Maliyetine Son
+              </li>
+              <li className="flex items-center gap-3 text-left w-full sm:w-auto">
+                <span className="w-6 h-6 rounded-full bg-stone-900 text-white flex items-center justify-center text-[10px]">✓</span>
+                Saniyeler İçinde Fiyat Güncelleme
+              </li>
+              <li className="flex items-center gap-3 text-left w-full sm:w-auto">
+                <span className="w-6 h-6 rounded-full bg-stone-900 text-white flex items-center justify-center text-[10px]">✓</span>
+                QR Kod ile Temassız Menü/Vitrin
+              </li>
             </ul>
           </div>
-          <div className="bg-stone-900 rounded-[3.5rem] p-12 aspect-square flex flex-col justify-center shadow-2xl relative overflow-hidden group">
+          <div className="bg-stone-900 rounded-[3.5rem] p-12 aspect-square flex flex-col justify-center shadow-2xl relative overflow-hidden group order-1 md:order-2">
              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
-             <h3 className="text-white text-4xl font-black tracking-tighter leading-none relative z-10">Katalog<br />Status: <span className="text-green-400">Live</span></h3>
-             <div className="mt-10 w-24 h-1.5 bg-white/20 rounded-full"></div>
+             <div className="relative z-10 space-y-4 text-center">
+               <h3 className="text-white text-3xl md:text-4xl font-black tracking-tighter leading-none">
+                 Web Sitesi Adres Ücreti:<br />
+                 <span className="text-green-400">0₺</span>
+               </h3>
+               <p className="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em]">Ömür boyu adresiniz bizden</p>
+             </div>
+             <div className="mt-10 w-24 h-1.5 bg-white/20 rounded-full mx-auto relative z-10"></div>
           </div>
         </div>
       </section>

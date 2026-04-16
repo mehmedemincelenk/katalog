@@ -21,21 +21,26 @@ export default function LandingPage() {
             Ürünlerinizi sergileyin, WhatsApp'tan sipariş alın. Karmaşık e-ticaret siteleriyle uğraşmayın, hızın tadını çıkarın.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8 animate-in slide-in-from-bottom-8 duration-700 delay-300">
-            <a href="https://wa.me/905550000000" target="_blank" rel="noreferrer">
+          <div className="pt-4 animate-in fade-in duration-1000 delay-300">
+            <span className="text-2xl font-black text-stone-900 tracking-tight">200₺</span>
+            <span className="text-stone-400 font-medium ml-1">/ ay</span>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 animate-in slide-in-from-bottom-8 duration-700 delay-300">
+            <a href="https://wa.me/905550000000" target="_blank" rel="noreferrer" className="w-full sm:w-auto">
               <Button 
                 variant="primary" 
                 size="lg" 
-                className="!rounded-full px-12 shadow-2xl"
+                className="!rounded-full px-8 sm:px-12 shadow-2xl w-full whitespace-nowrap"
               >
                 HEMEN KATALOG SAHİBİ OLUN
               </Button>
             </a>
-            <a href="https://toptanambalajcim.ekatalog.site" target="_blank" rel="noreferrer">
+            <a href="https://toptanambalajcim.ekatalog.site" target="_blank" rel="noreferrer" className="w-full sm:w-auto">
               <Button 
                 variant="secondary" 
                 size="lg" 
-                className="!rounded-full px-12"
+                className="!rounded-full px-8 sm:px-12 w-full whitespace-nowrap"
               >
                 ÖRNEK KATALOGU İNCELE
               </Button>

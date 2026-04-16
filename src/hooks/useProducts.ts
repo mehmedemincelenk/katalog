@@ -29,11 +29,13 @@ export function useProducts(
    * @param isSilent - If true, loading state is not visually triggered (background sync).
    */
   const synchronizeInventory = useCallback(async (isSilent = false) => {
-    if (!isSilent) setIsInventoryLoading(true);
-    if (!storeSettings.id) {
+    // 1. ANA SAYFA KONTROLÜ: Eğer ana sayfadaysak dükkan ID'si olmayacaktır, sorgu atma.
+    if (!storeSettings.id || getActiveStoreSlug() === 'main-site') {
       if (!isSilent) setIsInventoryLoading(false);
       return;
     }
+    
+    if (!isSilent) setIsInventoryLoading(true);
     
     const { data: repositoryData, error: fetchError } = await supabase
       .from(REPOSITORY_TABLE)

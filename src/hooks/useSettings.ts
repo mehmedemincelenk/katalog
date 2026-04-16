@@ -57,6 +57,12 @@ export function useSettings(isAdministrativeModeActive: boolean) {
    * synchronizeStoreSettings: Retrieves remote configuration from Supabase repository.
    */
   const synchronizeStoreSettings = useCallback(async () => {
+    // 1. ANA SAYFA KONTROLÜ: Eğer ana sayfadaysak DB'ye gitme
+    if (STORE_SLUG === 'main-site') {
+      setIsSettingsDataLoading(false);
+      return;
+    }
+    
     const { data: storeConfig, error: fetchError } = await supabase
       .from('stores')
       .select('*')

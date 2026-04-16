@@ -131,14 +131,24 @@ export default function LandingPage() {
           <p className="text-stone-400 text-lg font-medium">
             Ayda sadece 200₺'ye dükkanınızı modernize edin.<br />Taahhüt yok, gizli ücret yok.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="https://wa.me/905550000000" target="_blank" rel="noreferrer" className="w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
+            <a href="https://wa.me/905550000000" target="_blank" rel="noreferrer" className="w-full sm:w-auto group">
               <Button 
                 variant="primary" 
                 size="lg" 
-                className="!bg-white !text-stone-900 !rounded-full px-12 font-black shadow-xl"
+                className="!bg-white !text-stone-900 !rounded-full px-12 font-black shadow-[0_20px_50px_rgba(255,255,255,0.1)] group-hover:scale-105 transition-all duration-500 flex items-center justify-center gap-3"
               >
-                HAYDİ, BEN DE VARIM!
+                HEMEN WHATSAPP'TAN BAŞLATALIM
+                <span className="text-xl">🚀</span>
+              </Button>
+            </a>
+            <a href="https://toptanambalajcim.ekatalog.site" target="_blank" rel="noreferrer" className="w-full sm:w-auto">
+              <Button 
+                variant="secondary" 
+                size="lg" 
+                className="!bg-transparent !text-white !border-white/20 !rounded-full px-10 font-bold hover:!bg-white/10 transition-all"
+              >
+                TEKRAR ÖRNEĞE BAK
               </Button>
             </a>
           </div>

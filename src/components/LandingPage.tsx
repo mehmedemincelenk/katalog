@@ -5,14 +5,14 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-stone-900 selection:text-white">
       {/* STICKY PROMO BAR */}
-      <div className="sticky top-0 z-[100] bg-green-600 text-white py-3 px-4 text-center shadow-lg">
+      <div className="sticky top-0 z-[100] bg-red-600 text-white py-3 px-4 text-center shadow-lg">
         <p className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em]">
-          internet adresiniz <span className="bg-black/10 px-2 py-0.5 rounded">sirketiniz.ekatalog.site</span> ömür boyu 0₺
+          ekatalog internet adresiniz <span className="bg-black/10 px-2 py-0.5 rounded">www.markaniz.ekatalog.site</span> ömür boyu 0₺
         </p>
       </div>
 
       <section className="pt-12 pb-20 px-4 text-center">
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-4xl mx-auto space-y-4">
           <h1 className="text-5xl md:text-7xl font-black text-stone-900 tracking-tighter leading-[0.85] animate-in slide-in-from-bottom-8 duration-700">
             basit. sade.<br />ekatalog.
           </h1>
@@ -21,8 +21,8 @@ export default function LandingPage() {
             Katalog maliyetinden kurtulun. Ürünlerinizi saniyeler içinde güncelleyin. Üstelik web adresiniz (sirketiniz.ekatalog.site) ömür boyu bizden 0₺.
           </p>
 
-          <div className="pt-10 flex justify-center">
-            <div className="max-w-[280px] md:max-w-[320px] rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-stone-900 bg-stone-900 ring-1 ring-stone-200">
+          <div className="pt-2 flex justify-center">
+            <div className="max-w-[280px] md:max-w-[320px] rounded-md overflow-hidden shadow-2xl border-4 border-green-600 bg-white ring-1 ring-stone-200">
               <img src="/images/catalog_preview.png" alt="E-Katalog Önizleme" className="w-full h-auto" />
             </div>
           </div>
@@ -47,31 +47,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* THE VALUE SECTION */}
-      <section className="py-24 px-4 bg-stone-50/50 border-t border-stone-100">
-        <div className="max-w-3xl mx-auto space-y-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-black text-stone-900 tracking-tighter leading-tight">
-            Kendi dükkan isminizle.<br />
-            <span className="text-green-600 block mt-2 text-2xl md:text-3xl">markaniz.ekatalog.site</span>
-          </h2>
-          <p className="text-stone-500 font-medium text-lg mx-auto max-w-2xl">Kağıt kataloglar geçmişte kaldı. Dükkanınıza özel linkle her şey anında, her yerde güncel.</p>
-          <ul className="space-y-4 text-stone-900 font-black text-xs uppercase tracking-widest flex flex-col items-center">
-            <li className="flex items-center gap-3">
-              <span className="w-6 h-6 rounded-full bg-stone-900 text-white flex items-center justify-center text-[10px]">✓</span>
-              Sıfır Baskı Maliyeti
-            </li>
-            <li className="flex items-center gap-3">
-              <span className="w-6 h-6 rounded-full bg-stone-900 text-white flex items-center justify-center text-[10px]">✓</span>
-              Anlık Fiyat Güncelleme
-            </li>
-            <li className="flex items-center gap-3">
-              <span className="w-6 h-6 rounded-full bg-stone-900 text-white flex items-center justify-center text-[10px]">✓</span>
-              Hızlı WhatsApp Siparişi
-            </li>
-          </ul>
-        </div>
-      </section>
-
       {/* FEATURES GRID SECTION */}
       <section className="py-24 px-4 bg-white border-t border-stone-100">
         <div className="max-w-6xl mx-auto space-y-16">
@@ -84,10 +59,13 @@ export default function LandingPage() {
             {[
               { title: "Basit Yönetim", desc: "Telefonunuzdan saniyeler içinde ürün ekleyin, silin veya güncelleyin.", icon: "📱" },
               { title: "Toplu Güncelleme", desc: "Tüm dükkana veya seçtiğiniz reyona tek tıkla zam veya indirim uygulayın.", icon: "📈" },
-              { title: "WhatsApp Entegrasyonu", desc: "Müşterileriniz ürün seçtiğinde sipariş listesi doğrudan cebinize gelsin.", icon: "💬" },
+              { title: "WhatsApp Sipariş", desc: "Müşterileriniz ürün seçtiğinde sipariş listesi doğrudan cebinize gelsin.", icon: "💬" },
               { title: "Sınırsız Reyon", desc: "Ürünlerinizi istediğiniz gibi gruplayın, parmağınızla sürükleyerek sıralayın.", icon: "🗂️" },
               { title: "Işık Hızında", desc: "Müşterileriniz beklemeyi sevmez. Kataloğunuz her telefonda anında açılır.", icon: "⚡" },
-              { title: "Sade Tasarım", desc: "Karmaşık menüler yok. Sadece ürünleriniz ve markanız ön planda.", icon: "💎" }
+              { title: "Sade Tasarım", desc: "Karmaşık menüler yok. Sadece ürünleriniz ve markanız ön planda.", icon: "💎" },
+              { title: "QR Kod Menü", desc: "Dükkanınıza asacağınız tek bir QR kod ile tüm kataloğunuz müşterinin cebinde.", icon: "🔍" },
+              { title: "Arama & Filtre", desc: "Müşterileriniz binlerce ürün arasından aradığını saniyeler içinde bulur.", icon: "🔎" },
+              { title: "Stok Kontrolü", desc: "Biten ürünleri tek tıkla gizleyin, müşterilerinize her zaman güncel stok sunun.", icon: "📦" }
             ].map((f, i) => (
               <div key={i} className="bg-stone-50 p-8 rounded-[2rem] border border-stone-100 hover:bg-stone-900 hover:text-white transition-all duration-500 group">
                 <div className="text-3xl mb-6 group-hover:scale-110 transition-transform duration-500">{f.icon}</div>

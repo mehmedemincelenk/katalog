@@ -7,6 +7,7 @@ import {
 } from '../data/config';
 import { Product } from '../types';
 import { useSettings } from './useSettings';
+import { getActiveStoreSlug } from '../utils/store';
 
 const REPOSITORY_TABLE = 'prods';
 

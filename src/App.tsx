@@ -9,15 +9,23 @@ import AddProductModal from './components/AddProductModal';
 import BulkPriceUpdateModal from './components/BulkPriceUpdateModal';
 import PinModal from './components/PinModal';
 import References from './components/References';
+import LandingPage from './components/LandingPage';
 import { useProducts } from './hooks/useProducts';
 import { useAdminMode } from './hooks/useAdminMode';
 import { useDiscount } from './hooks/useDiscount';
 import { useSettings } from './hooks/useSettings';
 import { UI } from './data/config';
+import { getActiveStoreSlug } from './utils/store';
+
+const CURRENT_SLUG = getActiveStoreSlug();
 
 export default function App() {
+  // 1. LANDING PAGE CHECK: If on root domain or specifically main-site, show marketing page instantly
+  if (CURRENT_SLUG === 'main-site') {
+    return <LandingPage />;
+  }
+
   const { isAdmin, handleLogoPointerDown, handleLogoPointerUp, logout, isPinModalOpen, setIsPinModalOpen, correctPin, onPinSuccess } = useAdminMode();
-  const { settings, loading: settingsLoading } = useSettings(isAdmin);
   const [search, setSearch] = useState('');
   const [activeCategories, setActiveCategories] = useState<string[]>([]);
 

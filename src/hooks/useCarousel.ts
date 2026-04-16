@@ -35,6 +35,11 @@ export function useCarousel(isAdministrativeModeActive: boolean) {
    * synchronizeCarouselSlides: Fetches remote slide data from Supabase repository.
    */
   const synchronizeCarouselSlides = useCallback(async () => {
+    if (STORE_SLUG === 'main-site') {
+      setIsCarouselContentLoading(false);
+      return;
+    }
+    
     setIsCarouselContentLoading(true);
     const { data: storeData, error: fetchError } = await supabase
       .from('stores')

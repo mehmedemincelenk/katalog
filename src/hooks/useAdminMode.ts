@@ -20,6 +20,8 @@ export function useAdminMode() {
 
   // 1. PIN PRELOAD
   useEffect(() => {
+    if (STORE_SLUG === 'main-site') return;
+    
     let isMounted = true;
     async function preload() {
       try {

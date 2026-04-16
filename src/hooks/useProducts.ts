@@ -8,8 +8,7 @@ import {
 import { Product } from '../types';
 import { useSettings } from './useSettings';
 
-const STORE_SLUG = import.meta.env.VITE_STORE_SLUG;
-const REPOSITORY_TABLE = STORE_SLUG === 'toptan-ambalajcim' ? 'products_toptanAmbalajcim' : `products_${STORE_SLUG.replace(/-/g, '_')}`;
+const REPOSITORY_TABLE = 'prods';
 
 /**
  * USE PRODUCTS HOOK (INVENTORY & CATALOG ENGINE)
@@ -31,10 +30,15 @@ export function useProducts(
    */
   const synchronizeInventory = useCallback(async (isSilent = false) => {
     if (!isSilent) setIsInventoryLoading(true);
+    if (!storeSettings.id) {
+      if (!isSilent) setIsInventoryLoading(false);
+      return;
+    }
     
     const { data: repositoryData, error: fetchError } = await supabase
       .from(REPOSITORY_TABLE)
       .select('*')
+      .eq('store_id', storeSettings.id)
       .order('sort_order', { ascending: true });
     
     if (fetchError) {
@@ -55,7 +59,7 @@ export function useProducts(
     }
     
     if (!isSilent) setIsInventoryLoading(false);
-  }, []);
+  }, [storeSettings.id]);
 
   useEffect(() => { synchronizeInventory(); }, [synchronizeInventory]);
 
@@ -86,7 +90,11 @@ export function useProducts(
     if (dataChanges.is_archived !== undefined) updatePayload.is_archived = dataChanges.is_archived;
     if (dataChanges.sort_order !== undefined) updatePayload.sort_order = dataChanges.sort_order;
 
-    const { error: updateError } = await supabase.from(REPOSITORY_TABLE).update(updatePayload).eq('id', productId);
+    const { error: updateError } = await supabase
+      .from(REPOSITORY_TABLE)
+      .update(updatePayload)
+      .eq('id', productId)
+      .eq('store_id', storeSettings.id); // Security: Ensure owner
     
     if (updateError) {
       console.error('❌ Ürün güncelleme hatası:', updateError);
@@ -96,7 +104,7 @@ export function useProducts(
         synchronizeInventory(true);
       }
     }
-  }, [synchronizeInventory]);
+  }, [synchronizeInventory, storeSettings.id]);
 
   /**
    * uploadProductVisualAsset: Manages image processing and remote storage deployment.
@@ -169,6 +177,7 @@ export function useProducts(
       : 0;
     
     const { data: newRecord, error: insertError } = await supabase.from(REPOSITORY_TABLE).insert([{
+      store_id: storeSettings.id, // CRITICAL: Assign to current store
       name: productData.name,
       category: productData.category,
       price: productData.price,
@@ -182,7 +191,7 @@ export function useProducts(
       if (initialImage) await uploadProductVisualAsset(newRecord.id, initialImage);
       else synchronizeInventory(true);
     }
-  }, [uploadProductVisualAsset, synchronizeInventory, catalogProducts]);
+  }, [uploadProductVisualAsset, synchronizeInventory, catalogProducts, storeSettings.id]);
 
   /**
    * deleteProductRecord: Permanently removes a product and its associated assets.
@@ -193,7 +202,11 @@ export function useProducts(
     const targetProduct = catalogProducts.find(p => p.id === productId);
     setCatalogProducts(previous => previous.filter(p => p.id !== productId));
     
-    const { error: deletionError } = await supabase.from(REPOSITORY_TABLE).delete().eq('id', productId);
+    const { error: deletionError } = await supabase
+      .from(REPOSITORY_TABLE)
+      .delete()
+      .eq('id', productId)
+      .eq('store_id', storeSettings.id);
     
     if (!deletionError && targetProduct?.image) {
       try {
@@ -212,16 +225,16 @@ export function useProducts(
     } else if (deletionError) {
       synchronizeInventory(); 
     }
-  }, [catalogProducts, synchronizeInventory]);
+  }, [catalogProducts, synchronizeInventory, storeSettings.id]);
 
   /**
    * clearEntireInventory: Destructive action to wipe all products.
    */
   const clearEntireInventory = useCallback(async () => {
     if (!window.confirm(LABELS.adminActions.confirmDeleteAll)) return;
-    await supabase.from(REPOSITORY_TABLE).delete().neq('id', '00000000-0000-0000-0000-000000000000'); 
+    await supabase.from(REPOSITORY_TABLE).delete().eq('store_id', storeSettings.id); 
     synchronizeInventory();
-  }, [synchronizeInventory]);
+  }, [synchronizeInventory, storeSettings.id]);
 
   /**
    * modifyCategorySequence: Reorders category presentation in the UI.
@@ -235,43 +248,6 @@ export function useProducts(
       ...filteredCategories.slice(targetPosition - 1)
     ];
     updateStoreSetting('categoryOrder', finalizedSequence);
-  }, [storeSettings.categoryOrder, updateStoreSetting]);
-
-  /**
-   * rebrandCategory: Renames a category across all associated products.
-   */
-  const rebrandCategory = useCallback(async (legacyName: string, updatedName: string) => {
-    if (!updatedName || legacyName === updatedName) return;
-    setCatalogProducts(previous => previous.map(p => p.category === legacyName ? { ...p, category: updatedName } : p));
-    const { error: updateError } = await supabase.from(REPOSITORY_TABLE).update({ category: updatedName }).eq('category', legacyName);
-    if (!updateError) {
-      const updatedOrderSequence = storeSettings.categoryOrder.map(name => name === legacyName ? updatedName : name);
-      updateStoreSetting('categoryOrder', updatedOrderSequence);
-      synchronizeInventory(true);
-    }
-  }, [storeSettings.categoryOrder, updateStoreSetting, synchronizeInventory]);
-
-  /**
-   * decommissionCategory: Moves all products from a category to a fallback general category.
-   */
-  const decommissionCategory = useCallback(async (targetCategory: string) => {
-    const fallbackCategoryName = TECH.products.fallbackCategory;
-    setCatalogProducts(previous => previous.map(p => p.category === targetCategory ? { ...p, category: fallbackCategoryName } : p));
-    const { error: migrationError } = await supabase.from(REPOSITORY_TABLE).update({ category: fallbackCategoryName }).eq('category', targetCategory);
-    if (!migrationError) {
-      const truncatedSequence = storeSettings.categoryOrder.filter(name => name !== targetCategory);
-      updateStoreSetting('categoryOrder', truncatedSequence);
-      synchronizeInventory(true);
-    }
-  }, [storeSettings.categoryOrder, updateStoreSetting, synchronizeInventory]);
-
-  /**
-   * addCategory: Inserts a new category into the presentation order.
-   */
-  const addCategory = useCallback((newName: string) => {
-    if (!newName || storeSettings.categoryOrder.includes(newName)) return;
-    const updatedOrder = [...storeSettings.categoryOrder, newName];
-    updateStoreSetting('categoryOrder', updatedOrder);
   }, [storeSettings.categoryOrder, updateStoreSetting]);
 
   /**
@@ -310,11 +286,8 @@ export function useProducts(
     });
 
     try {
-      // 2. Sequential Updates (Safer than parallel for mass reordering to avoid race conditions)
-      // Note: Supabase doesn't support bulk update with different values for different IDs easily 
-      // without a complex RPC, so we do it in a small controlled loop or parallel with better error handling.
       const updatePromises = updates.map(u => 
-        supabase.from(REPOSITORY_TABLE).update({ sort_order: u.sort_order }).eq('id', u.id)
+        supabase.from(REPOSITORY_TABLE).update({ sort_order: u.sort_order }).eq('id', u.id).eq('store_id', storeSettings.id)
       );
       
       const results = await Promise.all(updatePromises);
@@ -327,10 +300,56 @@ export function useProducts(
       }
     } catch (err) {
       console.error('❌ Sıralama işlemi başarısız:', err);
-      // Fallback: Re-sync from server on hard failure
       synchronizeInventory();
     }
-  }, [catalogProducts, synchronizeInventory]);
+  }, [catalogProducts, synchronizeInventory, storeSettings.id]);
+
+  /**
+   * rebrandCategory: Renames a category across all associated products.
+   */
+  const rebrandCategory = useCallback(async (legacyName: string, updatedName: string) => {
+    if (!updatedName || legacyName === updatedName) return;
+    setCatalogProducts(previous => previous.map(p => p.category === legacyName ? { ...p, category: updatedName } : p));
+    const { error: updateError } = await supabase
+      .from(REPOSITORY_TABLE)
+      .update({ category: updatedName })
+      .eq('category', legacyName)
+      .eq('store_id', storeSettings.id);
+
+    if (!updateError) {
+      const updatedOrderSequence = storeSettings.categoryOrder.map(name => name === legacyName ? updatedName : name);
+      updateStoreSetting('categoryOrder', updatedOrderSequence);
+      synchronizeInventory(true);
+    }
+  }, [storeSettings.categoryOrder, updateStoreSetting, synchronizeInventory, storeSettings.id]);
+
+  /**
+   * decommissionCategory: Moves all products from a category to a fallback general category.
+   */
+  const decommissionCategory = useCallback(async (targetCategory: string) => {
+    const fallbackCategoryName = TECH.products.fallbackCategory;
+    setCatalogProducts(previous => previous.map(p => p.category === targetCategory ? { ...p, category: fallbackCategoryName } : p));
+    const { error: migrationError } = await supabase
+      .from(REPOSITORY_TABLE)
+      .update({ category: fallbackCategoryName })
+      .eq('category', targetCategory)
+      .eq('store_id', storeSettings.id);
+
+    if (!migrationError) {
+      const truncatedSequence = storeSettings.categoryOrder.filter(name => name !== targetCategory);
+      updateStoreSetting('categoryOrder', truncatedSequence);
+      synchronizeInventory(true);
+    }
+  }, [storeSettings.categoryOrder, updateStoreSetting, synchronizeInventory, storeSettings.id]);
+
+  /**
+   * addCategory: Inserts a new category into the presentation order.
+   */
+  const addCategory = useCallback((newName: string) => {
+    if (!newName || storeSettings.categoryOrder.includes(newName)) return;
+    const updatedOrder = [...storeSettings.categoryOrder, newName];
+    updateStoreSetting('categoryOrder', updatedOrder);
+  }, [storeSettings.categoryOrder, updateStoreSetting]);
 
   /**
    * SEARCH & FILTER LOGIC
@@ -403,7 +422,7 @@ export function useProducts(
       try {
         setIsInventoryLoading(true);
         const results = await Promise.all(updates.map(u => 
-          supabase.from(REPOSITORY_TABLE).update({ price: u.price }).eq('id', u.id)
+          supabase.from(REPOSITORY_TABLE).update({ price: u.price }).eq('id', u.id).eq('store_id', storeSettings.id)
         ));
         
         const errors = results.filter(r => r.error);

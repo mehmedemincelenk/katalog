@@ -1,4 +1,5 @@
 import { THEME, REFERENCES } from '../data/config';
+import { useSettings } from '../hooks/useSettings';
 
 /**
  * REFERENCES COMPONENT (100% Tokenized & Professional English)
@@ -7,7 +8,13 @@ import { THEME, REFERENCES } from '../data/config';
  */
 
 export default function References() {
+  const { settings } = useSettings(false);
   const referencesTheme = THEME.references;
+
+  // Use DB data or fallback to defaults
+  const activeReferences = settings.referencesData && settings.referencesData.length > 0 
+    ? settings.referencesData 
+    : REFERENCES;
 
   return (
     <section className={referencesTheme.layout}>
@@ -20,7 +27,7 @@ export default function References() {
 
         {/* LOGO GRID: Adaptive display for various device sizes */}
         <div className={referencesTheme.grid}>
-          {REFERENCES.map((referenceItem) => (
+          {activeReferences.map((referenceItem) => (
             <div
               key={referenceItem.id}
               className={referencesTheme.card.base}

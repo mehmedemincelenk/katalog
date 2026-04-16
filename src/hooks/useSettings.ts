@@ -1,8 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { DEFAULT_COMPANY, CATEGORY_ORDER as DEFAULT_ORDER } from '../data/config';
+import { getActiveStoreSlug } from '../utils/store';
 
 export interface CompanySettings {
+  id: string; // Store UUID
   whatsapp: string;
   address: string;
   instagram: string;
@@ -11,9 +13,23 @@ export interface CompanySettings {
   name: string;
   logoEmoji: string;
   categoryOrder: string[];
+  carouselData: {
+    slides: Array<{
+      id: number;
+      src: string;
+      bg: string;
+      label: string;
+      sub: string;
+    }>;
+  };
+  referencesData: Array<{
+    id: number;
+    name: string;
+    logo: string;
+  }>;
 }
 
-const STORE_SLUG = import.meta.env.VITE_STORE_SLUG;
+const STORE_SLUG = getActiveStoreSlug();
 
 /**
  * USE SETTINGS HOOK (BRANDING & CONFIGURATION ENGINE)
@@ -22,6 +38,7 @@ const STORE_SLUG = import.meta.env.VITE_STORE_SLUG;
  */
 export function useSettings(isAdministrativeModeActive: boolean) {
   const [activeStoreSettings, setActiveStoreSettings] = useState<CompanySettings>({
+    id: '',
     whatsapp: DEFAULT_COMPANY.phone,
     address: DEFAULT_COMPANY.address,
     instagram: DEFAULT_COMPANY.instagramUrl,
@@ -30,6 +47,8 @@ export function useSettings(isAdministrativeModeActive: boolean) {
     name: DEFAULT_COMPANY.name,
     logoEmoji: DEFAULT_COMPANY.logoEmoji,
     categoryOrder: DEFAULT_ORDER,
+    carouselData: { slides: [] },
+    referencesData: [],
   });
 
   const [isSettingsDataLoading, setIsSettingsDataLoading] = useState(true);
@@ -38,9 +57,6 @@ export function useSettings(isAdministrativeModeActive: boolean) {
    * synchronizeStoreSettings: Retrieves remote configuration from Supabase repository.
    */
   const synchronizeStoreSettings = useCallback(async () => {
-    // Initial loading is already true, so we only need to set it for subsequent refreshes
-    // if we wanted to show a loading state again. 
-    
     const { data: storeConfig, error: fetchError } = await supabase
       .from('stores')
       .select('*')
@@ -49,6 +65,7 @@ export function useSettings(isAdministrativeModeActive: boolean) {
 
     if (storeConfig && !fetchError) {
       setActiveStoreSettings({
+        id: storeConfig.id,
         whatsapp: storeConfig.phone || DEFAULT_COMPANY.phone,
         address: storeConfig.address || DEFAULT_COMPANY.address,
         instagram: storeConfig.instagram_url || DEFAULT_COMPANY.instagramUrl,
@@ -57,18 +74,15 @@ export function useSettings(isAdministrativeModeActive: boolean) {
         name: storeConfig.name || DEFAULT_COMPANY.name,
         logoEmoji: storeConfig.logo_url || DEFAULT_COMPANY.logoEmoji,
         categoryOrder: storeConfig.category_order || DEFAULT_ORDER,
+        carouselData: storeConfig.carousel_data || { slides: [] },
+        referencesData: storeConfig.references_data || [],
       });
     }
     setIsSettingsDataLoading(false);
   }, []);
 
   useEffect(() => {
-    // Standard data-fetching pattern for React components
-    const initializeSettings = async () => {
-      await synchronizeStoreSettings();
-    };
-    
-    void initializeSettings();
+    synchronizeStoreSettings();
   }, [synchronizeStoreSettings]);
 
   /**

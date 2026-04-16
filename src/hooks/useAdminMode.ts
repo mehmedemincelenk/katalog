@@ -1,8 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { TECH, STORAGE } from '../data/config';
 import { supabase } from '../lib/supabase';
+import { getActiveStoreSlug } from '../utils/store';
 
-const STORE_SLUG = import.meta.env.VITE_STORE_SLUG;
+const STORE_SLUG = getActiveStoreSlug();
 
 export function useAdminMode() {
   const [isAdmin, setIsAdmin] = useState(() => {

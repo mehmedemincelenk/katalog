@@ -60,7 +60,7 @@ const CarouselSlideUnit = memo(({
 });
 
 export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
-  const { slides, uploadHeroImage, loading } = useCarousel(isAdminModeActive);
+  const { slides, uploadHeroImage, addSlide, loading } = useCarousel(isAdminModeActive);
   const fileUploadInputRef = useRef<HTMLInputElement>(null);
   const [activeEditingSlideId, setActiveEditingSlideId] = useState<number | null>(null);
   const [isAssetUploading, setIsAssetUploading] = useState(false);
@@ -107,11 +107,39 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
 
   if (loading && slides.length === 0) return null;
 
+  // Empty state for Admin
+  if (slides.length === 0 && isAdminModeActive) {
+    return (
+      <div className={`${carouselTheme.layout} ${carouselTheme.container} !aspect-[21/9] sm:!aspect-[3/1]`}>
+        <div 
+          onClick={addSlide}
+          className="w-full h-full border-2 border-dashed border-stone-200 flex flex-col items-center justify-center gap-3 cursor-pointer hover:bg-stone-50 transition-all rounded-2xl bg-white shadow-sm"
+        >
+          <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-400">
+            <span className="w-6 h-6">{globalIcons.plus}</span>
+          </div>
+          <span className="text-stone-500 font-black uppercase text-xs tracking-widest">İlk Slider Görselini Ekle</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`
       ${carouselTheme.layout} 
       ${carouselTheme.container}
     `}>
+      {/* ADMIN: ADD SLIDE BUTTON (Top Left Overlay) */}
+      {isAdminModeActive && (
+        <Button 
+          onClick={addSlide} 
+          icon={globalIcons.plus}
+          variant="glass"
+          size="sm"
+          className="absolute top-4 left-4 z-[100] !rounded-full shadow-2xl bg-white/90"
+        />
+      )}
+
       <div 
         className={`relative w-full h-full overflow-hidden ${THEME.radius.carousel}`} 
         onTouchStart={handleTouchStart} 

@@ -10,7 +10,17 @@ export interface Slide {
   sub: string;
 }
 
-const STORE_SLUG = import.meta.env.VITE_STORE_SLUG;
+import { getActiveStoreSlug } from '../utils/store';
+
+export interface Slide {
+  id: number;
+  src: string;
+  bg: string;
+  label: string;
+  sub: string;
+}
+
+const STORE_SLUG = getActiveStoreSlug();
 
 /**
  * USE CAROUSEL HOOK (TECHNICAL TOKENS & A-LEVEL ENGLISH)
@@ -28,12 +38,12 @@ export function useCarousel(isAdministrativeModeActive: boolean) {
     setIsCarouselContentLoading(true);
     const { data: storeData, error: fetchError } = await supabase
       .from('stores')
-      .select('carousel_slides')
+      .select('carousel_data')
       .eq('slug', STORE_SLUG)
       .single();
 
-    if (storeData && !fetchError && storeData.carousel_slides) {
-      setMarketingSlides(storeData.carousel_slides);
+    if (storeData && !fetchError && storeData.carousel_data?.slides) {
+      setMarketingSlides(storeData.carousel_data.slides);
     }
     setIsCarouselContentLoading(false);
   }, []);
@@ -108,10 +118,40 @@ export function useCarousel(isAdministrativeModeActive: boolean) {
     }
   }, [modifySlideContent]);
 
+  /**
+   * addNewSlide: Inserts a new placeholder slide for admin to customize.
+   */
+  const addNewSlide = useCallback(async () => {
+    const nextId = marketingSlides.length > 0 
+      ? Math.max(...marketingSlides.map(s => s.id)) + 1 
+      : 1;
+    
+    const newSlide: Slide = {
+      id: nextId,
+      src: '',
+      bg: 'bg-stone-200',
+      label: 'Yeni Başlık',
+      sub: 'Açıklama metni buraya gelecek.'
+    };
+
+    const updatedSlides = [...marketingSlides, newSlide];
+    setMarketingSlides(updatedSlides);
+
+    if (isAdministrativeModeActive) {
+      const { error } = await supabase
+        .from('stores')
+        .update({ carousel_data: { slides: updatedSlides } })
+        .eq('slug', STORE_SLUG);
+      
+      if (error) console.error('Failed to save new slide:', error);
+    }
+  }, [isAdministrativeModeActive, marketingSlides, STORE_SLUG]);
+
   return { 
     slides: marketingSlides, 
     updateSlide: modifySlideContent, 
     uploadHeroImage: uploadHeroVisualAsset, 
+    addSlide: addNewSlide,
     loading: isCarouselContentLoading 
   };
 }

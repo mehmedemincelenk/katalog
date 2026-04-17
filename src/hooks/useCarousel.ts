@@ -80,7 +80,7 @@ export function useCarousel(isAdministrativeModeActive: boolean) {
 
       const { error: updateError } = await supabase
         .from('stores')
-        .update({ carousel_slides: currentSlides })
+        .update({ carousel_data: { slides: currentSlides } })
         .eq('slug', STORE_SLUG);
 
       if (updateError) console.error('Persistent carousel update failed:', updateError);

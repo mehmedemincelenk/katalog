@@ -35,7 +35,7 @@ export default function LandingPage() {
           </h1>
           
           <p className="max-w-2xl mx-auto text-base md:text-lg text-stone-500 font-medium leading-relaxed">
-            Fiyatlar zamlandığında kataloglarınızı tek tek güncellemek gibi angarya maliyetlere veda edin, ekatalogunuzdan fiyatlarınızı saniyeler içinde güncelleyin.
+            Fiyatlar zamlandığında kataloglarınızı tek tek güncellemek gibi angarya maliyetlere veda edin, ekataloğunuzdan fiyatlarınızı saniyeler içinde güncelleyin.
           </p>
 
           <div className="pt-2 flex justify-center">
@@ -82,7 +82,7 @@ export default function LandingPage() {
 
       {/* FINAL CTA */}
       <section className="pb-10 pt-2 md:pb-20 md:pt-4 px-4">
-        <div className="max-w-2xl mx-auto bg-stone-900 rounded-[3.5rem] pt-8 pb-10 md:pt-20 md:pb-24 px-12 text-center space-y-12 shadow-2xl relative overflow-hidden">
+        <div className="max-w-2xl mx-auto bg-stone-900 rounded-[3.5rem] pt-6 pb-8 md:pt-12 md:pb-16 px-12 text-center space-y-8 shadow-2xl relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent"></div>
           <h2 className="text-4xl md:text-7xl font-black text-white tracking-tighter leading-none relative z-10">Hemen başlayalım.</h2>
             <a href="https://wa.me/905550000000" target="_blank" rel="noreferrer" className="inline-block">

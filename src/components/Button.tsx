@@ -18,6 +18,7 @@ interface ButtonProps {
   disabled?: boolean;
   type?: 'button' | 'submit';
   title?: string;
+  loading?: boolean;
 }
 
 const Button = memo(({ 
@@ -28,11 +29,11 @@ const Button = memo(({
   size = 'md', 
   mode = 'circle',
   className = '', 
-  disabled = false,
+  disabled = false, 
   type = 'button',
-  title
+  title,
+  loading = false
 }: ButtonProps) => {
-  
   const buttonTheme = THEME.button;
   const variantStyles = buttonTheme.variants[variant as keyof typeof buttonTheme.variants] || buttonTheme.variants.secondary;
   const sizeStyles = buttonTheme.sizes[mode as keyof typeof buttonTheme.sizes][size as keyof (typeof buttonTheme.sizes)['circle']] || buttonTheme.sizes.circle.md;
@@ -49,7 +50,7 @@ const Button = memo(({
     <button 
       type={type}
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || loading}
       title={title}
       className={`
         ${buttonTheme.base} 
@@ -57,20 +58,27 @@ const Button = memo(({
         ${sizeStyles} 
         ${variantStyles} 
         ${className}
+        ${loading ? 'opacity-80 cursor-wait' : ''}
       `}
     >
-      {/* ICON AREA: Scaled for Apple-style refined aesthetics */}
-      {icon && (
-        <span className={`
-          ${children ? 'mr-2' : ''} 
-          flex items-center justify-center scale-75
-        `}>
-          {icon}
-        </span>
+      {loading ? (
+        <div className={`${THEME.loading.spinner} w-4 h-4`} />
+      ) : (
+        <>
+          {/* ICON AREA: Scaled for Apple-style refined aesthetics */}
+          {icon && (
+            <span className={`
+              ${children ? 'mr-2' : ''} 
+              flex items-center justify-center scale-75
+            `}>
+              {icon}
+            </span>
+          )}
+          
+          {/* CONTENT AREA */}
+          {children}
+        </>
       )}
-      
-      {/* CONTENT AREA */}
-      {children}
     </button>
   );
 });

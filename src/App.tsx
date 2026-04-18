@@ -57,6 +57,7 @@ function CatalogView() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isBulkUpdateModalOpen, setIsBulkUpdateModalOpen] = useState(false);
   const [isDisplaySettingsOpen, setIsDisplaySettingsOpen] = useState(false);
+  const [activeAdminProductId, setActiveAdminProductId] = useState<string | null>(null);
   const [visibleCategoryLimit, setVisibleCategoryLimit] = useState(2);
 
   // FAVICON & TITLE SYNC (With Fallback Protection)
@@ -126,6 +127,8 @@ function CatalogView() {
             activeDiscount={activeDiscount} visibleCategoryLimit={visibleCategoryLimit}
             onLoadMore={() => setVisibleCategoryLimit(prev => prev + 3)}
             activeCategories={activeCategories} onAddClick={() => setIsAddModalOpen(true)}
+            activeAdminProductId={activeAdminProductId}
+            setActiveAdminProductId={setActiveAdminProductId}
           />
         </div>
         {settings.displayConfig.showReferences && (

@@ -55,18 +55,18 @@ const DisplaySettingsModal = memo(({ isOpen, onClose, settings, updateSetting }:
               onClick={() => toggleOption(option.key)}
               className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 transition-all cursor-pointer text-center group ${
                 config[option.key] 
-                  ? 'border-stone-900 bg-stone-900 text-white shadow-md' 
+                  ? 'border-stone-900 bg-stone-900 text-white shadow-lg scale-[0.98]' 
                   : 'border-stone-100 bg-stone-50 text-stone-400 hover:border-stone-200'
               }`}
             >
-              <span className={`text-xl transition-transform duration-300 ${config[option.key] ? 'scale-110' : 'grayscale opacity-70 group-hover:grayscale-0'}`}>
+              <span className={`text-xl transition-all duration-300 ${config[option.key] ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]' : 'grayscale opacity-70 group-hover:grayscale-0'}`}>
                 {option.icon}
               </span>
               <span className="text-[8px] font-black uppercase tracking-tighter mt-1 leading-none line-clamp-1">
                 {option.label.split(' ')[0]}
               </span>
-              {/* Mini Status Dot */}
-              <div className={`w-1 h-1 rounded-full mt-1.5 ${config[option.key] ? 'bg-white' : 'bg-transparent'}`} />
+              {/* Mini Status Dot with Glow Effect */}
+              <div className={`w-1 h-1 rounded-full mt-1.5 transition-all duration-300 ${config[option.key] ? 'bg-white shadow-[0_0_5px_white]' : 'bg-transparent'}`} />
             </div>
           ))}
         </div>

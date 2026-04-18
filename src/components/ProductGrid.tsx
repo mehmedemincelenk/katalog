@@ -25,6 +25,8 @@ interface ProductGridProps {
   onLoadMore?: () => void;
   activeCategories: string[];
   onAddClick?: () => void;
+  activeAdminProductId?: string | null;
+  setActiveAdminProductId?: (id: string | null) => void;
 }
 
 const ProductGrid = memo(({
@@ -40,7 +42,9 @@ const ProductGrid = memo(({
   visibleCategoryLimit,
   onLoadMore,
   activeCategories,
-  onAddClick
+  onAddClick,
+  activeAdminProductId,
+  setActiveAdminProductId
 }: ProductGridProps) => {
   const theme = THEME.productGrid;
 
@@ -131,6 +135,8 @@ const ProductGrid = memo(({
                       itemsInCategory={categoryProducts.length}
                       activeDiscount={activeDiscount}
                       isPriority={isPriority}
+                      activeAdminProductId={activeAdminProductId}
+                      setActiveAdminProductId={setActiveAdminProductId}
                     />
                   );
                 })}

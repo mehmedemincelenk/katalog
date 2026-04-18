@@ -49,10 +49,17 @@ const ProductImagePicker = memo(({ imagePreviewUrl, onFileSelectionChange }: { i
           <span className="text-3xl text-stone-300">📷</span>
         )}
       </div>
-      <label className={theme.button}>
+      <Button 
+        onClick={() => (document.querySelector('input[type="file"]') as HTMLInputElement)?.click()}
+        variant="secondary"
+        mode="rectangle"
+        size="sm"
+        className="w-full !rounded-xl"
+        icon={<span>📷</span>}
+      >
         {LABELS.form.selectImage}
         <input type="file" accept="image/*" className="hidden" onChange={onFileSelectionChange} />
-      </label>
+      </Button>
     </div>
   );
 });
@@ -74,23 +81,27 @@ const ProductCategorySelector = memo(({ categories, currentSelection, customCate
       {categories.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-3">
           {visibleCategories.map((category) => (
-            <button 
+            <Button 
               key={category} 
-              type="button" 
               onClick={() => onCategorySelect(category)} 
-              className={currentSelection === category && !customCategory ? theme.categoryChipActive : theme.categoryChipInactive}
+              variant={currentSelection === category && !customCategory ? 'primary' : 'secondary'}
+              mode="rectangle"
+              size="sm"
+              className="!text-[10px] !py-1 !px-2.5 !rounded-lg"
             >
               {category}
-            </button>
+            </Button>
           ))}
           {categories.length > 4 && !isExpanded && (
-            <button 
-              type="button" 
+            <Button 
               onClick={() => setIsExpanded(true)} 
-              className={theme.categoryShowMore}
+              variant="ghost"
+              mode="rectangle"
+              size="sm"
+              className="!text-[10px] !py-1 !px-2.5 !rounded-lg"
             >
               +{categories.length - 4} Daha
-            </button>
+            </Button>
           )}
         </div>
       )}

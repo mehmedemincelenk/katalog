@@ -87,7 +87,7 @@ export default function References({ isAdmin = false, isInlineEnabled = true }: 
               {isAdmin && (
                 <>
                   {/* ORDER SELECTOR */}
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 opacity-100 transition-opacity">
                     <OrderSelector 
                       currentOrder={index + 1}
                       totalCount={activeReferences.length}
@@ -95,14 +95,14 @@ export default function References({ isAdmin = false, isInlineEnabled = true }: 
                     />
                   </div>
  
-                  {/* DELETE BUTTON */}
-                  <div className="absolute -top-2 -right-2 z-20 opacity-0 group-hover:opacity-100 transition-all">
+                  {/* DELETE BUTTON: Repositioned to bottom for visual balance */}
+                  <div className="absolute -bottom-2 right-4 z-20 opacity-100 transition-all">
                     <Button 
                       onClick={() => handleDelete(ref.id)}
                       variant="danger"
                       mode="square"
                       size="xs"
-                      icon={<span>✕</span>}
+                      icon={globalIcons.trash}
                       title="Referansı Sil"
                     />
                   </div>

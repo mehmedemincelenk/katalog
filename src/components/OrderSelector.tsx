@@ -5,7 +5,7 @@ interface OrderSelectorProps {
   currentOrder: number;
   totalCount: number;
   onChange: (newOrder: number) => void;
-  variant?: 'small' | 'medium';
+  variant?: 'small' | 'medium' | 'large';
   className?: string;
 }
 
@@ -22,7 +22,7 @@ const OrderSelector = memo(({
   variant = 'small',
   className = ''
 }: OrderSelectorProps) => {
-  const sizeClass = variant === 'small' ? 'w-7 h-7' : 'w-8 h-8';
+  const sizeClass = variant === 'small' ? 'w-7 h-7' : (variant === 'medium' ? 'w-8 h-8' : 'w-10 h-10');
   const radiusClass = 'rounded-md'; // Rounded square
   
   return (
@@ -39,7 +39,7 @@ const OrderSelector = memo(({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -12, opacity: 0 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="text-stone-900 font-black text-[12px] absolute tracking-tighter"
+            className={`text-stone-900 font-black absolute tracking-tighter ${variant === 'large' ? 'text-[14px]' : 'text-[12px]'}`}
           >
             {currentOrder}.
           </motion.span>

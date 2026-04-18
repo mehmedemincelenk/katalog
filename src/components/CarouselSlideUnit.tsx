@@ -61,9 +61,9 @@ const CarouselSlideUnit = memo(({
         />
       )}
 
-      {/* ADMIN CONTROLS ON SLIDE */}
+      {/* ADMIN CONTROLS ON SLIDE: Repositioned to bottom-right vertical stack */}
       {isAdmin && isCurrentlyActive && (
-        <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+        <div className="absolute bottom-4 right-4 z-50 flex flex-col gap-2">
           <OrderSelector 
             currentOrder={currentIndex}
             totalCount={totalSlides}
@@ -83,7 +83,7 @@ const CarouselSlideUnit = memo(({
             variant="danger"
             mode="square"
             size="xs"
-            icon={<span>✕</span>}
+            icon={globalIcons.trash}
             title="Slide Sil"
           />
         </div>

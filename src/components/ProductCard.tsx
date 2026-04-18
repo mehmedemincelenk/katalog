@@ -28,6 +28,8 @@ interface ProductCardProps {
   itemsInCategory?: number;
   activeDiscount?: ActiveDiscount | null;
   isPriority?: boolean;
+  activeAdminProductId?: string | null;
+  setActiveAdminProductId?: (id: string | null) => void;
 }
 
 const ProductCard = memo(({
@@ -42,7 +44,9 @@ const ProductCard = memo(({
   orderIndex = 1, 
   itemsInCategory = 1, 
   activeDiscount,
-  isPriority = false
+  isPriority = false,
+  activeAdminProductId,
+  setActiveAdminProductId
 }: ProductCardProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cardContainerRef = useRef<HTMLElement>(null);
@@ -51,6 +55,11 @@ const ProductCard = memo(({
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [optimisticImagePreview, setOptimisticImagePreview] = useState<string | null>(null);
   const [isZoomDetailOpen, setIsZoomDetailOpen] = useState(false);
+
+  const isAdminMenuOpen = activeAdminProductId === product.id;
+  const setIsAdminMenuOpen = (isOpen: boolean) => {
+    setActiveAdminProductId?.(isOpen ? product.id : null);
+  };
 
   const theme = THEME.productCard;
   const adminLabels = LABELS.adminActions;
@@ -123,7 +132,7 @@ const ProductCard = memo(({
         <div 
           className={`${theme.image.wrapper} ${theme.image.aspect} ${theme.image.bg} ${THEME.radius.image} ${!isAdmin ? theme.image.cursorUser : theme.image.cursorAdmin}`} 
           onClick={() => { 
-            if (isAdmin && !isUploadingImage) fileInputRef.current?.click(); 
+            if (isAdmin && !isUploadingImage) setIsAdminMenuOpen(true); 
             else if (!isAdmin && primaryImageSource) setIsZoomDetailOpen(true); 
           }}
         >
@@ -145,6 +154,29 @@ const ProductCard = memo(({
           
           {isAdmin && primaryImageSource && !isUploadingImage && (
             <div className={theme.image.overlay} />
+          )}
+
+          {/* ADMIN TOOLS: Repositioned logic */}
+          {isAdmin && (
+            <>
+              <div className="absolute top-2 right-2 z-[30]">
+                <OrderSelector 
+                  currentOrder={orderIndex}
+                  totalCount={itemsInCategory}
+                  onChange={(newPos) => onOrderChange?.(product.id, newPos)}
+                  className="shadow-xl"
+                />
+              </div>
+              <AdminActionMenu 
+                product={product} 
+                categories={categories} 
+                onDelete={onDelete} 
+                onUpdate={onUpdate} 
+                isOpen={isAdminMenuOpen}
+                setIsOpen={setIsAdminMenuOpen}
+                onImageChangeClick={() => fileInputRef.current?.click()}
+              />
+            </>
           )}
 
           {isUploadingImage && (
@@ -224,25 +256,6 @@ const ProductCard = memo(({
             </div>
           </div>
         </div>
-
-        {/* ADMIN TOOLS */}
-        {isAdmin && (
-          <>
-            <div className="absolute top-2 left-2 z-30">
-              <OrderSelector 
-                currentOrder={orderIndex}
-                totalCount={itemsInCategory}
-                onChange={(newPos) => onOrderChange?.(product.id, newPos)}
-                className="shadow-xl"
-              />
-            </div>
-            <div className="absolute top-2 right-2 z-30">
-              <div className="shadow-xl rounded-full bg-white/90 backdrop-blur-md">
-                <AdminActionMenu product={product} categories={categories} onDelete={onDelete} onUpdate={onUpdate} />
-              </div>
-            </div>
-          </>
-        )}
 
         {/* STATUS BADGES */}
         <div className={theme.status.wrapper}>

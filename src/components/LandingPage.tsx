@@ -29,9 +29,6 @@ export default function LandingPage() {
 
       <section className="pt-12 pb-20 px-4 text-center">
         <div className="max-w-4xl mx-auto space-y-4">
-          <div className="inline-block bg-green-100 text-green-700 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest mb-2 animate-bounce">
-            Temmuz'a Kadar %20 İndirim + İlk Ay Ücretsiz! 🎁
-          </div>
           <h1 className="text-5xl md:text-7xl font-black text-stone-900 tracking-tighter leading-[0.85] animate-in slide-in-from-bottom-8 duration-700">
             basit. sade.<br />ekatalog.
           </h1>
@@ -49,10 +46,13 @@ export default function LandingPage() {
           {/* PRICING & TRUST SECTION */}
           <div className="pt-10 flex flex-col items-center space-y-6">
             <div className="text-center flex flex-col items-center">
-              <div className="w-fit flex flex-col items-center">
+              <div className="w-fit flex flex-col items-center relative">
+                <div className="absolute -top-6 -right-16 bg-red-600 text-white text-[9px] font-black px-3 py-1 rounded-lg rotate-12 shadow-lg animate-pulse whitespace-nowrap">
+                  TEMMUZ'A KADAR %20 İNDİRİM 🏷️
+                </div>
                 <p className="text-[10px] md:text-xs font-black text-stone-400 uppercase tracking-widest line-through mb-1">₺500 / AY</p>
                 <p className="text-6xl md:text-8xl font-black text-stone-900 tracking-tighter leading-none pr-1">
-                  ₺400<span className="text-lg font-bold opacity-30 ml-1">&nbsp;/&nbsp;ay&nbsp;</span>
+                  ₺399<span className="text-lg font-bold opacity-30 ml-1">&nbsp;/&nbsp;ay&nbsp;</span>
                 </p>
                 <div className="relative h-3 md:h-4 w-full -mt-1 md:-mt-2 overflow-visible">
                   <AnimatePresence mode="wait">

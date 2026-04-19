@@ -182,8 +182,8 @@ export default function AddProductModal({
         inStock: formState.isProductInStock,
       }, formState.selectedImageFile || undefined);
       handleCloseAndReset();
-    } catch (_error) {
-      setFormErrorMessage("Ürün eklenirken bir hata oluştu.");
+    } catch {
+      setFormErrorMessage(LABELS.saveError);
     } finally {
       setIsSubmittingData(false);
     }

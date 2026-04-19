@@ -8,6 +8,7 @@ import FloatingAdminMenu from './components/FloatingAdminMenu';
 import AddProductModal from './components/AddProductModal';
 import BulkPriceUpdateModal from './components/BulkPriceUpdateModal';
 import PinModal from './components/PinModal';
+import QRModal from './components/QRModal';
 import References from './components/References';
 import LandingPage from './components/LandingPage';
 import DisplaySettingsModal from './components/DisplaySettingsModal';
@@ -28,10 +29,13 @@ function CatalogView() {
     handleLogoPointerUp, 
     isPinModalOpen, 
     setIsPinModalOpen, 
+    isQRModalOpen,
+    setIsQRModalOpen,
     verifyPinWithServer, 
     onPinSuccess,
     isInlineEnabled,
-    toggleInlineEdit
+    toggleInlineEdit,
+    isLockedOut
   } = useAdminMode();
   const { settings, updateSetting, loading: settingsLoading, notFound, isError, retry } = useSettings(isAdmin);
   const [search, setSearch] = useState('');
@@ -47,7 +51,7 @@ function CatalogView() {
     reorderCategory: updateCategoryOrder, 
     reorderProductsInCategory,
     renameCategory, 
-    bulkUpdatePrices,
+    executeGranularBulkActions,
     uploadImage,
     loading: productsLoading 
   } = useProducts(search, activeCategories, isAdmin, settings, updateSetting);
@@ -138,7 +142,18 @@ function CatalogView() {
           </>
         )}
       </main>
-      <Footer onLogoClick={() => {}} isAdmin={isAdmin} activeDiscount={activeDiscount} onApplyDiscount={applyCode} discountError={discountError} settings={settings} />
+      <Footer 
+        onLogoClick={() => {}} 
+        onQRClick={() => setIsQRModalOpen(true)}
+        isAdmin={isAdmin} 
+        activeDiscount={activeDiscount} 
+        onApplyDiscount={applyCode} 
+        discountError={discountError} 
+        settings={settings} 
+      />
+      
+      <QRModal isOpen={isQRModalOpen} onClose={() => setIsQRModalOpen(false)} />
+
       {isAdmin && (
         <>
           <FloatingAdminMenu 
@@ -149,11 +164,17 @@ function CatalogView() {
             onSettingsTrigger={() => setIsDisplaySettingsOpen(true)}
           />
           <AddProductModal isModalOpen={isAddModalOpen} onModalClose={() => setIsAddModalOpen(false)} onProductAddition={addProduct} availableCategories={categoryOrder} />
-          <BulkPriceUpdateModal isOpen={isBulkUpdateModalOpen} onClose={() => setIsBulkUpdateModalOpen(false)} allProducts={allProducts} categories={categoryOrder} onUpdate={bulkUpdatePrices} />
+          <BulkPriceUpdateModal 
+            isOpen={isBulkUpdateModalOpen} 
+            onClose={() => setIsBulkUpdateModalOpen(false)} 
+            allProducts={allProducts} 
+            categories={categoryOrder} 
+            onGranularUpdate={executeGranularBulkActions}
+          />
           <DisplaySettingsModal isOpen={isDisplaySettingsOpen} onClose={() => setIsDisplaySettingsOpen(false)} settings={settings} updateSetting={updateSetting} />
         </>
       )}
-      <PinModal isModalOpen={isPinModalOpen} onVerify={verifyPinWithServer} onAuthenticationSuccess={onPinSuccess} onModalClose={() => setIsPinModalOpen(false)} />
+      <PinModal isModalOpen={isPinModalOpen} onVerify={verifyPinWithServer} onAuthenticationSuccess={onPinSuccess} onModalClose={() => setIsPinModalOpen(false)} isLockedOut={isLockedOut} />
     </div>
   );
 }

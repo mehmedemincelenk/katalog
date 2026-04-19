@@ -1,0 +1,2 @@
+- Admin: "Abi eka.ai sitesine gir, 10 yaz." (Veya dükkanın o kısa domainini ta.eka.site).
+- 

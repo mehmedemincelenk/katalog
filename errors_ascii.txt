@@ -1,0 +1,7 @@
+
+C:\Users\celen\Desktop\codes\ekatalog\src\components\BulkPriceUpdateModal.tsx
+   47:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  143:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+??? 2 problems (2 errors, 0 warnings)
+

@@ -144,8 +144,8 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
             setIsAssetUploading(true);
             try {
               await uploadHeroImage(activeEditingSlideId, selectedFile);
-            } catch (_error) { 
-              alert(LABELS.saveError); 
+            } catch {
+              console.error("Resim yükleme hatası");
             } finally { 
               setIsAssetUploading(false); 
               setActiveEditingSlideId(null); 

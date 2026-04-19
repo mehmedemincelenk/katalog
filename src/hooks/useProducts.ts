@@ -260,6 +260,62 @@ export function useProducts(
   }, [catalogProducts, synchronizeInventory, storeSettings.id]);
 
   /**
+   * executeGranularBulkActions: Processes multiple specific product changes (price, deletion, archive, stock) in parallel.
+   */
+  const executeGranularBulkActions = useCallback(async (actions: { productId: string; newPrice?: number; delete?: boolean; inStock?: boolean; is_archived?: boolean }[]) => {
+    if (actions.length === 0) return;
+
+    try {
+      setIsInventoryLoading(true);
+
+      const priceUpdates = actions.filter(a => a.newPrice !== undefined);
+      const deletions = actions.filter(a => a.delete === true);
+      const stockUpdates = actions.filter(a => a.inStock !== undefined);
+      const archiveUpdates = actions.filter(a => a.is_archived !== undefined);
+
+      // Perform all updates and deletions in parallel batches
+      await Promise.all([
+        // Prices
+        ...priceUpdates.map(u => 
+          supabase.from(REPOSITORY_TABLE)
+            .update({ price: formatNumberToCurrency(u.newPrice!) })
+            .eq('id', u.productId)
+            .eq('store_id', storeSettings.id)
+        ),
+        // Deletions
+        ...deletions.map(d => 
+          supabase.from(REPOSITORY_TABLE)
+            .delete()
+            .eq('id', d.productId)
+            .eq('store_id', storeSettings.id)
+        ),
+        // Stock Status
+        ...stockUpdates.map(s => 
+          supabase.from(REPOSITORY_TABLE)
+            .update({ out_of_stock: !s.inStock })
+            .eq('id', s.productId)
+            .eq('store_id', storeSettings.id)
+        ),
+        // Archive Status
+        ...archiveUpdates.map(a => 
+          supabase.from(REPOSITORY_TABLE)
+            .update({ is_archived: a.is_archived })
+            .eq('id', a.productId)
+            .eq('store_id', storeSettings.id)
+        )
+      ]);
+
+      await synchronizeInventory(true);
+    } catch (err) {
+      console.error('❌ Granüler toplu işlem hatası:', err);
+      alert(LABELS.saveError);
+      synchronizeInventory();
+    } finally {
+      setIsInventoryLoading(false);
+    }
+  }, [synchronizeInventory, storeSettings.id]);
+
+  /**
    * bulkUpdatePrices: Batch arithmetic pricing updates.
    */
   const bulkUpdatePrices = useCallback(async (targetCategories: string[], amount: number, isPercentage: boolean, isIncrease: boolean) => {
@@ -392,5 +448,6 @@ export function useProducts(
     uploadImage: uploadProductVisualAsset,
     addCategory: addCategory,
     bulkUpdatePrices,
+    executeGranularBulkActions,
   };
 }

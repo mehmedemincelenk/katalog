@@ -35,8 +35,8 @@ export const AdminActionMenu = memo(({
       downloadLink.click();
       window.URL.revokeObjectURL(localUrl);
       document.body.removeChild(downloadLink);
-    } catch (error) {
-      alert('Resim indirilemedi.');
+    } catch {
+      alert(LABELS.saveError);
     }
   };
 

@@ -1,0 +1,15 @@
+
+C:\Users\celen\Desktop\codes\ekatalog\src\components\AddProductModal.tsx
+  185:14  warning  '_error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\celen\Desktop\codes\ekatalog\src\components\AdminActionMenu.tsx
+  38:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\celen\Desktop\codes\ekatalog\src\components\BulkPriceUpdateModal.tsx
+  140:19  warning  '_' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\celen\Desktop\codes\ekatalog\src\components\HeroCarousel.tsx
+  147:22  warning  '_error' is defined but never used  @typescript-eslint/no-unused-vars
+
+??? 4 problems (0 errors, 4 warnings)
+

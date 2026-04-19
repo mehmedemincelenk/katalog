@@ -88,23 +88,23 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnab
       <div className={theme.container}>
         <div className={`${theme.innerWrapper} ${isTitleOnly ? 'justify-center' : 'justify-between'}`}>
           
-          {/* BRAND SECTION (Logo & Identity) */}
-          <div className={theme.brand.wrapper}>
+          {/* BRAND SECTION (Logo & Identity) - GESTURE AREA */}
+          <div 
+            className={theme.brand.wrapper}
+            onPointerDown={onLogoPointerDown}
+            onPointerUp={onLogoPointerUp}
+            onContextMenu={(e) => isAdmin && e.preventDefault()}
+            style={{ 
+              userSelect: 'none', 
+              WebkitUserSelect: 'none', 
+              WebkitTouchCallout: 'none',
+              touchAction: 'none'
+            }}
+          >
             {settings.displayConfig.showLogo && (
               <div 
-                onPointerDown={onLogoPointerDown}
-                onPointerUp={onLogoPointerUp}
-                onPointerLeave={onLogoPointerUp}
                 onClick={() => isAdmin && document.getElementById('logo-upload-input')?.click()}
                 className={`${theme.brand.logoWrapper} select-none touch-none cursor-pointer overflow-hidden flex items-center justify-center`}
-                style={{ 
-                  userSelect: 'none', 
-                  WebkitUserSelect: 'none', 
-                  WebkitTouchCallout: 'none',
-                  WebkitTapHighlightColor: 'transparent',
-                  touchAction: 'none'
-                }}
-                onContextMenu={(e) => e.preventDefault()}
               >
                 <input 
                   id="logo-upload-input"
@@ -121,14 +121,14 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnab
               </div>
             )}
 
-            <div className={theme.brand.textWrapper}>
+            <div className={`${theme.brand.textWrapper} cursor-pointer`}>
               <div className="flex items-center">
                 <span 
                   contentEditable={isAdmin && isInlineEnabled}
                   suppressContentEditableWarning
                   onBlur={(e) => updateSetting('title', e.currentTarget.textContent || '')}
                   onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), e.currentTarget.blur())}
-                  onClick={() => handleTextEdit('title', settings.title, 'Mağaza Adı')}
+                  onClick={(e) => { e.stopPropagation(); handleTextEdit('title', settings.title, 'Mağaza Adı'); }}
                   className={`${theme.brand.name} ${editStyle}`}
                 >
                   {settings.title}
@@ -140,7 +140,7 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnab
                   suppressContentEditableWarning
                   onBlur={(e) => updateSetting('subtitle', e.currentTarget.textContent || '')}
                   onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), e.currentTarget.blur())}
-                  onClick={() => handleTextEdit('subtitle', settings.subtitle, 'Slogan/Açıklama')}
+                  onClick={(e) => { e.stopPropagation(); handleTextEdit('subtitle', settings.subtitle, 'Slogan/Açıklama'); }}
                   className={`${theme.brand.tagline} ${editStyle}`}
                 >
                   {settings.subtitle}

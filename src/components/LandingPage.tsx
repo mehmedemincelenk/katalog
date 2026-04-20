@@ -50,7 +50,7 @@ export default function LandingPage() {
       <section className="pt-12 pb-20 px-4 text-center">
         <div className="max-w-4xl mx-auto space-y-4">
           <h1 className="text-5xl md:text-7xl font-black text-stone-900 tracking-tighter leading-[0.85] animate-in slide-in-from-bottom-8 duration-700">
-            basit. akıllı. yönetilebilir.<br />ekatalog.
+            sade. basit.<br />ekatalog.
           </h1>
           
           <p className="max-w-2xl mx-auto text-base md:text-lg text-stone-500 font-medium leading-relaxed">

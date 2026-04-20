@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, memo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { LABELS, THEME } from '../data/config';
 import { Product } from '../types';
 import { resolveVisualAssetUrl, PLACEHOLDER_VISUAL_SYMBOL } from '../utils/image';
@@ -72,9 +73,16 @@ const ProductCard = memo(({
     return () => window.removeEventListener('scroll', handleScrollClose);
   }, [isZoomDetailOpen]);
 
-  // Reset optimistic preview when real image arrives
+  // Reset optimistic preview when real image arrives & CLEANUP memory
   useEffect(() => {
-    if (product.image && optimisticImagePreview) setOptimisticImagePreview(null);
+    if (product.image && optimisticImagePreview) {
+      URL.revokeObjectURL(optimisticImagePreview);
+      setOptimisticImagePreview(null);
+    }
+    // Cleanup on unmount
+    return () => {
+      if (optimisticImagePreview) URL.revokeObjectURL(optimisticImagePreview);
+    };
   }, [product.image, optimisticImagePreview]);
 
   const handleImageFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -152,32 +160,49 @@ const ProductCard = memo(({
             </div>
           )}
           
-          {isAdmin && primaryImageSource && !isUploadingImage && (
-            <div className={theme.image.overlay} />
-          )}
+          <AnimatePresence>
+            {isAdmin && primaryImageSource && !isUploadingImage && (
+              <motion.div 
+                initial={false} 
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, filter: 'blur(10px)' }}
+                className={theme.image.overlay} 
+              />
+            )}
+          </AnimatePresence>
 
           {/* ADMIN TOOLS: Repositioned logic */}
-          {isAdmin && (
-            <>
-              <div className="absolute top-2 right-2 z-[30]">
-                <OrderSelector 
-                  currentOrder={orderIndex}
-                  totalCount={itemsInCategory}
-                  onChange={(newPos) => onOrderChange?.(product.id, newPos)}
-                  className="shadow-xl"
-                />
-              </div>
-              <AdminActionMenu 
-                product={product} 
-                categories={categories} 
-                onDelete={onDelete} 
-                onUpdate={onUpdate} 
-                isOpen={isAdminMenuOpen}
-                setIsOpen={setIsAdminMenuOpen}
-                onImageChangeClick={() => fileInputRef.current?.click()}
-              />
-            </>
-          )}
+          <AnimatePresence>
+            {isAdmin && (
+              <motion.div
+                initial={false}
+                animate={{ opacity: 1, scale: 1, transform: 'translateZ(0)' }}
+                exit={{ opacity: 0, filter: 'blur(12px)', scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                className="absolute inset-0 z-[30] pointer-events-none"
+              >
+                <div className="absolute top-2 right-2 z-[30] pointer-events-auto">
+                  <OrderSelector 
+                    currentOrder={orderIndex}
+                    totalCount={itemsInCategory}
+                    onChange={(newPos) => onOrderChange?.(product.id, newPos)}
+                    className="shadow-xl"
+                  />
+                </div>
+                <div className="pointer-events-auto">
+                  <AdminActionMenu 
+                    product={product} 
+                    categories={categories} 
+                    onDelete={onDelete} 
+                    onUpdate={onUpdate} 
+                    isOpen={isAdminMenuOpen}
+                    setIsOpen={setIsAdminMenuOpen}
+                    onImageChangeClick={() => fileInputRef.current?.click()}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {isUploadingImage && (
             <div className={theme.uploadOverlay.wrapper}>
@@ -210,8 +235,17 @@ const ProductCard = memo(({
                 <textarea 
                   defaultValue={product.description || ''} 
                   onBlur={(event) => handleDataFieldUpdate('description', event.target.value.trim())} 
-                  className={`${theme.typography.description} outline-none w-full px-1 -mx-1 rounded transition-all hover:bg-stone-100 focus:bg-stone-100 focus:ring-2 focus:ring-stone-900/10 border-transparent bg-transparent resize-none`} 
+                  onChange={(e) => {
+                    e.target.style.height = 'auto';
+                    e.target.style.height = e.target.scrollHeight + 'px';
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.height = 'auto';
+                    e.target.style.height = e.target.scrollHeight + 'px';
+                  }}
+                  className={`${theme.typography.description} outline-none w-full px-1 -mx-1 rounded transition-all hover:bg-stone-100 focus:bg-stone-100 focus:ring-2 focus:ring-stone-900/10 border-transparent bg-transparent resize-none overflow-hidden`} 
                   placeholder={adminLabels.addDescription}
+                  rows={1}
                 />
               </div>
             ) : (

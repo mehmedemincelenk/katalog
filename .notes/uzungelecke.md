@@ -1,0 +1,2 @@
+- b2c b2b ayrı panel gerekir mi diye bakmak lazım
+- bazı şeyler ikonlarla temsil edilir evrenseil ikonlardır mesela kurutma vs. bunların bi listesini ve cardlarda yerini ayarlamak

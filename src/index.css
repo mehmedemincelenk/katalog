@@ -25,11 +25,22 @@ body {
     transition: opacity 0.8s ease-in-out;
   }
 
-  /* ADMİN EDİTÖRÜ: Yazıların etrafındaki o çirkin mavi çerçeveyi kaldırır. */
+  /* ADMİN EDİTÖRÜ: Yazıların etrafındaki o çirkin mavi çerçeveyi kaldırır ve render hatalarını engeller. */
   [contenteditable='true'],
   .admin-textarea {
     outline: none !important;
-    cursor: text;
+    border-color: transparent !important;
+    -webkit-tap-highlight-color: transparent;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+    transform-style: preserve-3d;
+  }
+
+  /* Animasyon sırasında fontların titremesini veya siyah kutu çıkarmasını engellemek için */
+  .motion-fix {
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-font-smoothing: antialiased;
   }
 
   /* HATA TİTREŞİMİ: Apple tarzı PIN hata efekti */
@@ -60,8 +71,10 @@ body {
     100% { transform: translateX(-50%); }
   }
   .marquee-track {
-    animation: marquee-scroll 6s linear infinite;
+    animation: marquee-scroll 10s linear infinite;
+    display: inline-flex;
     white-space: nowrap;
+    will-change: transform;
   }
 
   /* ÖZEL SCROLLBAR: Modern ve zarif kaydırma çubukları. */

@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { THEME } from '../data/config';
 import { Slide } from '../hooks/useCarousel';
 import OrderSelector from './OrderSelector';
@@ -62,32 +63,39 @@ const CarouselSlideUnit = memo(({
       )}
 
       {/* ADMIN CONTROLS ON SLIDE: Repositioned to bottom-right vertical stack */}
-      {isAdmin && isCurrentlyActive && (
-        <div className="absolute bottom-4 right-4 z-50 flex flex-col gap-2">
-          <OrderSelector 
-            currentOrder={currentIndex}
-            totalCount={totalSlides}
-            onChange={(newIdx) => onReorderSlide?.(slideData.id, newIdx)}
-          />
+      <AnimatePresence>
+        {isAdmin && isCurrentlyActive && (
+          <motion.div 
+            initial={false}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, filter: 'blur(12px)', scale: 0.9 }}
+            className="absolute bottom-4 right-4 z-50 flex flex-col gap-2"
+          >
+            <OrderSelector 
+              currentOrder={currentIndex}
+              totalCount={totalSlides}
+              onChange={(newIdx) => onReorderSlide?.(slideData.id, newIdx)}
+            />
 
-          <Button 
-            onClick={(e) => { e.stopPropagation(); onAddSlide?.(); }}
-            variant="glass"
-            mode="square"
-            size="xs"
-            icon={globalIcons.plus}
-            title="Yeni Slide Ekle"
-          />
-          <Button 
-            onClick={(e) => { e.stopPropagation(); onDeleteSlide?.(slideData.id); }}
-            variant="danger"
-            mode="square"
-            size="xs"
-            icon={globalIcons.trash}
-            title="Slide Sil"
-          />
-        </div>
-      )}
+            <Button 
+              onClick={(e) => { e.stopPropagation(); onAddSlide?.(); }}
+              variant="glass"
+              mode="square"
+              size="xs"
+              icon={globalIcons.plus}
+              title="Yeni Slide Ekle"
+            />
+            <Button 
+              onClick={(e) => { e.stopPropagation(); onDeleteSlide?.(slideData.id); }}
+              variant="danger"
+              mode="square"
+              size="xs"
+              icon={globalIcons.trash}
+              title="Slide Sil"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* UPLOAD PROGRESS VISUAL */}
       {isCurrentlyUploading && editingTargetSlideId === slideData.id && isCurrentlyActive && (

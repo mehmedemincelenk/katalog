@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import HeroCarousel from './components/HeroCarousel';
 import SearchFilter from './components/SearchFilter';
@@ -35,7 +36,8 @@ function CatalogView() {
     onPinSuccess,
     isInlineEnabled,
     toggleInlineEdit,
-    isLockedOut
+    isLockedOut,
+    failedAttempts
   } = useAdminMode();
   const { settings, updateSetting, loading: settingsLoading, notFound, isError, retry } = useSettings(isAdmin);
   const [search, setSearch] = useState('');
@@ -154,27 +156,51 @@ function CatalogView() {
       
       <QRModal isOpen={isQRModalOpen} onClose={() => setIsQRModalOpen(false)} />
 
-      {isAdmin && (
-        <>
-          <FloatingAdminMenu 
-            onProductAddTrigger={() => setIsAddModalOpen(true)} 
-            onBulkUpdateTrigger={() => setIsBulkUpdateModalOpen(true)} 
-            isInlineEnabled={isInlineEnabled} 
-            onToggleInline={toggleInlineEdit} 
-            onSettingsTrigger={() => setIsDisplaySettingsOpen(true)}
+      <AnimatePresence mode="popLayout">
+        {isAdmin && (
+          <>
+            <motion.div
+              key="floating-menu"
+              initial={false}
+              animate={{ opacity: 1, scale: 1, transform: 'translateZ(0)' }}
+              exit={{ opacity: 0, filter: 'blur(15px)', scale: 0.95 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+              className="fixed bottom-2 right-2 z-[150]"
+            >
+              <FloatingAdminMenu 
+                onProductAddTrigger={() => setIsAddModalOpen(true)} 
+                onBulkUpdateTrigger={() => setIsBulkUpdateModalOpen(true)} 
+                isInlineEnabled={isInlineEnabled} 
+                onToggleInline={toggleInlineEdit} 
+                onSettingsTrigger={() => setIsDisplaySettingsOpen(true)}
+              />
+            </motion.div>
+
+            {/* Admin Modals (Separated to stay full-screen) */}
+            <AddProductModal isModalOpen={isAddModalOpen} onModalClose={() => setIsAddModalOpen(false)} onProductAddition={addProduct} availableCategories={categoryOrder} />
+            <BulkPriceUpdateModal 
+              isOpen={isBulkUpdateModalOpen} 
+              onClose={() => setIsBulkUpdateModalOpen(false)} 
+              allProducts={allProducts} 
+              categories={categoryOrder} 
+              onGranularUpdate={executeGranularBulkActions}
+            />
+            <DisplaySettingsModal isOpen={isDisplaySettingsOpen} onClose={() => setIsDisplaySettingsOpen(false)} settings={settings} updateSetting={updateSetting} />
+          </>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isPinModalOpen && (
+          <PinModal 
+            isModalOpen={true} 
+            onVerify={verifyPinWithServer} 
+            onAuthenticationSuccess={onPinSuccess} 
+            onModalClose={() => setIsPinModalOpen(false)} 
+            isLockedOut={isLockedOut} 
+            failedAttempts={failedAttempts}
           />
-          <AddProductModal isModalOpen={isAddModalOpen} onModalClose={() => setIsAddModalOpen(false)} onProductAddition={addProduct} availableCategories={categoryOrder} />
-          <BulkPriceUpdateModal 
-            isOpen={isBulkUpdateModalOpen} 
-            onClose={() => setIsBulkUpdateModalOpen(false)} 
-            allProducts={allProducts} 
-            categories={categoryOrder} 
-            onGranularUpdate={executeGranularBulkActions}
-          />
-          <DisplaySettingsModal isOpen={isDisplaySettingsOpen} onClose={() => setIsDisplaySettingsOpen(false)} settings={settings} updateSetting={updateSetting} />
-        </>
-      )}
-      <PinModal isModalOpen={isPinModalOpen} onVerify={verifyPinWithServer} onAuthenticationSuccess={onPinSuccess} onModalClose={() => setIsPinModalOpen(false)} isLockedOut={isLockedOut} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

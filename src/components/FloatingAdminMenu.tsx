@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { THEME } from '../data/config';
 import Button from './Button';
 
@@ -67,68 +68,107 @@ export default function FloatingAdminMenu({
   };
 
   return (
-    <div className={menuTheme.wrapper} ref={menuContainerRef}>
-      <div className={menuTheme.container}>
+    <div ref={menuContainerRef} className="relative">
+      <div className={`${menuTheme.container} overflow-hidden w-[46px] flex flex-col items-center justify-end`}>
         
         {/* EXPANDABLE ACTION AREA */}
-        <div className={`
-          ${menuTheme.innerActions} 
-          ${isMenuExpanded ? menuTheme.actionsActive : menuTheme.actionsInactive}
-        `}>
-          {/* INLINE TOGGLE SWITCH */}
-          <Button 
-            onClick={() => handleManagementAction(onToggleInline)}
-            icon={isInlineEnabled ? "✍️" : "🧩"}
-            variant="secondary"
-            size="sm"
-            mode="circle"
-            className={`shrink-0 ${isInlineEnabled ? "!bg-stone-900 !text-white shadow-inner" : ""}`}
-            aria-label={isInlineEnabled ? "Deactivate Inline Edit" : "Activate Inline Edit"}
-          />
-
-          {onBulkUpdateTrigger && (
-            <Button 
-              onClick={() => handleManagementAction(onBulkUpdateTrigger)}
-              icon="🏷️"
-              variant="secondary"
-              size="sm"
-              mode="circle"
-              className="shrink-0"
-              aria-label="Bulk Update Prices"
-            />
+        <AnimatePresence>
+          {isMenuExpanded && (
+            <motion.div 
+              key="expanded-actions"
+              initial="closed"
+              animate="open"
+              exit="closed"
+              variants={{
+                open: {
+                  height: "auto",
+                  opacity: 1,
+                  marginBottom: 8, // Spacing only when open
+                  transition: {
+                    height: { type: "spring", stiffness: 300, damping: 30 },
+                    staggerChildren: 0.05,
+                    delayChildren: 0.1
+                  }
+                },
+                closed: {
+                  height: 0,
+                  opacity: 0,
+                  marginBottom: 0,
+                  transition: {
+                    height: { type: "spring", stiffness: 300, damping: 35 },
+                    staggerChildren: 0.03,
+                    staggerDirection: -1
+                  }
+                }
+              }}
+              className="flex flex-col gap-2 items-center w-full"
+              style={{ transformOrigin: 'bottom' }}
+            >
+              {(
+                [
+                  { 
+                    id: 'inline', 
+                    icon: isInlineEnabled ? "✍️" : "🧩", 
+                    action: onToggleInline,
+                    label: "Düzenleme Modu",
+                    className: isInlineEnabled ? "!bg-stone-900 !text-white" : ""
+                  },
+                  onBulkUpdateTrigger && { 
+                    id: 'bulk', 
+                    icon: "🏷️", 
+                    action: onBulkUpdateTrigger,
+                    label: "Toplu Güncelle" 
+                  },
+                  { 
+                    id: 'add', 
+                    icon: globalIcons.plus, 
+                    action: onProductAddTrigger,
+                    label: "Ürün Ekle",
+                    primary: true
+                  },
+                  { 
+                    id: 'settings', 
+                    icon: globalIcons.settings, 
+                    action: onSettingsTrigger,
+                    label: "Ayarlar" 
+                  }
+                ].filter(Boolean) as { id: string; icon: React.ReactNode; action: () => void; label: string; primary?: boolean; className?: string }[]
+              ).map((btn) => (
+                <motion.div
+                  key={btn.id}
+                  variants={{
+                    open: { opacity: 1, y: 0, scale: 1 },
+                    closed: { opacity: 0, y: 15, scale: 0.5 }
+                  }}
+                  className="w-full flex justify-center"
+                >
+                  <Button 
+                    onClick={() => handleManagementAction(btn.action)}
+                    icon={btn.icon}
+                    variant={btn.primary ? "primary" : "secondary"}
+                    size="sm"
+                    mode="circle"
+                    className={`shrink-0 ${btn.className || ''}`}
+                    aria-label={btn.label}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
           )}
-
-          <Button 
-            onClick={() => handleManagementAction(onProductAddTrigger)}
-            icon={globalIcons.plus}
-            variant="primary"
-            size="sm"
-            mode="circle"
-            className="shrink-0"
-            aria-label="Add New Product"
-          />
-
-          <Button 
-            onClick={() => handleManagementAction(onSettingsTrigger)}
-            icon={globalIcons.settings}
-            variant="secondary"
-            size="sm"
-            mode="circle"
-            className="shrink-0"
-            aria-label="General Settings"
-          />
-        </div>
+        </AnimatePresence>
 
         {/* MAIN TOGGLE CONTROL */}
-        <Button 
-          onClick={() => { clearAutoCloseTimer(); setIsMenuExpanded(previousState => !previousState); }}
-          icon={isMenuExpanded ? globalIcons.close : globalIcons.adminLayout}
-          variant={isMenuExpanded ? 'ghost' : 'secondary'}
-          size="sm"
-          mode="circle"
-          className={isMenuExpanded ? menuTheme.toggleActive : menuTheme.toggleInactive}
-          aria-label={isMenuExpanded ? "Close Admin Menu" : "Open Admin Menu"}
-        />
+        <div className="flex items-center justify-center p-0.5">
+          <Button 
+            onClick={() => { clearAutoCloseTimer(); setIsMenuExpanded(previousState => !previousState); }}
+            icon={globalIcons.adminLayout}
+            variant={isMenuExpanded ? 'ghost' : 'secondary'}
+            size="sm"
+            mode="circle"
+            className={isMenuExpanded ? menuTheme.toggleActive : menuTheme.toggleInactive}
+            aria-label={isMenuExpanded ? "Close Admin Menu" : "Open Admin Menu"}
+          />
+        </div>
       </div>
     </div>
   );

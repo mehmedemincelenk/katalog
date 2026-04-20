@@ -78,20 +78,34 @@ const CategoryFilterChip = memo(({
       onClick={() => onSelect(categoryName)}
     >
       <div className="relative h-full shrink-0 overflow-hidden flex items-center">
-        {isAdminMode ? (
-          <div className="relative group px-1 h-8 flex items-center border-r border-stone-100">
-            <OrderSelector 
-              currentOrder={currentOrder}
-              totalCount={totalCategories}
-              onChange={(newPos) => onOrderChange(categoryName, newPos)}
-              className="!shadow-none !bg-transparent !border-none !h-7 !w-7"
-            />
-          </div>
-        ) : (
-          <span className={`${chipTheme.counter.base} ${isItemSelected ? chipTheme.counter.active : chipTheme.counter.inactive}`}>
-            {productCount}
-          </span>
-        )}
+        <AnimatePresence mode="wait">
+          {isAdminMode ? (
+            <motion.div 
+              key="admin-order"
+              initial={false}
+              animate={{ opacity: 1, transform: 'translateZ(0)' }}
+              exit={{ opacity: 0, filter: 'blur(8px)' }}
+              className="relative group px-1 h-8 flex items-center border-r border-stone-100"
+            >
+              <OrderSelector 
+                currentOrder={currentOrder}
+                totalCount={totalCategories}
+                onChange={(newPos) => onOrderChange(categoryName, newPos)}
+                className="!shadow-none !bg-transparent !border-none !h-7 !w-7"
+              />
+            </motion.div>
+          ) : (
+            <motion.span 
+              key="guest-count"
+              initial={false}
+              animate={{ opacity: 1, transform: 'translateZ(0)' }}
+              exit={{ opacity: 0, filter: 'blur(8px)' }}
+              className={`${chipTheme.counter.base} ${isItemSelected ? chipTheme.counter.active : chipTheme.counter.inactive}`}
+            >
+              {productCount}
+            </motion.span>
+          )}
+        </AnimatePresence>
       </div>
       <div className={`${chipTheme.textButton} ${isAdminMode ? 'pl-2' : 'pl-4'} pr-4 pointer-events-none`}>
         <span className={isItemSelected ? chipTheme.activeText : chipTheme.inactiveText}>{categoryName}</span>

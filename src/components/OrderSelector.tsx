@@ -35,10 +35,10 @@ const OrderSelector = memo(({
         <AnimatePresence mode="wait">
           <motion.span
             key={currentOrder}
-            initial={{ y: 12, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -12, opacity: 0 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
             className={`text-stone-900 font-black absolute tracking-tighter ${variant === 'large' ? 'text-[14px]' : 'text-[12px]'}`}
           >
             {currentOrder}.

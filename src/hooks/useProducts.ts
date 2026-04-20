@@ -18,6 +18,10 @@ const REPOSITORY_TABLE = 'prods';
  * USE PRODUCTS HOOK (INVENTORY & CATALOG ENGINE)
  * -----------------------------------------------------------
  * Manages product lifecycle, categorized display logic, and inventory synchronization.
+ * 1. Real-time Synchronization: Fetching product data from Supabase.
+ * 2. CRUD Operations: Product addition, deletion, and updates with optimistic UI.
+ * 3. Visual Management: HQ/LQ image processing and storage cleanup.
+ * 4. Categorization Logic: Smart grouping, renaming, and reordering.
  */
 export function useProducts(
   currentSearchQuery = '',
@@ -130,24 +134,18 @@ export function useProducts(
    * uploadProductVisualAsset: Direct storage deployment with dual-quality processing.
    */
   const uploadProductVisualAsset = useCallback(async (productId: string, visualFile: File) => {
-    const targetProduct = catalogProducts.find(p => p.id === productId);
-    if (!targetProduct) return;
+    // 1. Dosya isimlerini ve yollarını önceden belirle
+    const turkishCharMap: Record<string, string> = { 'ç':'c','ğ':'g','ı':'i','ö':'o','ş':'s','ü':'u','Ç':'C','Ğ':'G','İ':'I','Ö':'O','Ş':'S','Ü':'U' };
+    const fileName = `${visualFile.name.split('.')[0].replace(/[çğıöşüÇĞİÖŞÜ]/g, (c: string) => turkishCharMap[c] || c).toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '').substring(0, 30)}-${productId.substring(0, 4)}-${Math.random().toString(36).substring(2, 7)}.jpg`;
+    
+    const lqPath = `${TECH.storage.lqFolder}/${fileName}`;
+    const hqPath = `${TECH.storage.hqFolder}/${fileName}`;
+    let isUploadSuccessful = false;
 
     try {
       const { hq: highQualityAsset, lq: previewAsset } = await processDualQualityVisuals(visualFile);
 
-      // Storage Hygiene
-      if (targetProduct.image) {
-        await removeProductVisual(targetProduct.image);
-      }
-
-      // SEO Naming
-      const turkishCharMap: Record<string, string> = { 'ç':'c','ğ':'g','ı':'i','ö':'o','ş':'s','ü':'u','Ç':'C','Ğ':'G','İ':'I','Ö':'O','Ş':'S','Ü':'U' };
-      const fileName = `${targetProduct.name.replace(/[çğıöşüÇĞİÖŞÜ]/g, (c: string) => turkishCharMap[c] || c).toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '').substring(0, 30)}-${productId.substring(0, 4)}-${Math.random().toString(36).substring(2, 7)}.jpg`;
-
-      const lqPath = `${TECH.storage.lqFolder}/${fileName}`;
-      const hqPath = `${TECH.storage.hqFolder}/${fileName}`;
-
+      // 2. Storage'a yükle
       const [lqUp, hqUp] = await Promise.all([
         supabase.storage.from(TECH.storage.bucket).upload(lqPath, previewAsset, { upsert: true, cacheControl: TECH.storage.cacheControl }),
         supabase.storage.from(TECH.storage.bucket).upload(hqPath, highQualityAsset, { upsert: true, cacheControl: TECH.storage.cacheControl })
@@ -156,26 +154,48 @@ export function useProducts(
       if (lqUp.error) throw lqUp.error;
       if (hqUp.error) throw hqUp.error;
 
+      isUploadSuccessful = true;
+
       const { data: { publicUrl } } = supabase.storage.from(TECH.storage.bucket).getPublicUrl(lqPath);
       const finalizedUrl = `${publicUrl}?t=${Date.now()}`;
       
+      // 3. Mevcut ürünü bulup eski görsel linkini yedekle
+      const targetProduct = catalogProducts.find(p => p.id === productId);
+      const oldImageUrl = targetProduct?.image;
+
+      // 4. Veritabanını güncelle
       await modifyProductRecord(productId, { image: finalizedUrl });
+      
+      // 5. Veritabanı başarılıysa eski görseli temizle (Eğer varsa)
+      if (oldImageUrl) {
+        await removeProductVisual(oldImageUrl);
+      }
+
       return finalizedUrl;
     } catch (error) {
-      console.error('Visual asset deployment failed:', error);
+      console.error('❌ Görsel yükleme veya senkronizasyon hatası:', error);
+      
+      // TRANSACTION ROLLBACK: Eğer yükleme yapıldı ama DB güncellenemediyle dosyaları sil
+      if (isUploadSuccessful) {
+        console.warn('⚠️ Veritabanı güncellemesi başarısız, yüklenen dosyalar temizleniyor...');
+        await supabase.storage.from(TECH.storage.bucket).remove([lqPath, hqPath]);
+      }
+
       alert(LABELS.saveError);
       throw error;
     }
-  }, [catalogProducts, removeProductVisual, modifyProductRecord]);
+  }, [modifyProductRecord, removeProductVisual, catalogProducts]);
 
   /**
    * addNewProductRecord: Initializes a new product in the catalog.
    */
   const addNewProductRecord = useCallback(async (productData: Omit<Product, 'id' | 'is_archived'>, initialImage?: File) => {
-    const peerProducts = catalogProducts.filter(p => p.category === productData.category);
-    const maxOrdinalPosition = peerProducts.length > 0 
-      ? Math.max(...peerProducts.map(p => p.sort_order || 0)) 
-      : 0;
+    let maxOrdinal = 0;
+    setCatalogProducts(prev => {
+       const peerProducts = prev.filter(p => p.category === productData.category);
+       maxOrdinal = peerProducts.length > 0 ? Math.max(...peerProducts.map(p => p.sort_order || 0)) : 0;
+       return prev;
+    });
     
     const { data: newRecord, error: insertError } = await supabase.from(REPOSITORY_TABLE).insert([{
       store_id: storeSettings.id,
@@ -185,14 +205,14 @@ export function useProducts(
       description: productData.description,
       out_of_stock: !productData.inStock,
       is_archived: false,
-      sort_order: maxOrdinalPosition + 1
+      sort_order: maxOrdinal + 1
     }]).select().single();
 
     if (newRecord && !insertError) {
       if (initialImage) await uploadProductVisualAsset(newRecord.id, initialImage);
       else synchronizeInventory(true);
     }
-  }, [uploadProductVisualAsset, synchronizeInventory, catalogProducts, storeSettings.id]);
+  }, [uploadProductVisualAsset, synchronizeInventory, storeSettings.id]);
 
   /**
    * deleteProductRecord: Permanently removes a product and associated assets.
@@ -200,8 +220,12 @@ export function useProducts(
   const deleteProductRecord = useCallback(async (productId: string) => {
     if (!window.confirm(LABELS.deleteConfirm)) return;
     
-    const targetProduct = catalogProducts.find(p => p.id === productId);
-    setCatalogProducts(previous => previous.filter(p => p.id !== productId));
+    let targetImageUrl: string | null = null;
+    setCatalogProducts(previous => {
+      const target = previous.find(p => p.id === productId);
+      if (target) targetImageUrl = target.image;
+      return previous.filter(p => p.id !== productId);
+    });
     
     const { error: deletionError } = await supabase
       .from(REPOSITORY_TABLE)
@@ -209,55 +233,68 @@ export function useProducts(
       .eq('id', productId)
       .eq('store_id', storeSettings.id);
     
-    if (!deletionError && targetProduct?.image) {
-      await removeProductVisual(targetProduct.image);
+    if (!deletionError && targetImageUrl) {
+      await removeProductVisual(targetImageUrl);
       synchronizeInventory(true);
     } else if (deletionError) {
       synchronizeInventory(); 
     }
-  }, [catalogProducts, synchronizeInventory, storeSettings.id, removeProductVisual]);
+  }, [synchronizeInventory, storeSettings.id, removeProductVisual]);
 
   /**
    * reorderProductsInCategory: Stable sequence management.
    */
   const reorderProductsInCategory = useCallback(async (productId: string, targetPos: number) => {
-    const targetProduct = catalogProducts.find(p => p.id === productId);
-    if (!targetProduct) return;
+    let updates: {id: string, sort_order: number}[] = [];
 
-    const category = targetProduct.category;
-    const peerProducts = catalogProducts
-      .filter(p => p.category === category)
-      .sort((a, b) => ((a.sort_order || 0) - (b.sort_order || 0)) || a.id.localeCompare(b.id));
-
-    const otherPeers = peerProducts.filter(p => p.id !== productId);
-    const newPeersOrder = [
-      ...otherPeers.slice(0, targetPos - 1),
-      targetProduct,
-      ...otherPeers.slice(targetPos - 1)
-    ];
-
-    const updates = newPeersOrder.map((p, index) => ({
-      id: p.id,
-      sort_order: index + 1
-    }));
-
+    const previousProducts = [...catalogProducts];
+    
     setCatalogProducts(prev => {
+      const targetProduct = prev.find(p => p.id === productId);
+      if (!targetProduct) return prev;
+
+      const category = targetProduct.category;
+      const peerProducts = prev
+        .filter(p => p.category === category)
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+      const otherPeers = peerProducts.filter(p => p.id !== productId);
+      const newPeersOrder = [
+        ...otherPeers.slice(0, targetPos - 1),
+        targetProduct,
+        ...otherPeers.slice(targetPos - 1)
+      ];
+
+      updates = newPeersOrder.map((p, index) => ({ id: p.id, sort_order: index + 1 }));
+
       const updated = prev.map(p => {
         const up = updates.find(u => u.id === p.id);
         return up ? { ...p, sort_order: up.sort_order } : p;
       });
-      return [...updated].sort((a, b) => ((a.sort_order || 0) - (b.sort_order || 0)) || a.id.localeCompare(b.id));
+      return [...updated].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
     });
 
     try {
-      await Promise.all(updates.map(u => 
-        supabase.from(REPOSITORY_TABLE).update({ sort_order: u.sort_order }).eq('id', u.id).eq('store_id', storeSettings.id)
-      ));
+      if (updates.length > 0) {
+        // BATCH UPDATE: Tek bir HTTP isteği ile tüm sıralamayı güncelle (Diamond Performance)
+        const batchPayload = updates.map(u => ({
+          id: u.id,
+          store_id: storeSettings.id,
+          sort_order: u.sort_order
+        }));
+
+        const { error: batchError } = await supabase
+          .from(REPOSITORY_TABLE)
+          .upsert(batchPayload, { onConflict: 'id' });
+
+        if (batchError) throw batchError;
+      }
     } catch (err) {
-      console.error('❌ Sıralama işlemi başarısız:', err);
-      synchronizeInventory();
+      console.error('❌ Sıralama işlemi başarısız, geri alınıyor:', err);
+      setCatalogProducts(previousProducts);
+      alert(LABELS.saveError);
     }
-  }, [catalogProducts, synchronizeInventory, storeSettings.id]);
+  }, [storeSettings.id, catalogProducts]);
 
   /**
    * executeGranularBulkActions: Processes multiple specific product changes (price, deletion, archive, stock) in parallel.
@@ -273,37 +310,47 @@ export function useProducts(
       const stockUpdates = actions.filter(a => a.inStock !== undefined);
       const archiveUpdates = actions.filter(a => a.is_archived !== undefined);
 
-      // Perform all updates and deletions in parallel batches
-      await Promise.all([
-        // Prices
-        ...priceUpdates.map(u => 
-          supabase.from(REPOSITORY_TABLE)
-            .update({ price: formatNumberToCurrency(u.newPrice!) })
-            .eq('id', u.productId)
-            .eq('store_id', storeSettings.id)
-        ),
-        // Deletions
-        ...deletions.map(d => 
-          supabase.from(REPOSITORY_TABLE)
-            .delete()
-            .eq('id', d.productId)
-            .eq('store_id', storeSettings.id)
-        ),
-        // Stock Status
-        ...stockUpdates.map(s => 
-          supabase.from(REPOSITORY_TABLE)
-            .update({ out_of_stock: !s.inStock })
-            .eq('id', s.productId)
-            .eq('store_id', storeSettings.id)
-        ),
-        // Archive Status
-        ...archiveUpdates.map(a => 
-          supabase.from(REPOSITORY_TABLE)
-            .update({ is_archived: a.is_archived })
-            .eq('id', a.productId)
-            .eq('store_id', storeSettings.id)
-        )
-      ]);
+      // BATCH UPDATES: Group all modifications into a single object-array for Upsert (Mapping to DB columns)
+      type DbUpdate = { id: string; store_id: string; price?: string; out_of_stock?: boolean; is_archived?: boolean };
+      const updatePayload: DbUpdate[] = [];
+      
+      // Collect price updates
+      priceUpdates.forEach(u => {
+        updatePayload.push({
+          id: u.productId,
+          store_id: storeSettings.id,
+          price: formatNumberToCurrency(u.newPrice!)
+        });
+      });
+
+      // Collect stock updates (merging if ID already exists in payload)
+      stockUpdates.forEach(s => {
+        const existing = updatePayload.find(p => p.id === s.productId);
+        if (existing) existing.out_of_stock = !s.inStock;
+        else updatePayload.push({ id: s.productId, store_id: storeSettings.id, out_of_stock: !s.inStock });
+      });
+
+      // Collect archive updates
+      archiveUpdates.forEach(a => {
+        const existing = updatePayload.find(p => p.id === a.productId);
+        if (existing) existing.is_archived = a.is_archived;
+        else updatePayload.push({ id: a.productId, store_id: storeSettings.id, is_archived: a.is_archived });
+      });
+
+      // Execute updates in one go
+      const updatePromise = updatePayload.length > 0 
+        ? supabase.from(REPOSITORY_TABLE).upsert(updatePayload, { onConflict: 'id' })
+        : Promise.resolve({ error: null });
+
+      // Execute deletions in one go using 'in' operator
+      const deleteIds = deletions.map(d => d.productId);
+      const deletePromise = deleteIds.length > 0
+        ? supabase.from(REPOSITORY_TABLE).delete().in('id', deleteIds).eq('store_id', storeSettings.id)
+        : Promise.resolve({ error: null });
+
+      const [uRes, dRes] = await Promise.all([updatePromise, deletePromise]);
+      if (uRes.error) throw uRes.error;
+      if (dRes.error) throw dRes.error;
 
       await synchronizeInventory(true);
     } catch (err) {
@@ -319,7 +366,12 @@ export function useProducts(
    * bulkUpdatePrices: Batch arithmetic pricing updates.
    */
   const bulkUpdatePrices = useCallback(async (targetCategories: string[], amount: number, isPercentage: boolean, isIncrease: boolean) => {
-    const productsToUpdate = catalogProducts.filter(p => targetCategories.length === 0 || targetCategories.includes(p.category));
+    let productsToUpdate: Product[] = [];
+    setCatalogProducts(prev => {
+      productsToUpdate = prev.filter(p => targetCategories.length === 0 || targetCategories.includes(p.category));
+      return prev;
+    });
+
     if (productsToUpdate.length === 0) return;
 
     const updates = productsToUpdate.map(product => {
@@ -354,7 +406,7 @@ export function useProducts(
     } finally {
       setIsInventoryLoading(false);
     }
-  }, [catalogProducts, synchronizeInventory, storeSettings.id]);
+  }, [synchronizeInventory, storeSettings.id]);
 
   /**
    * CATEGORY ANALYTICS & REBRANDING

@@ -10,13 +10,14 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "type-check": "tsc --noEmit",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.103.0",
     "dotenv": "^17.4.1",
     "framer-motion": "^12.38.0",
+    "lucide-react": "^1.8.0",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { THEME } from '../data/config';
+import Turnstile from './Turnstile';
 
 interface PinModalProps {
   isModalOpen: boolean;
@@ -7,6 +9,7 @@ interface PinModalProps {
   onAuthenticationSuccess: () => void;
   onModalClose: () => void;
   isLockedOut?: boolean;
+  failedAttempts?: number;
 }
 
 const PIN_LENGTH = 4;
@@ -16,11 +19,16 @@ export default function PinModal({
   onVerify, 
   onAuthenticationSuccess, 
   onModalClose,
-  isLockedOut 
+  isLockedOut,
+  failedAttempts = 0
 }: PinModalProps) {
   const [currentPinAttempt, setCurrentPinAttempt] = useState('');
   const [hasAuthError, setHasAuthError] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isRobotVerified, setIsRobotVerified] = useState(false);
+
+  const requiresCaptcha = failedAttempts >= 2;
+  const isInputDisabled = isLockedOut || isVerifying || (requiresCaptcha && !isRobotVerified);
 
   const theme = THEME.pinModal;
   const globalIcons = THEME.icons;
@@ -34,7 +42,7 @@ export default function PinModal({
   }, [isModalOpen]);
 
   const handleDigitEntry = async (digit: string) => {
-    if (isVerifying || currentPinAttempt.length >= PIN_LENGTH || isLockedOut) return;
+    if (isInputDisabled || currentPinAttempt.length >= PIN_LENGTH) return;
     
     const newAttempt = currentPinAttempt + digit;
     setCurrentPinAttempt(newAttempt);
@@ -58,15 +66,27 @@ export default function PinModal({
   };
 
   const handleDeleteDigit = () => {
-    if (isVerifying || isLockedOut) return;
+    if (isInputDisabled) return;
     setCurrentPinAttempt(prev => prev.slice(0, -1));
   };
 
-  if (!isModalOpen) return null;
+  // We shifted the conditional rendering logic to the parent (App.tsx)
+  // to allow AnimatePresence to handle exit animations effectively.
 
   return (
-    <div className={theme.overlay}>
-      <div className={`${theme.container} ${hasAuthError ? theme.animations.shake : ''}`}>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className={theme.overlay}
+    >
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95, filter: 'blur(15px)' }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className={`${theme.container} ${hasAuthError ? theme.animations.shake : ''}`}
+      >
         
         {/* HEADER SECTION */}
         <div className={theme.headerWrapper}>
@@ -81,12 +101,16 @@ export default function PinModal({
           </div>
           <h2 className={theme.typography.title}>{isLockedOut ? 'GÜVENLİK KİLİDİ' : 'ADMİN PANELİ'}</h2>
           <p className={theme.typography.subtitle}>
-            {isLockedOut ? 'Çok fazla yanlış deneme. Lütfen 1 dakika bekleyin.' : 'Giriş yapmak için 4 haneli PIN kodunuzu girin.'}
+            {isLockedOut 
+              ? 'Çok fazla yanlış deneme. Lütfen 1 dakika bekleyin.' 
+              : requiresCaptcha && !isRobotVerified
+                ? 'Lütfen önce güvenliği doğrulayın.'
+                : 'Giriş yapmak için 4 haneli PIN kodunuzu girin.'}
           </p>
         </div>
 
         {/* DOTS INDICATOR */}
-        <div className={`${theme.dotsWrapper} ${isLockedOut ? 'opacity-20' : ''}`}>
+        <div className={`${theme.dotsWrapper} ${isInputDisabled ? 'opacity-20' : ''}`}>
           {[...Array(PIN_LENGTH)].map((_, i) => (
             <div 
               key={i} 
@@ -99,12 +123,19 @@ export default function PinModal({
           ))}
         </div>
 
+        {/* CAPTCHA SECTION (Intelligent Barrier) */}
+        {requiresCaptcha && !isRobotVerified && (
+          <div className="animate-in fade-in zoom-in duration-500 mb-6">
+            <Turnstile onVerify={() => setIsRobotVerified(true)} options={{ theme: 'light', size: 'normal' }} />
+          </div>
+        )}
+
         {/* KEYBOARD GRID */}
-        <div className={`${theme.keyboardGrid} ${isLockedOut ? theme.animations.lockout : ''}`}>
+        <div className={`${theme.keyboardGrid} ${isInputDisabled ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
             <button 
               key={num} 
-              disabled={!!isLockedOut}
+              disabled={isInputDisabled}
               onClick={() => handleDigitEntry(String(num))} 
               className={theme.keyButton}
             >
@@ -115,18 +146,18 @@ export default function PinModal({
           {/* BOTTOM ROW */}
           <button onClick={onModalClose} className={theme.cancelButton}>İPTAL</button>
           <button 
-            disabled={!!isLockedOut}
+            disabled={isInputDisabled}
             onClick={() => handleDigitEntry('0')} 
             className={theme.keyButton}
           >
             <span className={theme.typography.keyText}>0</span>
           </button>
-          <button disabled={!!isLockedOut} onClick={handleDeleteDigit} className={theme.deleteButton}>
+          <button disabled={isInputDisabled} onClick={handleDeleteDigit} className={theme.deleteButton}>
              <div className={theme.deleteIconSize}>{globalIcons.backspace}</div>
           </button>
         </div>
 
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { THEME, DEFAULT_COMPANY } from '../data/config';
 import { CompanySettings } from '../hooks/useSettings';
 import { generateWhatsAppLink } from '../utils/contact';
@@ -23,6 +23,17 @@ interface NavbarProps {
 const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnabled, settings, updateSetting }: NavbarProps) => {
   const theme = THEME.navbar;
   const globalIcons = THEME.icons;
+  const [isLogoPressed, setIsLogoPressed] = useState(false);
+
+  const handlePressStart = () => {
+    setIsLogoPressed(true);
+    onLogoPointerDown();
+  };
+
+  const handlePressEnd = () => {
+    setIsLogoPressed(false);
+    onLogoPointerUp();
+  };
 
   // handleLogoClick removed to enforce long-press for authentication
 
@@ -77,7 +88,7 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnab
     }
   };
 
-  const editStyle = isAdmin ? "outline-none focus:ring-2 focus:ring-stone-900/10 rounded px-1 -mx-1 transition-all hover:bg-stone-50 cursor-text" : "";
+  const editStyle = isAdmin ? "outline-none focus:ring-0 rounded px-1 -mx-1 transition-colors duration-200 hover:bg-stone-50 cursor-text motion-fix" : "";
 
   const config = settings.displayConfig;
   const isRightSideVisible = config.showInstagram || config.showAddress || config.showWhatsapp;
@@ -90,10 +101,11 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnab
           
           {/* BRAND SECTION (Logo & Identity) - GESTURE AREA */}
           <div 
-            className={theme.brand.wrapper}
-            onPointerDown={onLogoPointerDown}
-            onPointerUp={onLogoPointerUp}
-            onContextMenu={(e) => isAdmin && e.preventDefault()}
+            className={`${theme.brand.wrapper} relative transition-all duration-200 ${isLogoPressed ? 'scale-95 opacity-80' : 'scale-100'}`}
+            onPointerDown={handlePressStart}
+            onPointerUp={handlePressEnd}
+            onPointerLeave={handlePressEnd}
+            onContextMenu={(e) => e.preventDefault()}
             style={{ 
               userSelect: 'none', 
               WebkitUserSelect: 'none', 
@@ -101,10 +113,13 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnab
               touchAction: 'none'
             }}
           >
+            {/* INVISIBLE SHIELD: Prevents native browser context menus on mobile */}
+            <div className="absolute inset-0 z-[40] cursor-pointer" />
+
             {settings.displayConfig.showLogo && (
               <div 
                 onClick={() => isAdmin && document.getElementById('logo-upload-input')?.click()}
-                className={`${theme.brand.logoWrapper} select-none touch-none cursor-pointer overflow-hidden flex items-center justify-center`}
+                className={`${theme.brand.logoWrapper} select-none touch-none cursor-pointer overflow-hidden flex items-center justify-center relative z-[30]`}
               >
                 <input 
                   id="logo-upload-input"
@@ -121,7 +136,7 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnab
               </div>
             )}
 
-            <div className={`${theme.brand.textWrapper} cursor-pointer`}>
+            <div className={`${theme.brand.textWrapper} cursor-pointer relative z-[30]`}>
               <div className="flex items-center">
                 <span 
                   contentEditable={isAdmin && isInlineEnabled}

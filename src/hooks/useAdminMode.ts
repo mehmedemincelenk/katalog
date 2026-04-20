@@ -5,6 +5,15 @@ import { getActiveStoreSlug } from '../utils/store';
 
 const STORE_SLUG = getActiveStoreSlug();
 
+/**
+ * ADMIN SESSION & GESTURE ENGINE (useAdminMode)
+ * -----------------------------------------------------------
+ * Bu hook mağazanın kapı görevlisidir:
+ * 1. Admin oturum yönetimi (sessionStorage).
+ * 2. Gesture Algılama: Logoya uzun basış (1.5s) ile giriş/çıkış.
+ * 3. Güvenlik: PIN doğrulama ve hatalı deneme kilidi.
+ * 4. UX Tercihleri: 'Vibe Coding' için inline düzenleme modu kontrolü.
+ */
 export function useAdminMode() {
   const [isAdmin, setIsAdmin] = useState(() => {
     return sessionStorage.getItem(STORAGE.adminSession) === TECH.auth.sessionActiveValue;
@@ -55,30 +64,30 @@ export function useAdminMode() {
     return () => clearInterval(check);
   }, [lockoutUntil]);
 
-  // SECURITY: The PIN is verified directly via Supabase query filters
   const verifyPinWithServer = useCallback(async (pin: string) => {
     if (STORE_SLUG === 'main-site') return false;
     
-    // Safety: If locked out, refuse to even call the server
     if (isLockedOut) {
       console.warn('Security Shield: Rate limited. Please wait.');
       return false;
     }
     
-    const { data, error } = await supabase
-      .from('stores')
-      .select('id')
-      .eq('slug', STORE_SLUG)
-      .eq('admin_pin', pin)
-      .single();
+    // SECURE SERVER-SIDE VERIFICATION: Doğrudan tabloyu okumuyoruz, gizli fonksiyonu çağırıyoruz.
+    const { data: isSuccess, error } = await supabase
+      .rpc('verify_admin_access', { 
+        target_slug: STORE_SLUG, 
+        input_pin: pin 
+      });
     
-    const isSuccess = !!data && !error;
+    if (error) {
+      console.error('❌ PIN doğrulama sırasında teknik hata:', error);
+      return false;
+    }
 
     if (!isSuccess) {
       const newAttempts = failedAttempts + 1;
       setFailedAttempts(newAttempts);
       
-      // Bot Protection: Block for 60 seconds after 3 fails
       if (newAttempts >= 3) {
         const until = Date.now() + 60000;
         setLockoutUntil(until);
@@ -142,14 +151,14 @@ export function useAdminMode() {
         setIsQRModalOpen(true);
         clickCount.current = 0; // Reset
       } else {
-        // 2 Seconds Hold -> Admin Login/Logout
+        // 1.5 Seconds Hold -> Admin Login/Logout
         if (isAdmin) {
           logout();
         } else {
           setIsPinModalOpen(true);
         }
       }
-    }, isGestureAction ? 800 : 2000); 
+    }, isGestureAction ? 800 : 1500); 
   }, [isAdmin, logout]);
 
   const handleLogoPointerUp = useCallback(() => {
@@ -187,6 +196,7 @@ export function useAdminMode() {
     onPinSuccess,
     isInlineEnabled,
     toggleInlineEdit,
-    isLockedOut
+    isLockedOut,
+    failedAttempts
   };
 }

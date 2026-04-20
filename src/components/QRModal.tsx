@@ -104,7 +104,7 @@ const QRModal: React.FC<QRModalProps> = ({ isOpen, onClose }) => {
                 mode="rectangle"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white">PAYLAŞ</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white">PAYLA┼×</span>
                 </div>
               </Button>
             </div>

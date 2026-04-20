@@ -16,6 +16,24 @@ const FS = {
   xl: 'text-lg sm:text-2xl leading-none font-black tracking-tighter',
 };
 
+import { 
+  GripHorizontal, 
+  ChevronLeft, 
+  X, 
+  Search, 
+  Lock, 
+  Delete, 
+  ChevronRight, 
+  ChevronDown, 
+  ChevronUp, 
+  Power, 
+  Plus, 
+  Check, 
+  Settings, 
+  Trash2,
+  LayoutGrid
+} from 'lucide-react';
+
 export const THEME = {
   radius: {
     card: BR.md,
@@ -50,28 +68,23 @@ export const THEME = {
   },
 
   icons: {
-    dots: (
-      <svg viewBox="0 0 24 24" className="w-full h-full fill-none stroke-current stroke-[2.5]" style={{ strokeLinecap: 'round' }}>
-        <line x1="5" y1="8" x2="19" y2="8" />
-        <line x1="5" y1="16" x2="19" y2="16" />
-      </svg>
-    ),
-    back: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3 h-3"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>,
-    close: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>,
+    dots: <GripHorizontal className="w-full h-full" strokeWidth={2.5} />,
+    back: <ChevronLeft className="w-4 h-4" strokeWidth={3} />,
+    close: <X className="w-5 h-5" strokeWidth={2.5} />,
     whatsapp: <svg className="w-full h-full fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.506-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.13.57-.074 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.648h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>,
-    search: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-full h-full"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>,
-    lock: <svg viewBox="0 0 24 24" className="w-full h-full fill-current"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9z" /></svg>,
-    backspace: <svg viewBox="0 0 24 24" className="w-full h-full fill-current"><path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z" /></svg>,
-    chevronLeft: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-full h-full"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>,
-    chevronRight: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-full h-full"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>,
-    chevronDown: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-full h-full"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>,
-    chevronUp: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-full h-full"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>,
-    power: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-full h-full p-0.5"><path strokeLinecap="round" strokeLinejoin="round" d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9" /></svg>,
-    plus: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-full h-full p-0.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>,
-    check: <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>,
-    adminLayout: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-full h-full p-0.5"><path fillRule="evenodd" d="M3 6a3 3 0 0 1 3-3h2.25a3 3 0 0 1 3 3v2.25a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm9.75 0a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3v2.25a3 3 0 0 1-3 3h-2.25a3 3 0 0 1-3-3V6ZM3 15.75a3 3 0 0 1 3-3h2.25a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-2.25Zm9.75 0a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-2.25a3 3 0 0 1-3-3v-2.25Z" clipRule="evenodd" /></svg>,
-    settings: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-full h-full p-0.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.592c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.127c-.332.183-.582.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
-    trash: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-full h-full p-0.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>,
+    search: <Search className="w-full h-full" strokeWidth={2} />,
+    lock: <Lock className="w-full h-full" fill="currentColor" strokeWidth={0} />,
+    backspace: <Delete className="w-full h-full" fill="currentColor" strokeWidth={1.5} />,
+    chevronLeft: <ChevronLeft className="w-full h-full" strokeWidth={2.5} />,
+    chevronRight: <ChevronRight className="w-full h-full" strokeWidth={2.5} />,
+    chevronDown: <ChevronDown className="w-full h-full" strokeWidth={2.5} />,
+    chevronUp: <ChevronUp className="w-full h-full" strokeWidth={2.5} />,
+    power: <Power className="w-full h-full p-0.5" strokeWidth={3} />,
+    plus: <Plus className="w-full h-full p-0.5" strokeWidth={3} />,
+    check: <Check className="w-full h-full" strokeWidth={3} />,
+    adminLayout: <LayoutGrid className="w-full h-full p-0.5" strokeWidth={2.5} />,
+    settings: <Settings className="w-full h-full p-0.5" strokeWidth={3} />,
+    trash: <Trash2 className="w-full h-full p-0.5" strokeWidth={2.5} />,
   },
 
   button: {
@@ -118,15 +131,14 @@ export const THEME = {
       instagram: 'text-stone-400 hover:text-pink-600 transition-all active:scale-75 cursor-pointer',
       instagramIconSize: 'w-4 h-4 sm:w-5 sm:h-5',
       whatsapp: `flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 bg-stone-900 text-white ${BR.low} transition-all active:scale-95 shadow-sm hover:bg-black`,
-      whatsappIconSize: 'w-3 h-3 sm:w-4 sm:h-4',
       phoneText: `text-[9px] sm:${FS.xs} font-black tracking-tight`,
     }
   },
 
   floatingAdminMenu: {
-    wrapper: 'fixed bottom-5 right-4 z-[150]',
+    wrapper: 'fixed bottom-2 right-2 z-[150]',
     container: `flex flex-col items-center p-1 bg-stone-200/50 backdrop-blur-xl border border-white/20 shadow-2xl ${BR.full} transition-all duration-200`,
-    innerActions: 'flex flex-col gap-1.5 overflow-hidden transition-all duration-200',
+    innerActions: 'flex flex-col gap-1.5 overflow-hidden',
     actionsActive: 'max-h-64 opacity-100 mt-1 mb-2',
     actionsInactive: 'max-h-0 opacity-0',
     toggleActive: '!bg-stone-900/10 !text-stone-900 shadow-none border-transparent',
@@ -163,7 +175,7 @@ export const THEME = {
       wrapper: 'flex w-full sm:w-auto items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap',
       inputWrapper: `relative flex-1 sm:w-48 min-w-[140px] ${BR.low}`,
       iconSize: 'absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400',
-      input: `w-full pl-9 pr-8 py-2 border border-stone-200 ${FS.sm} text-stone-900 focus:ring-2 focus:ring-stone-900 outline-none transition bg-stone-50/50 ${BR.low}`,
+      input: `w-full pl-9 pr-8 py-2 border border-stone-200 ${FS.sm} text-stone-900 focus:ring-2 focus:ring-stone-900 outline-none transition-colors duration-200 bg-stone-50/50 ${BR.low} motion-fix`,
       clearButton: 'absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-900 p-1 transition-colors',
       mobileToggle: `sm:hidden flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 border border-stone-200 ${FS.xs} font-black text-stone-700 ${BR.low}`,
     },
@@ -202,7 +214,7 @@ export const THEME = {
     cols: 'grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4',
     gap: 'gap-x-2 gap-y-2 sm:gap-x-6 sm:gap-y-10',
     emptyState: {
-      wrapper: 'flex flex-col items-center justify-center py-20 text-stone-400 animate-in fade-in duration-700',
+      wrapper: 'flex flex-col items-center justify-center py-20 text-stone-400',
       iconSize: 'w-16 h-16 mb-4 opacity-20',
       text: `${FS.sm} font-medium italic tracking-wide`,
       adminWrapper: `text-center py-16 border-2 border-dashed border-stone-100 ${BR.lg} mb-12 bg-stone-50/30`,
@@ -219,7 +231,7 @@ export const THEME = {
       inputWrapper: 'flex items-stretch gap-1 w-full h-10',
       input: `flex-1 px-4 py-2 border border-stone-200 text-stone-900 bg-stone-50/50 outline-none transition-all duration-300 ${FS.sm} font-bold focus:border-stone-900 focus:bg-white`,
       button: `w-10 h-10 flex items-center justify-center bg-stone-900 text-white transition-all active:scale-90 shrink-0`,
-      statusWrapper: 'mt-1 animate-in fade-in duration-300 text-center',
+      statusWrapper: 'mt-1 text-center',
       statusText: `${FS.xs} font-bold uppercase tracking-tight`,
       successText: 'text-green-600',
       errorText: 'text-red-500',
@@ -271,12 +283,12 @@ export const THEME = {
       priceOutOfStock: 'line-through opacity-30 text-stone-400 scale-95 origin-left',
       discountPrice: 'text-kraft-600',
       categoryBadge: `${FS.xs} text-stone-400`,
-      editable: 'cursor-text focus:outline-none outline-none',
+      editable: 'cursor-text focus:outline-none outline-none motion-fix',
     },
     adminMenu: {
       container: 'absolute right-1 bottom-1 z-30',
       toggleButton: '!bg-stone-50/80 backdrop-blur shadow-sm border-stone-200',
-      dropdown: `absolute bottom-full right-0 mb-2 w-48 bg-white/95 backdrop-blur-2xl border border-stone-200 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-200 origin-bottom-right ${BR.md}`,
+      dropdown: `absolute bottom-full right-0 mb-2 w-48 bg-white/95 backdrop-blur-2xl border border-stone-200 shadow-2xl py-2 z-50 origin-bottom-right ${BR.md}`,
       item: 'w-full text-left px-4 py-2.5 hover:bg-stone-50 border-b border-stone-100 last:border-0 transition-colors',
       itemText: `${FS.sm} text-stone-800`,
       categoryListWrapper: 'max-h-48 overflow-y-auto py-1 custom-scrollbar',
@@ -357,7 +369,7 @@ export const THEME = {
   },
 
   pinModal: {
-    overlay: 'fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xl animate-in fade-in duration-500',
+    overlay: 'fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xl',
     container: 'relative w-full max-w-[240px] sm:max-w-[280px] flex flex-col items-center select-none transform transition-transform duration-300',
     headerWrapper: 'text-center mb-6',
     headerIconWrapper: `w-12 h-12 bg-white/10 backdrop-blur-md ${BR.md} flex items-center justify-center mx-auto mb-3 shadow-xl border border-white/20`,
@@ -384,12 +396,12 @@ export const THEME = {
   },
 
   modal: {
-    overlay: 'fixed inset-0 z-[200] flex flex-col items-center justify-center bg-white/40 backdrop-blur-2xl p-4 md:p-8 animate-in fade-in duration-500',
+    overlay: 'fixed inset-0 z-[200] flex flex-col items-center justify-center bg-white/40 backdrop-blur-2xl p-4 md:p-8',
     closeButtonWrapper: 'absolute top-6 right-6 z-[210]',
     closeButtonCustom: '!bg-white/80',
     imageWrapper: 'w-full flex items-center justify-center max-h-[50vh] md:max-h-[55vh]',
     image: `max-w-full max-h-[50vh] md:max-h-[55vh] object-contain shadow-2xl ${BR.lg}`,
-    contentWrapper: 'text-center space-y-4 w-full max-w-2xl animate-in slide-in-from-bottom-4 duration-700',
+    contentWrapper: 'text-center space-y-4 w-full max-w-2xl',
     headerWrapper: 'space-y-1',
     title: `${FS.xl} text-stone-900`,
     description: `${FS.base} text-stone-500 leading-relaxed font-medium px-6`,
@@ -415,15 +427,15 @@ export const UI = {
     adminLimit: 999,
   },
   animations: {
-    fadeIn: 'animate-in fade-in duration-500',
-    slideUp: 'animate-in fade-in slide-in-from-bottom-4 duration-700',
+    fadeIn: '',
+    slideUp: '',
   },
   category: {
     initialVisible: 6,
   },
   errorState: {
     overlay: 'min-h-screen flex flex-col items-center justify-center p-6 text-center bg-stone-50',
-    card: `bg-white p-10 ${BR.lg} shadow-2xl border border-stone-100 max-w-sm w-full animate-in zoom-in-95 duration-500`,
+    card: `bg-white p-10 ${BR.lg} shadow-2xl border border-stone-100 max-w-sm w-full`,
     icon: 'text-6xl mb-6 block',
     title: `${FS.lg} text-stone-900 mb-3`,
     description: `${FS.sm} text-stone-500 leading-relaxed mb-8`,

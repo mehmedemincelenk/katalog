@@ -1,0 +1,71 @@
+import { useEffect, useRef } from 'react';
+
+interface TurnstileProps {
+  onVerify: (token: string) => void;
+  options?: {
+    theme?: 'light' | 'dark' | 'auto';
+    size?: 'normal' | 'compact' | 'invisible';
+  };
+}
+
+/**
+ * TURNSTILE COMPONENT (Cloudflare Security Widget)
+ * -----------------------------------------------------------
+ * Provides intelligent, non-intrusive bot protection.
+ */
+const Turnstile = ({ onVerify, options = {} }: TurnstileProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    // Cloudflare scriptinin yüklendiğinden emin ol
+    if (!window.turnstile) {
+      console.warn('Cloudflare Turnstile script not loaded yet.');
+      return;
+    }
+
+    // Eğer zaten bir widget varsa salla
+    if (widgetIdRef.current) {
+      window.turnstile.remove(widgetIdRef.current);
+    }
+
+    // Yerel geliştirme ortamında test anahtarını, canlıda gerçek anahtarı kullanıyoruz.
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const activeSiteKey = isLocal 
+      ? '1x00000000000000000000AA' // Local Test Key
+      : '0x4AAAAAADAJkSXkZ8wkzSTM'; // Your Production Key
+
+    widgetIdRef.current = window.turnstile.render(containerRef.current!, {
+      sitekey: activeSiteKey,
+      callback: (token: string) => onVerify(token),
+      theme: options.theme || 'auto',
+      size: options.size || 'normal',
+    });
+
+    return () => {
+      if (widgetIdRef.current) {
+        window.turnstile.remove(widgetIdRef.current);
+      }
+    };
+  }, [onVerify, options.theme, options.size]);
+
+  return <div ref={containerRef} className="my-4 flex justify-center" />;
+};
+
+export default Turnstile;
+
+interface TurnstileOptions {
+  sitekey: string;
+  callback: (token: string) => void;
+  theme?: 'light' | 'dark' | 'auto';
+  size?: 'normal' | 'compact' | 'invisible';
+}
+
+declare global {
+  interface Window {
+    turnstile: {
+      render: (container: string | HTMLElement, options: TurnstileOptions) => string;
+      remove: (widgetId: string) => void;
+    };
+  }
+}

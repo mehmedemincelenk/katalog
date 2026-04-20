@@ -42,9 +42,13 @@ export interface CompanySettings {
 const STORE_SLUG = getActiveStoreSlug();
 
 /**
- * USE SETTINGS HOOK (BRANDING & CONFIGURATION ENGINE)
+ * BRANDING & CONFIGURATION ENGINE (useSettings)
  * -----------------------------------------------------------
- * Manages store-wide settings including contact info, branding assets, and display logic.
+ * Manages the store's identity and visual rules. Key responsibilities:
+ * 1. Identity Management: Store title, logo, address, and social links.
+ * 2. Layout Control: Component visibility toggles (DisplayConfig).
+ * 3. Dynamic Assets: Management of Hero Carousels and Client References.
+ * 4. UX States: Inline editing toggle for the 'vibe coding' experience.
  */
 export function useSettings(isAdministrativeModeActive: boolean) {
   const [activeStoreSettings, setActiveStoreSettings] = useState<CompanySettings>({

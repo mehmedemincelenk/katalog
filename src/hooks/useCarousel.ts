@@ -1,3 +1,8 @@
+// FILE: src/hooks/useCarousel.ts
+// ROLE: Manages fetching, updating, uploading images, and reordering hero carousel slides
+// READS FROM: src/lib/supabase, src/data/config, src/utils/store
+// USED BY: HeroCarousel
+
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { CAROUSEL, TECH } from '../data/config';
@@ -18,6 +23,11 @@ const STORE_SLUG = getActiveStoreSlug();
  * -----------------------------------------------------------
  * Orchestrates the hero visual experience and marketing slide synchronization.
  */
+
+// ARCHITECTURE: useCarousel
+// PURPOSE: Encapsulates all state and API interactions for the Hero Carousel (read/write slides)
+// DEPENDENCIES: supabase, CAROUSEL default config, processDualQualityVisuals
+// CONSUMERS: HeroCarousel component
 export function useCarousel(isAdministrativeModeActive: boolean) {
   const [marketingSlides, setMarketingSlides] = useState<Slide[]>(CAROUSEL.slides);
   const [isCarouselContentLoading, setIsCarouselContentLoading] = useState(true);
@@ -79,6 +89,9 @@ export function useCarousel(isAdministrativeModeActive: boolean) {
   /**
    * uploadHeroVisualAsset: Processes and uploads a new high-quality image for a slide.
    */
+  // ⚠️ CRITICAL: Dynamic Import Risk
+  // RISK: `processDualQualityVisuals` is dynamically imported but errors are caught globally. If the chunk fails to load due to network, it will fail silently or throw an unhandled promise rejection depending on Vite's setup.
+  // EVIDENCE: `const { processDualQualityVisuals } = await import('../utils/image');`
   const uploadHeroVisualAsset = useCallback(async (slideId: number, visualFile: File) => {
     try {
       const { processDualQualityVisuals } = await import('../utils/image');

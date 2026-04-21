@@ -1,3 +1,8 @@
+// FILE: src/components/Footer.tsx
+// ROLE: Renders the site footer, including social links, promo code input, and administrative QR code triggers
+// READS FROM: src/data/config, src/hooks/useSettings
+// USED BY: App.tsx
+
 import { useState, useCallback, useMemo } from 'react';
 import { THEME, LABELS } from '../data/config';
 import { ActiveDiscount } from '../hooks/useDiscount';
@@ -14,6 +19,10 @@ interface FooterProps {
   settings: CompanySettings;
 }
 
+// ARCHITECTURE: Footer
+// PURPOSE: Displays configured company address, instagram links, dynamic promo code forms, and handles bottom-of-page navigation
+// DEPENDENCIES: THEME.footer, CompanySettings
+// CONSUMERS: App layout layer
 export default function Footer({ isAdmin, activeDiscount, onApplyDiscount, discountError, onQRClick, settings }: FooterProps) {
   const [couponCodeInput, setCouponCodeInput] = useState('');
 

@@ -1,3 +1,8 @@
+// FILE: src/hooks/useAdminMode.ts
+// ROLE: Manages admin session state, PIN verification, auto-logout, and complex gesture detection for admin entry
+// READS FROM: src/data/config, src/lib/supabase, src/utils/store
+// USED BY: App.tsx, Navbar, admin-restricted components
+
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { TECH, STORAGE } from '../data/config';
 import { supabase } from '../lib/supabase';
@@ -13,6 +18,11 @@ const STORE_SLUG = getActiveStoreSlug();
  * - Akıllı Gesture Algılama (PIN vs QR Ayrımı).
  * - Sunucu taraflı PIN doğrulama (RPC).
  */
+
+// ARCHITECTURE: useAdminMode
+// PURPOSE: Handles the entire admin lifecycle including login/logout logic, UI gesture triggers, and brute-force protection
+// DEPENDENCIES: supabase (for 'verify_admin_access' RPC), getActiveStoreSlug
+// CONSUMERS: Top-level App components or providers needing admin state and functions
 export function useAdminMode() {
   const [isAdmin, setIsAdmin] = useState(() => {
     return sessionStorage.getItem(STORAGE.adminSession) === TECH.auth.sessionActiveValue;

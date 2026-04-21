@@ -1,3 +1,8 @@
+// FILE: src/components/HeroCarousel.tsx
+// ROLE: Top-level banner carousel component, supporting auto-play, swipe gestures, and admin slide management
+// READS FROM: src/data/config, src/hooks/useCarousel
+// USED BY: App.tsx
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { THEME, LABELS, TECH } from '../data/config';
 import { useCarousel } from '../hooks/useCarousel';
@@ -14,6 +19,10 @@ interface HeroCarouselProps {
   isAdminModeActive: boolean; 
 }
 
+// ARCHITECTURE: HeroCarousel
+// PURPOSE: Coordinates the display of multiple marketing slides, managing auto-scroll intervals and touch-swipe navigation
+// DEPENDENCIES: useCarousel, CarouselSlideUnit, THEME.heroCarousel
+// CONSUMERS: Renders at the top of the main application layout
 export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
   const { slides, uploadHeroImage, addSlide, deleteSlide, reorderSlides, loading } = useCarousel(isAdminModeActive);
   const fileUploadInputRef = useRef<HTMLInputElement>(null);

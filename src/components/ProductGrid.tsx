@@ -1,3 +1,8 @@
+// FILE: src/components/ProductGrid.tsx
+// ROLE: Renders the entire catalog categorized by sections, including handling empty states and "load more" logic
+// READS FROM: src/data/config, src/types
+// USED BY: App.tsx
+
 import { useMemo, memo } from 'react';
 import { THEME, LABELS, sortCategories, TECH } from '../data/config';
 import { Product } from '../types';
@@ -31,6 +36,10 @@ interface ProductGridProps {
   showPrice?: boolean;
 }
 
+// ARCHITECTURE: ProductGrid
+// PURPOSE: Groups the flat product array into categories based on global configuration and renders `ProductCard` instances per category
+// DEPENDENCIES: ProductCard, sortCategories, THEME.grid
+// CONSUMERS: App layout layer
 const ProductGrid = memo(({
   products = [], 
   categoryOrder = [], 

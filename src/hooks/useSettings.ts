@@ -1,3 +1,8 @@
+// FILE: src/hooks/useSettings.ts
+// ROLE: Manages fetching and updating global store configuration (UI settings, contact info, visual toggles)
+// READS FROM: src/lib/supabase, src/data/config, src/utils/store
+// USED BY: App.tsx, Navbar, Footer, DisplaySettingsModal, Admin components
+
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { DEFAULT_COMPANY, CATEGORY_ORDER as DEFAULT_ORDER } from '../data/config';
@@ -51,6 +56,11 @@ const STORE_SLUG = getActiveStoreSlug();
  * 3. Dynamic Assets: Management of Hero Carousels and Client References.
  * 4. UX States: Inline editing toggle for the 'vibe coding' experience.
  */
+
+// ARCHITECTURE: useSettings
+// PURPOSE: Primary hook for loading and saving the current tenant's global store configuration (colors, visibility, branding)
+// DEPENDENCIES: supabase, getActiveStoreSlug
+// CONSUMERS: Top-level App components or providers needing configuration state
 export function useSettings(isAdministrativeModeActive: boolean) {
   const [activeStoreSettings, setActiveStoreSettings] = useState<CompanySettings>({
     id: '',

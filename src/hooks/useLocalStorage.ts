@@ -1,3 +1,8 @@
+// FILE: src/hooks/useLocalStorage.ts
+// ROLE: Generic hook for state management synchronized with localStorage
+// READS FROM: src/data/config
+// USED BY: Utility hook potentially used across settings or basic persistence layers
+
 import { useState, useCallback } from 'react';
 import { LABELS } from '../data/config';
 
@@ -6,6 +11,11 @@ import { LABELS } from '../data/config';
  * -----------------------------------------------------------
  * Ensures seamless data retention across browser sessions.
  */
+
+// ARCHITECTURE: useLocalStorage
+// PURPOSE: A robust wrapper around useState and localStorage that safely handles parsing and quota exceptions
+// DEPENDENCIES: window.localStorage
+// CONSUMERS: General application components needing persistent state
 export function useLocalStorage<T>(storageKey: string, initialValue: T): [T, (updateValue: T | ((val: T) => T)) => void] {
   
   // Initialization: Retrieve existing data from persistent storage

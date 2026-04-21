@@ -1,3 +1,8 @@
+// FILE: src/data/products.ts
+// ROLE: Fallback/Default product data used as a last resort if database connections fail
+// READS FROM: src/types
+// USED BY: Product hooks or initialization logic
+
 // ============================================================
 // DEFAULT PRODUCTS (YEDEK ÜRÜN HAVUZU)
 // ============================================================
@@ -15,6 +20,10 @@
 
 import { Product } from '../types';
 
+// ARCHITECTURE: DEFAULT_PRODUCTS
+// PURPOSE: Array of default product objects to render if the primary data source is empty or unavailable
+// DEPENDENCIES: Product type definition
+// CONSUMERS: Initialization logic, default state
 export const DEFAULT_PRODUCTS: Product[] = [
   // Örnek: Eğer Sheets boşsa mağazada görünecek temel ürünler buraya eklenebilir.
   /* 

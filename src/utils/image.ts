@@ -1,8 +1,17 @@
+// FILE: src/utils/image.ts
+// ROLE: Handles image URL resolution, file conversion, and optimized resizing/compression
+// READS FROM: src/data/config
+// USED BY: Product display components, AddProductModal, ProductCard
+
 import { TECH, LABELS, THEME } from '../data/config';
 
 /**
  * resolveVisualAssetUrl: Harmonizes raw storage paths into valid public URLs.
  */
+// ARCHITECTURE: resolveVisualAssetUrl
+// PURPOSE: Transforms relative paths or storage paths into absolute public URLs for display
+// DEPENDENCIES: Vite's import.meta.env.BASE_URL
+// CONSUMERS: ProductCard, HeroCarousel, CarouselSlideUnit
 export const resolveVisualAssetUrl = (assetPath: string | null | undefined): string | null => {
   if (!assetPath) return null;
   // Early exit if the path is already an absolute URL or data URI
@@ -36,6 +45,10 @@ const transformFileToVisualElement = (visualFile: File): Promise<HTMLImageElemen
 /**
  * processDualQualityVisuals: Generates high-definition and preview-optimized copies from a single file.
  */
+// ARCHITECTURE: processDualQualityVisuals
+// PURPOSE: Generates two versions of an image (high-res and low-res preview) as Blobs for storage
+// DEPENDENCIES: transformFileToVisualElement, TECH.storage settings
+// CONSUMERS: useProductStorage (Admin add/edit product logic)
 export async function processDualQualityVisuals(visualFile: File, hqMaxWidth?: number): Promise<{ hq: Blob, lq: Blob }> {
   const visualElement = await transformFileToVisualElement(visualFile);
   
@@ -84,6 +97,10 @@ export async function processDualQualityVisuals(visualFile: File, hqMaxWidth?: n
 /**
  * compressVisualToDataUri: Legacy-compatible compression for immediate Base64 feedback.
  */
+// ARCHITECTURE: compressVisualToDataUri
+// PURPOSE: Compresses an image file and returns a Base64 Data URI string, typically for quick preview or legacy storage
+// DEPENDENCIES: transformFileToVisualElement, THEME.colors.visualFallback
+// CONSUMERS: Fallback image uploads or simple immediate UI previews
 export async function compressVisualToDataUri(visualFile: File, maximumDimension: number, compressionQuality: number): Promise<string> {
   const visualElement = await transformFileToVisualElement(visualFile);
   const drawingCanvas = document.createElement('canvas');

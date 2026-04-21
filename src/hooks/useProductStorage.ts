@@ -1,3 +1,8 @@
+// FILE: src/hooks/useProductStorage.ts
+// ROLE: Handles upload and deletion of product images to Supabase storage
+// READS FROM: src/lib/supabase, src/data/config
+// USED BY: AddProductModal, ProductCard (for edits/deletes)
+
 import { useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { Product } from '../types';
@@ -8,6 +13,11 @@ import { TECH } from '../data/config';
  * -----------------------------------------------------------
  * Specialized service for processing and managing remote visual assets.
  */
+
+// ARCHITECTURE: useProductStorage
+// PURPOSE: Manages image processing (HQ/LQ splits) and handles Supabase storage bucket operations (upload/delete)
+// DEPENDENCIES: supabase storage, processDualQualityVisuals
+// CONSUMERS: Admin components editing or adding products
 export function useProductStorage() {
   
   /**
@@ -15,6 +25,9 @@ export function useProductStorage() {
    * @param targetProduct - The product entity associated with the visual.
    * @param visualFile - The raw image file selected for upload.
    */
+  // ⚠️ CRITICAL: Dynamic Import Risk
+  // RISK: Network failure loading `processDualQualityVisuals` chunk can crash the upload silently or throw unhandled rejection.
+  // EVIDENCE: `const { processDualQualityVisuals } = await import('../utils/image');`
   const uploadProductVisual = useCallback(async (targetProduct: Product, visualFile: File) => {
     try {
       const { processDualQualityVisuals } = await import('../utils/image');

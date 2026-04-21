@@ -1,3 +1,8 @@
+// FILE: src/components/SearchFilter.tsx
+// ROLE: Renders category chips, search inputs, and handles category filtering logic and admin category renaming
+// READS FROM: src/data/config, src/types
+// USED BY: App.tsx
+
 import React, { useState, useMemo, memo, useEffect, useRef, useCallback } from 'react';
 import { THEME, LABELS, TECH, sortCategories } from '../data/config';
 import { Product } from '../types';

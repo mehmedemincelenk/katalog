@@ -1,9 +1,18 @@
+// FILE: src/utils/store.ts
+// ROLE: Resolves the active store slug from the current URL or environment variables for multi-tenant SaaS routing
+// READS FROM: None
+// USED BY: useProducts, useDiscount, useAdminMode, and general data fetching logic
+
 /**
  * STORE UTILS
  * -----------------------------------------------------------
  * SaaS mimarisinde aktif dükkanı URL'den veya çevreden çözer.
  */
 
+// ARCHITECTURE: getActiveStoreSlug
+// PURPOSE: Determines which tenant (store) should be loaded based on the hostname or environment variables
+// DEPENDENCIES: import.meta.env (Vite environment variables), window.location
+// CONSUMERS: Data hooks (useProducts, useSettings), authentication contexts
 export const getActiveStoreSlug = (): string => {
   if (typeof window === 'undefined') return 'main-site';
 

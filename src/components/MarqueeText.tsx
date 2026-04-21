@@ -1,3 +1,8 @@
+// FILE: src/components/MarqueeText.tsx
+// ROLE: Renders text that auto-scrolls horizontally if it overflows its container (Marquee effect)
+// READS FROM: src/data/config
+// USED BY: Navbar, Footer, ProductCard, CarouselSlideUnit
+
 import { useRef, useState, useEffect, memo } from 'react';
 import { THEME } from '../data/config';
 
@@ -15,6 +20,10 @@ interface MarqueeTextProps {
  * Handles overflow text with a sliding animation for customers, 
  * while keeping it editable for admins. Managed via THEME tokens.
  */
+// ARCHITECTURE: MarqueeText
+// PURPOSE: A robust text component that detects overflow and applies a CSS marquee animation for customers, but renders standard text (with contentEditable if needed) for admins
+// DEPENDENCIES: THEME.typography.marquee
+// CONSUMERS: Used anywhere dynamic text length could break layout constraints
 export const MarqueeText = memo(({ 
   text, 
   textClass, 

@@ -1,3 +1,8 @@
+// FILE: src/components/DisplaySettingsModal.tsx
+// ROLE: Admin modal for toggling global display configurations (e.g., showing prices, references, WhatsApp button)
+// READS FROM: src/data/config, src/hooks/useSettings
+// USED BY: FloatingAdminMenu
+
 import { memo } from 'react';
 import { THEME } from '../data/config';
 import { CompanySettings } from '../hooks/useSettings';
@@ -12,6 +17,10 @@ interface DisplaySettingsModalProps {
   onToggleInline: () => void;
 }
 
+// ARCHITECTURE: DisplaySettingsModal
+// PURPOSE: A control panel overlay that updates the tenant's global display visibility toggles via useSettings
+// DEPENDENCIES: THEME, CompanySettings type
+// CONSUMERS: Triggered by FloatingAdminMenu
 const DisplaySettingsModal = memo(({ isOpen, onClose, settings, updateSetting, isInlineEnabled, onToggleInline }: DisplaySettingsModalProps) => {
   if (!isOpen) return null;
 

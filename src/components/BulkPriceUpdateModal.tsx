@@ -1,3 +1,8 @@
+// FILE: src/components/BulkPriceUpdateModal.tsx
+// ROLE: Modal interface for performing bulk operations (price adjustments, status changes, deletions) across multiple products
+// READS FROM: src/data/config, src/utils/price, src/types
+// USED BY: FloatingAdminMenu or other admin controls
+
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { THEME } from '../data/config';
@@ -15,6 +20,10 @@ interface BulkPriceUpdateModalProps {
   onGranularUpdate: (actions: { productId: string; newPrice?: number; delete?: boolean; inStock?: boolean; is_archived?: boolean }[]) => Promise<void>;
 }
 
+// ARCHITECTURE: BulkPriceUpdateModal
+// PURPOSE: A multi-step wizard allowing admins to filter products and apply batch operations (e.g., +10% price increase)
+// DEPENDENCIES: THEME, framer-motion, transformCurrencyStringToNumber
+// CONSUMERS: Renders conditionally via Admin panels
 export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, categories, onGranularUpdate }: BulkPriceUpdateModalProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [actionType, setActionType] = useState<ActionType>(null);

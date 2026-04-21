@@ -1,3 +1,8 @@
+// FILE: src/components/FloatingAdminMenu.tsx
+// ROLE: Renders an assistive-touch style floating action button (FAB) for global admin commands
+// READS FROM: src/data/config
+// USED BY: App.tsx (when admin mode is active)
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { THEME } from '../data/config';
@@ -15,6 +20,10 @@ interface FloatingAdminMenuProps {
   onSettingsTrigger: () => void;
 }
 
+// ARCHITECTURE: FloatingAdminMenu
+// PURPOSE: Provides quick access to add products, bulk edit prices, and toggle display settings while browsing the catalog
+// DEPENDENCIES: THEME.floatingAdminMenu, framer-motion
+// CONSUMERS: App layout layer
 export default function FloatingAdminMenu({ 
   onProductAddTrigger,
   onBulkUpdateTrigger,

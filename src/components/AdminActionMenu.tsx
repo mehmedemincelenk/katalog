@@ -1,3 +1,8 @@
+// FILE: src/components/AdminActionMenu.tsx
+// ROLE: Renders a contextual admin menu for editing, archiving, or deleting a specific product
+// READS FROM: src/data/config, src/types
+// USED BY: ProductCard
+
 import { memo } from 'react';
 import { createPortal } from 'react-dom';
 import { LABELS, THEME } from '../data/config';
@@ -19,6 +24,10 @@ interface AdminActionMenuProps {
  * -----------------------------------------------------------
  * Product management interface. Fully managed via THEME tokens.
  */
+// ARCHITECTURE: AdminActionMenu
+// PURPOSE: A floating or modal-based menu providing actions (edit, delete, download HQ image) for a single product card
+// DEPENDENCIES: THEME, LABELS, createPortal
+// CONSUMERS: ProductCard
 export const AdminActionMenu = memo(({ 
   product, categories, onDelete, onUpdate, onImageChangeClick, isOpen, setIsOpen
 }: AdminActionMenuProps) => {

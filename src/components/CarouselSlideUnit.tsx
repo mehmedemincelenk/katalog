@@ -1,3 +1,8 @@
+// FILE: src/components/CarouselSlideUnit.tsx
+// ROLE: Renders an individual slide within the Hero Carousel, including admin controls for editing
+// READS FROM: src/data/config, src/hooks/useCarousel
+// USED BY: HeroCarousel
+
 import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { THEME } from '../data/config';
@@ -19,6 +24,10 @@ interface CarouselSlideUnitProps {
   totalSlides: number;
 }
 
+// ARCHITECTURE: CarouselSlideUnit
+// PURPOSE: Displays the visual and textual content of a single hero slide, and conditionally overlays edit tools if in Admin mode
+// DEPENDENCIES: framer-motion, OrderSelector, Button
+// CONSUMERS: HeroCarousel
 const CarouselSlideUnit = memo(({ 
   slideData, 
   isCurrentlyActive, 

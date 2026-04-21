@@ -1,3 +1,8 @@
+// FILE: src/hooks/useDiscount.ts
+// ROLE: Manages dynamic promotion code validation and discount state
+// READS FROM: src/data/config
+// USED BY: OrderSelector, checkout-related components
+
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { TECH, LABELS } from '../data/config';
 
@@ -12,6 +17,11 @@ export type ActiveDiscount = {
  * -----------------------------------------------------------
  * Manages customer promotion codes and dynamic discount calculation.
  */
+
+// ARCHITECTURE: useDiscount
+// PURPOSE: Parses promo codes (e.g., "SAVE20") to extract a numeric discount and validates it against configured min/max limits
+// DEPENDENCIES: TECH config (discount limits, timeouts)
+// CONSUMERS: OrderSelector
 export function useDiscount() {
   const [currentlyActiveDiscount, setCurrentlyActiveDiscount] = useState<ActiveDiscount | null>(null);
   const [promotionErrorMessage, setPromotionErrorMessage] = useState<string | null>(null);

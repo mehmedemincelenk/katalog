@@ -1,3 +1,8 @@
+// FILE: src/components/OrderSelector.tsx
+// ROLE: Reusable drop-down selector for reordering lists
+// READS FROM: None
+// USED BY: CarouselSlideUnit
+
 import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -15,6 +20,10 @@ interface OrderSelectorProps {
  * Uses a ghost select overlay to trigger native dropdowns while 
  * maintaining high-end animated visuals.
  */
+// ARCHITECTURE: OrderSelector
+// PURPOSE: Renders a visually styled select element that utilizes the native `<select>` dropdown for ordering tasks (e.g., slide index)
+// DEPENDENCIES: framer-motion
+// CONSUMERS: CarouselSlideUnit, admin lists needing reorder functionality
 const OrderSelector = memo(({ 
   currentOrder, 
   totalCount, 

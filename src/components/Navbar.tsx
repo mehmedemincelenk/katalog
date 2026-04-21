@@ -1,3 +1,8 @@
+// FILE: src/components/Navbar.tsx
+// ROLE: Renders the site navigation, logo, search bar, and contact buttons
+// READS FROM: src/data/config, src/utils/contact, src/utils/image
+// USED BY: App.tsx
+
 import { memo, useState, useEffect } from 'react';
 import { THEME, DEFAULT_COMPANY } from '../data/config';
 import { CompanySettings } from '../hooks/useSettings';
@@ -22,6 +27,10 @@ interface NavbarProps {
   onSearchChange?: (val: string) => void;
 }
 
+// ARCHITECTURE: Navbar
+// PURPOSE: Top-level navigation displaying store branding, inline-editable details (for admins), search functionality, and global contact links
+// DEPENDENCIES: THEME.navbar, CompanySettings
+// CONSUMERS: App layout layer
 const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnabled, settings, updateSetting, search, onSearchChange }: NavbarProps) => {
   const theme = THEME.navbar;
   const globalIcons = THEME.icons;

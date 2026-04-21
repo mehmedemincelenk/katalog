@@ -1,3 +1,12 @@
+// FILE: src/data/config/labels.ts
+// ROLE: Centralized dictionary for hardcoded UI text, error messages, and prompt strings
+// READS FROM: None
+// USED BY: Nearly every UI component and hook displaying messages to users
+
+// ARCHITECTURE: LABELS
+// PURPOSE: A single source of truth for all text content, making it easier to maintain tone or support internationalization later
+// DEPENDENCIES: None
+// CONSUMERS: Hooks (error messages), Components (UI text, placeholders, alerts)
 export const LABELS = {
   storeName: "Toptan Ambalajcım",
   adminModeActive: "Admin Modu Aktif",

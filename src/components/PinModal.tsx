@@ -1,3 +1,8 @@
+// FILE: src/components/PinModal.tsx
+// ROLE: Renders a numeric keypad modal for entering the admin access PIN
+// READS FROM: src/data/config
+// USED BY: App.tsx (via useAdminMode triggers)
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { THEME } from '../data/config';
@@ -15,6 +20,10 @@ interface PinModalProps {
 
 const PIN_LENGTH = 4;
 
+// ARCHITECTURE: PinModal
+// PURPOSE: A secure keypad UI for PIN entry, including Cloudflare Turnstile integration and lockout/rate-limiting visual states
+// DEPENDENCIES: framer-motion, THEME.pinModal, Turnstile
+// CONSUMERS: Triggered globally to unlock admin capabilities
 export default function PinModal({ 
   isModalOpen, 
   onVerify, 

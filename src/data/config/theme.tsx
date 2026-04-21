@@ -1,6 +1,16 @@
+// FILE: src/data/config/theme.tsx
+// ROLE: Global design system defining spacing, typography, colors, and specific Tailwind component classes
+// READS FROM: None
+// USED BY: All UI components for consistent styling
+
 /**
  * BASE DESIGN TOKENS
  */
+
+// ARCHITECTURE: BR
+// PURPOSE: Border radius token mapping for consistent rounding across UI elements
+// DEPENDENCIES: None
+// CONSUMERS: THEME object, component class names
 const BR = {
   low: 'rounded-md',      
   md: 'rounded-lg',      
@@ -8,6 +18,10 @@ const BR = {
   full: 'rounded-full'    
 };
 
+// ARCHITECTURE: FS
+// PURPOSE: Font size token mapping to maintain consistent typographic hierarchy
+// DEPENDENCIES: None
+// CONSUMERS: THEME object, component class names
 const FS = {
   xs: 'text-[8px] leading-tight font-medium uppercase tracking-wider',
   sm: 'text-[9px] leading-snug font-semibold',
@@ -35,6 +49,10 @@ import {
   Trash2
 } from 'lucide-react';
 
+// ARCHITECTURE: THEME
+// PURPOSE: Comprehensive dictionary of Tailwind utility classes grouped by component semantics (e.g., THEME.navbar, THEME.productCard)
+// DEPENDENCIES: FS, BR
+// CONSUMERS: Almost every UI component in the `src/components` directory
 export const THEME = {
   radius: {
     card: BR.md,
@@ -421,6 +439,10 @@ export const THEME = {
 /**
  * UI SETTINGS (LAYOUT & LIMITS)
  */
+// ARCHITECTURE: UI
+// PURPOSE: High-level layout configurations, animations, and limits
+// DEPENDENCIES: FS, BR
+// CONSUMERS: App layout structure
 export const UI = {
   layout: {
     bodyBg: 'bg-stone-50',

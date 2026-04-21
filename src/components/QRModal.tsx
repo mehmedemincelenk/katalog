@@ -1,3 +1,8 @@
+// FILE: src/components/QRModal.tsx
+// ROLE: Modal displaying a QR code that links to the current tenant's storefront
+// READS FROM: src/data/config
+// USED BY: Footer (triggered via special gesture or icon)
+
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,6 +14,10 @@ interface QRModalProps {
   onClose: () => void;
 }
 
+// ARCHITECTURE: QRModal
+// PURPOSE: Displays a dynamically generated QR code pointing to the current URL, with native share and copy-to-clipboard functionality
+// DEPENDENCIES: qrcode.react, framer-motion, THEME
+// CONSUMERS: Triggered globally (usually via Footer interaction)
 const QRModal: React.FC<QRModalProps> = ({ isOpen, onClose }) => {
   const shopUrl = window.location.href;
   const [copied, setCopied] = useState(false);

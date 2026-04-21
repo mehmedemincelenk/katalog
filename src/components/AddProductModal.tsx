@@ -1,3 +1,8 @@
+// FILE: src/components/AddProductModal.tsx
+// ROLE: Renders the modal overlay form for adding new products to the catalog
+// READS FROM: src/data/config, src/types
+// USED BY: ProductGrid (or FloatingAdminMenu)
+
 import React, { useState, memo, useCallback } from 'react';
 import { LABELS, THEME } from '../data/config';
 import { Product } from '../types';
@@ -9,6 +14,10 @@ import Button from './Button';
  * Orchestrates the product creation workflow. Fully managed via THEME.
  */
 
+// ARCHITECTURE: AddProductModal
+// PURPOSE: Collects user input (name, category, price, image) and triggers the `onProductAddition` callback
+// DEPENDENCIES: Button, LABELS, THEME
+// CONSUMERS: Renders conditionally when the admin wants to add a new product
 interface AddProductModalProps {
   isModalOpen: boolean;
   availableCategories: string[];

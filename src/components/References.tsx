@@ -1,3 +1,8 @@
+// FILE: src/components/References.tsx
+// ROLE: Renders the "Trusted Partners / References" section, supporting admin edits
+// READS FROM: src/data/config, src/hooks/useSettings
+// USED BY: App.tsx
+
 import { THEME, REFERENCES } from '../data/config';
 import { useSettings } from '../hooks/useSettings';
 import OrderSelector from './OrderSelector';
@@ -8,6 +13,10 @@ interface ReferencesProps {
   isInlineEnabled?: boolean;
 }
 
+// ARCHITECTURE: References
+// PURPOSE: Displays a grid of reference/partner names, and handles adding, deleting, and reordering these entries in Admin mode
+// DEPENDENCIES: useSettings, OrderSelector, THEME.references
+// CONSUMERS: Renders near the bottom of the main application layout
 export default function References({ isAdmin = false, isInlineEnabled = true }: ReferencesProps) {
   const { settings, updateSetting } = useSettings(isAdmin);
   const referencesTheme = THEME.references;

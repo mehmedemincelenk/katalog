@@ -1,3 +1,8 @@
+// FILE: src/components/Button.tsx
+// ROLE: Reusable, theme-driven button component used across the application
+// READS FROM: src/data/config
+// USED BY: Nearly every component with clickable actions
+
 import { memo } from 'react';
 import { THEME } from '../data/config';
 
@@ -21,6 +26,10 @@ interface ButtonProps {
   loading?: boolean;
 }
 
+// ARCHITECTURE: Button
+// PURPOSE: A highly flexible atomic button component supporting various variants (primary, secondary, danger), shapes, and loading states, completely styled by THEME
+// DEPENDENCIES: THEME.button
+// CONSUMERS: Used globally
 const Button = memo(({ 
   onClick, 
   icon, 

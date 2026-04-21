@@ -1,3 +1,8 @@
+// FILE: src/components/ProductCard.tsx
+// ROLE: Renders an individual product item within the grid, handling inline edits, admin menus, and image zoom
+// READS FROM: src/data/config, src/utils/image, src/utils/price
+// USED BY: ProductGrid
+
 import { useRef, useState, useEffect, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LABELS, THEME } from '../data/config';
@@ -34,6 +39,10 @@ interface ProductCardProps {
   setActiveAdminProductId?: (id: string | null) => void;
 }
 
+// ARCHITECTURE: ProductCard
+// PURPOSE: Primary display unit for catalog items. Handles its own inline editing state, modal toggles for full-size images, and discount price calculations
+// DEPENDENCIES: AdminActionMenu, MarqueeText, resolveVisualAssetUrl, calculatePromotionalPrice
+// CONSUMERS: ProductGrid
 const ProductCard = memo(({
   product, 
   categories = [], 

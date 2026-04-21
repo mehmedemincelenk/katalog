@@ -1,3 +1,8 @@
+// FILE: src/hooks/useProducts.ts
+// ROLE: Core product state management, filtering, and CRUD operations against Supabase
+// READS FROM: src/lib/supabase, src/data/config, src/utils/store, src/utils/price, src/utils/image
+// USED BY: ProductGrid, AdminActionMenu, AddProductModal, DisplaySettingsModal
+
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import {
@@ -22,6 +27,11 @@ const REPOSITORY_TABLE = 'prods';
  * 3. Visual Management: HQ/LQ image processing and storage cleanup.
  * 4. Categorization Logic: Smart grouping, renaming, and reordering.
  */
+
+// ARCHITECTURE: useProducts
+// PURPOSE: Primary hook for fetching, creating, updating, deleting products, and categorizing them based on settings
+// DEPENDENCIES: supabase, getActiveStoreSlug, transformCurrencyStringToNumber
+// CONSUMERS: ProductGrid
 export function useProducts(
   currentSearchQuery = '',
   activeFilterCategories: string[] = [],

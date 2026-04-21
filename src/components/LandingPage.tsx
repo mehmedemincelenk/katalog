@@ -1,3 +1,8 @@
+// FILE: src/components/LandingPage.tsx
+// ROLE: Renders the marketing landing page for the core SaaS product (ekatalog.site)
+// READS FROM: None
+// USED BY: App.tsx (when visiting the root domain)
+
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from './Button';
@@ -30,6 +35,10 @@ const PRICING_PHRASES = [
 
 const DOMAIN_EXTENSIONS = ['site', 'shop', 'co', 'cafe', 'me'];
 
+// ARCHITECTURE: LandingPage
+// PURPOSE: Dedicated marketing page for onboarding new merchants, displaying features and a dynamic pricing phrase carousel
+// DEPENDENCIES: framer-motion, Button
+// CONSUMERS: Renders only when active store slug resolves to 'main-site'
 export default function LandingPage() {
   const [index, setIndex] = useState(0);
 

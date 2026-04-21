@@ -1,3 +1,5 @@
+// FILE ROLE: Real-time Exchange Rate Fetcher
+// CONSUMED BY: useSettings.ts, App.tsx
 /**
  * AUTOMATIC CURRENCY ENGINE
  * -----------------------------------------------------------

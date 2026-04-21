@@ -1,3 +1,6 @@
+// FILE ROLE: High-Impact Visual Showcase Component
+// DEPENDS ON: THEME, useCarousel hook, CarouselSlideUnit
+// CONSUMED BY: App.tsx
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { THEME, LABELS, TECH } from '../data/config';
 import { useCarousel } from '../hooks/useCarousel';

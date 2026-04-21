@@ -1,3 +1,5 @@
+// FILE ROLE: SaaS Store Resolver (Subdomain & Environment Logic)
+// CONSUMED BY: useProducts, useSettings, useAdminMode, Navbar
 /**
  * STORE UTILS
  * -----------------------------------------------------------

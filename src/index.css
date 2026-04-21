@@ -8,14 +8,34 @@
  * Bir kurucu olarak bu dosya sitenin "Karakter Analizidir".
  */
 
-body {
-  margin: 0;
+:root {
+  /* THE DIAMOND PALETTE */
+  --primary: #1c1917;    /* stone-900 */
+  --primary-hover: #292524;
+  --secondary: #f5f5f4;  /* stone-100 */
+  --accent: #10b981;   /* emerald-500 */
+  --bg-main: #fafaf9;   /* stone-50 */
+  --text-main: #1c1917;
+  --text-muted: #78716c; /* stone-500 */
+  
+  /* BORDER & RADIUS */
+  --border-light: #f5f5f4;
+  --radius-card: 1rem;
+  --radius-button: 0.5rem;
+  --radius-badge: 9999px;
+  
+  /* ANIMATION SPEEDS */
+  --transition-fast: 0.2s ease-in-out;
+  --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @layer base {
   body {
     /* Sitenin genel zemin rengi ve ana yazı tipi */
-    @apply bg-stone-50 text-stone-900 font-sans;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    @apply font-sans selection:bg-stone-900 selection:text-white;
   }
 }
 

@@ -1,3 +1,6 @@
+// FILE ROLE: Logic Engine for Currency, Discounts, and Price Formatting
+// DEPENDS ON: TECH constants
+// CONSUMED BY: ProductCard.tsx, BulkPriceUpdateModal.tsx, App.tsx
 import { TECH } from '../data/config';
 
 /**

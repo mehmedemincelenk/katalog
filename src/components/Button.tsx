@@ -1,3 +1,6 @@
+// FILE ROLE: Atomic UI Button Unit (Tokenized)
+// DEPENDS ON: THEME config, React
+// CONSUMED BY: Almost all UI components (Navbar, AdminMenu, Modals)
 import { memo } from 'react';
 import { THEME } from '../data/config';
 

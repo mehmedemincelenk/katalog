@@ -1,3 +1,6 @@
+// FILE ROLE: Core Product Presentation Unit (Interactive Card)
+// DEPENDS ON: THEME, Product Types, Admin Sub-menus, Animation Logic
+// CONSUMED BY: ProductGrid.tsx
 import { useRef, useState, useEffect, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LABELS, THEME } from '../data/config';

@@ -1,3 +1,6 @@
+// FILE ROLE: Admin Authentication and Session Engine (Pin & Gestures)
+// DEPENDS ON: TECH/STORAGE constants, Supabase
+// CONSUMED BY: App.tsx, Navbar.tsx, Protected Components
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { TECH, STORAGE } from '../data/config';
 import { supabase } from '../lib/supabase';

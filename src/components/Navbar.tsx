@@ -1,3 +1,6 @@
+// FILE ROLE: Global Navigation & Brand Header
+// DEPENDS ON: THEME, CompanySettings, Image Utilities, Contact Helpers
+// CONSUMED BY: App.tsx
 import { memo, useState, useEffect } from 'react';
 import { THEME, DEFAULT_COMPANY } from '../data/config';
 import { CompanySettings } from '../hooks/useSettings';

@@ -2,6 +2,8 @@ import React, { useState, memo, useCallback } from 'react';
 import { LABELS, THEME } from '../data/config';
 import { Product } from '../types';
 import Button from './Button';
+import BaseModal from './BaseModal';
+import { ArrowLeft } from 'lucide-react';
 
 /**
  * ADD PRODUCT MODAL COMPONENT (100% Tokenized & Professional English)
@@ -54,10 +56,9 @@ const ProductImagePicker = memo(({ imagePreviewUrl, onFileSelectionChange }: { i
         variant="secondary"
         mode="rectangle"
         size="sm"
-        className="w-full !rounded-xl"
-        icon={<span>📷</span>}
+        className="mx-auto !rounded-xl px-8"
       >
-        {LABELS.form.selectImage}
+        GALERİDEN SEÇ
         <input type="file" accept="image/*" className="hidden" onChange={onFileSelectionChange} />
       </Button>
     </div>
@@ -71,16 +72,14 @@ const ProductCategorySelector = memo(({ categories, currentSelection, customCate
   onCategorySelect: (category: string) => void,
   onCustomCategoryChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
   const theme = THEME.addProductModal;
-  const visibleCategories = isExpanded ? categories : categories.slice(0, 4);
 
   return (
     <div>
       <label className={theme.typography.categoryLabel}>{LABELS.form.category}</label>
       {categories.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-3">
-          {visibleCategories.map((category) => (
+          {categories.map((category) => (
             <Button 
               key={category} 
               onClick={() => onCategorySelect(category)} 
@@ -92,17 +91,6 @@ const ProductCategorySelector = memo(({ categories, currentSelection, customCate
               {category}
             </Button>
           ))}
-          {categories.length > 4 && !isExpanded && (
-            <Button 
-              onClick={() => setIsExpanded(true)} 
-              variant="ghost"
-              mode="rectangle"
-              size="sm"
-              className="!text-[10px] !py-1 !px-2.5 !rounded-lg"
-            >
-              +{categories.length - 4} Daha
-            </Button>
-          )}
         </div>
       )}
       <input 
@@ -194,179 +182,195 @@ export default function AddProductModal({
 
   const isStepValid = () => {
     if (currentStep === 2) return !!formState.productName.trim();
-    if (currentStep === 4) return !!((formState.selectedCategory.trim() || formState.customCategoryName.trim()) && formState.productPrice.trim());
+    if (currentStep === 4) return !!(formState.selectedCategory.trim() || formState.customCategoryName.trim());
+    if (currentStep === 5) return !!formState.productPrice.trim();
     return true;
   };
 
   if (!isModalOpen) return null;
 
   return (
-    <div className={theme.overlay} role="dialog">
-      <div className={theme.container} onClick={event => event.stopPropagation()}>
-        
-        <div className={theme.header}>
-          <div className="flex flex-col">
-            <h2 className="text-sm font-black text-stone-900 uppercase tracking-widest">{LABELS.newProductBtn}</h2>
-            <div className={theme.wizard.progressWrapper}>
-              {[1, 2, 3, 4, 5].map(step => (
-                <div key={step} className={`${theme.wizard.progressBase} ${currentStep >= step ? theme.wizard.stepActive : theme.wizard.stepInactive}`} />
-              ))}
+    <BaseModal
+      isOpen={isModalOpen}
+      onClose={handleCloseAndReset}
+      title={LABELS.newProductBtn}
+      progress={{ current: currentStep, total: 7 }}
+      disableClickOutside={isSubmittingData}
+      hideCloseButton={isSubmittingData}
+    >
+      <div className="space-y-6">
+        {/* STEP 1: PHOTO */}
+        {currentStep === 1 && (
+          <div className={theme.wizard.stepContent}>
+            <div className="text-center space-y-2 mb-6">
+              <h3 className="font-bold text-stone-800">Ürün Fotoğrafı</h3>
+            </div>
+            <ProductImagePicker imagePreviewUrl={temporaryImagePreviewUrl} onFileSelectionChange={handleImageFileSelection} />
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              <Button onClick={handleCloseAndReset} variant="ghost" className="w-full" mode="rectangle">
+                İPTAL
+              </Button>
+              <Button onClick={nextStep} variant="secondary" className="w-full" mode="rectangle">
+                {temporaryImagePreviewUrl ? 'İLERLE' : 'FOTOĞRAFSIZ DEVAM ET'}
+              </Button>
             </div>
           </div>
-          <Button 
-            onClick={handleCloseAndReset} 
-            disabled={isSubmittingData} 
-            icon={THEME.icons.close}
-            variant="ghost"
-            size="sm"
-            className={theme.headerButton}
-          />
-        </div>
+        )}
 
-        <div className={theme.body}>
-          {/* STEP 1: PHOTO */}
-          {currentStep === 1 && (
-            <div className={theme.wizard.stepContent}>
-              <div className="text-center space-y-2">
-                <h3 className="font-bold text-stone-800">Ürün Fotoğrafı</h3>
-                <p className="text-xs text-stone-500">Müşterilerinizin ürünü görmesi satışı artırır.</p>
-              </div>
-              <ProductImagePicker imagePreviewUrl={temporaryImagePreviewUrl} onFileSelectionChange={handleImageFileSelection} />
-              <div className="flex gap-3">
-                <Button onClick={nextStep} variant="secondary" className="flex-1" mode="rectangle">
-                  {temporaryImagePreviewUrl ? 'İLERLE' : 'FOTOĞRAFSIZ DEVAM ET'}
-                </Button>
-              </div>
+        {/* STEP 2: NAME */}
+        {currentStep === 2 && (
+          <div className={theme.wizard.stepContent}>
+            <FormInput 
+              labelText={LABELS.form.productName} 
+              name="productName" 
+              value={formState.productName} 
+              onChange={handleFormInputChange} 
+              placeholder={LABELS.form.productNamePlaceholder} 
+              autoFocus
+            />
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              <Button onClick={prevStep} variant="ghost" className="w-full" mode="rectangle" icon={<ArrowLeft size={16}/>}>GERİ</Button>
+              <Button onClick={nextStep} disabled={!formState.productName.trim()} variant="primary" className="w-full" mode="rectangle">SONRAKİ</Button>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* STEP 2: NAME */}
-          {currentStep === 2 && (
-            <div className={theme.wizard.stepContent}>
-              <FormInput 
-                labelText={LABELS.form.productName} 
-                name="productName" 
-                value={formState.productName} 
+        {/* STEP 3: DESCRIPTION */}
+        {currentStep === 3 && (
+          <div className={theme.wizard.stepContent}>
+            <div>
+              <label className={theme.typography.label}>{LABELS.form.description}</label>
+              <textarea 
+                name="productDescription" 
+                value={formState.productDescription} 
                 onChange={handleFormInputChange} 
-                placeholder={LABELS.form.productNamePlaceholder} 
+                rows={4} 
+                className={`${theme.inputField} resize-none block`} 
+                placeholder={LABELS.form.descriptionPlaceholder} 
                 autoFocus
               />
-              <div className="flex gap-3">
-                <Button onClick={prevStep} variant="ghost" className="flex-1" mode="rectangle">GERİ</Button>
-                <Button onClick={nextStep} disabled={!formState.productName.trim()} variant="primary" className="flex-1" mode="rectangle">SONRAKİ</Button>
+            </div>
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              <Button onClick={prevStep} variant="ghost" className="w-full" mode="rectangle" icon={<ArrowLeft size={16}/>}>GERİ</Button>
+              <Button onClick={nextStep} variant="primary" className="w-full" mode="rectangle">
+                {formState.productDescription.trim() ? 'SONRAKİ' : 'GEÇ'}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: CATEGORY */}
+        {currentStep === 4 && (
+          <div className={theme.wizard.stepContent}>
+            <ProductCategorySelector 
+              categories={availableCategories} 
+              currentSelection={formState.selectedCategory} 
+              customCategory={formState.customCategoryName} 
+              onCategorySelect={handleCategorySelection} 
+              onCustomCategoryChange={handleFormInputChange} 
+            />
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              <Button onClick={prevStep} variant="ghost" className="w-full" mode="rectangle" icon={<ArrowLeft size={16}/>}>GERİ</Button>
+              <Button onClick={nextStep} disabled={!isStepValid()} variant="primary" className="w-full" mode="rectangle">SONRAKİ</Button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 5: PRICE */}
+        {currentStep === 5 && (
+          <div className={theme.wizard.stepContent}>
+            <FormInput 
+              labelText={LABELS.form.price} 
+              name="productPrice" 
+              value={formState.productPrice} 
+              onChange={handleFormInputChange} 
+              placeholder={LABELS.form.pricePlaceholder} 
+              autoFocus
+            />
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              <Button onClick={prevStep} variant="ghost" className="w-full" mode="rectangle" icon={<ArrowLeft size={16}/>}>GERİ</Button>
+              <Button onClick={nextStep} disabled={!isStepValid()} variant="primary" className="w-full" mode="rectangle">SONRAKİ</Button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 6: STOCK */}
+        {currentStep === 6 && (
+          <div className={theme.wizard.stepContent}>
+            <div className="bg-stone-50 p-6 rounded-2xl border border-stone-100 flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="font-bold text-stone-800">Stok Durumu</span>
+                <span className="text-[10px] text-stone-400 font-bold uppercase tracking-tight">Ürün satışa hazır mı?</span>
+              </div>
+              
+              <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200 scale-110">
+                 <button 
+                   onClick={() => setFormState(p => ({ ...p, isProductInStock: true }))}
+                   className={`px-4 py-2 rounded-lg text-[9px] font-black transition-all ${formState.isProductInStock ? 'bg-green-600 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
+                 >
+                   STOKTA
+                 </button>
+                 <button 
+                   onClick={() => setFormState(p => ({ ...p, isProductInStock: false }))}
+                   className={`px-4 py-2 rounded-lg text-[9px] font-black transition-all ${!formState.isProductInStock ? 'bg-red-600 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
+                 >
+                   YOK
+                 </button>
               </div>
             </div>
-          )}
 
-          {/* STEP 3: DESCRIPTION */}
-          {currentStep === 3 && (
-            <div className={theme.wizard.stepContent}>
-              <div>
-                <label className={theme.typography.label}>{LABELS.form.description}</label>
-                <textarea 
-                  name="productDescription" 
-                  value={formState.productDescription} 
-                  onChange={handleFormInputChange} 
-                  rows={4} 
-                  className={`${theme.inputField} resize-none block`} 
-                  placeholder={LABELS.form.descriptionPlaceholder} 
-                  autoFocus
-                />
-              </div>
-              <div className="flex gap-3">
-                <Button onClick={prevStep} variant="ghost" className="flex-1" mode="rectangle">GERİ</Button>
-                <Button onClick={nextStep} variant="primary" className="flex-1" mode="rectangle">
-                  {formState.productDescription.trim() ? 'SONRAKİ' : 'GEÇ'}
-                </Button>
-              </div>
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              <Button onClick={prevStep} variant="ghost" className="w-full" mode="rectangle" icon={<ArrowLeft size={16}/>}>GERİ</Button>
+              <Button onClick={nextStep} variant="primary" className="w-full" mode="rectangle">ÖNİZLEME</Button>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* STEP 4: CATEGORY & PRICE & STOCK */}
-          {currentStep === 4 && (
-            <div className={theme.wizard.stepContent}>
-              <div className={theme.stockToggle}>
-                <label className="text-xs font-bold text-stone-700 uppercase tracking-wide" htmlFor="product-stock-checkbox">
-                  {LABELS.form.stockStatus}
-                </label>
-                <input 
-                  id="product-stock-checkbox" 
-                  type="checkbox" 
-                  checked={formState.isProductInStock} 
-                  onChange={(e) => setFormState(p => ({ ...p, isProductInStock: e.target.checked }))} 
-                  className={theme.checkbox} 
-                />
-              </div>
-
-              <ProductCategorySelector 
-                categories={availableCategories} 
-                currentSelection={formState.selectedCategory} 
-                customCategory={formState.customCategoryName} 
-                onCategorySelect={handleCategorySelection} 
-                onCustomCategoryChange={handleFormInputChange} 
-              />
-
-              <FormInput 
-                labelText={LABELS.form.price} 
-                name="productPrice" 
-                value={formState.productPrice} 
-                onChange={handleFormInputChange} 
-                placeholder={LABELS.form.pricePlaceholder} 
-              />
-
-              <div className="flex gap-3">
-                <Button onClick={prevStep} variant="ghost" className="flex-1" mode="rectangle">GERİ</Button>
-                <Button onClick={nextStep} disabled={!isStepValid()} variant="primary" className="flex-1" mode="rectangle">ÖNİZLEME</Button>
-              </div>
+        {/* STEP 7: PREVIEW & CONFIRM */}
+        {currentStep === 7 && (
+          <div className={theme.wizard.stepContent}>
+            <div className="text-center space-y-1 mb-6">
+              <h3 className="font-bold text-stone-800">Son Kontrol</h3>
+              <p className="text-xs text-stone-500">Ürününüz dükkanda böyle görünecek.</p>
             </div>
-          )}
 
-          {/* STEP 5: PREVIEW & CONFIRM */}
-          {currentStep === 5 && (
-            <div className={theme.wizard.stepContent}>
-              <div className="text-center space-y-1">
-                <h3 className="font-bold text-stone-800">Son Kontrol</h3>
-                <p className="text-xs text-stone-500">Ürününüz dükkanda böyle görünecek.</p>
-              </div>
-
-              {/* MINI PREVIEW CARD */}
-              <div className="bg-stone-50 rounded-2xl p-4 border border-stone-200">
-                <div className="flex gap-4">
-                  <div className="w-20 h-20 bg-stone-200 rounded-xl overflow-hidden shrink-0 flex items-center justify-center">
-                    {temporaryImagePreviewUrl ? <img src={temporaryImagePreviewUrl} className="w-full h-full object-cover" alt="preview" /> : <span className="text-2xl text-stone-400">📷</span>}
-                  </div>
-                  <div className="flex-1 min-w-0 py-1">
-                    <h4 className="font-bold text-stone-900 truncate">{formState.productName || 'İsimsiz Ürün'}</h4>
-                    <p className="text-xs text-stone-500 line-clamp-1">{formState.productDescription || 'Açıklama yok'}</p>
-                    <div className="mt-2 flex items-center justify-between">
-                      <span className="text-sm font-black text-kraft-600">{formState.productPrice || '0'}</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 bg-stone-200 rounded-full text-stone-600 uppercase">
-                        {formState.customCategoryName || formState.selectedCategory || 'Kategorisiz'}
-                      </span>
-                    </div>
+            {/* MINI PREVIEW CARD */}
+            <div className="bg-stone-50 rounded-2xl p-4 border border-stone-200">
+              <div className="flex gap-4">
+                <div className="w-20 h-20 bg-stone-200 rounded-xl overflow-hidden shrink-0 flex items-center justify-center">
+                  {temporaryImagePreviewUrl ? <img src={temporaryImagePreviewUrl} className="w-full h-full object-cover" alt="preview" /> : <span className="text-2xl text-stone-400">📷</span>}
+                </div>
+                <div className="flex-1 min-w-0 py-1">
+                  <h4 className="font-bold text-stone-900 truncate">{formState.productName || 'İsimsiz Ürün'}</h4>
+                  <p className="text-xs text-stone-500 line-clamp-1">{formState.productDescription || 'Açıklama yok'}</p>
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="text-sm font-black text-kraft-600">{formState.productPrice || '0'}</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 bg-stone-200 rounded-full text-stone-600 uppercase">
+                      {formState.customCategoryName || formState.selectedCategory || 'Kategorisiz'}
+                    </span>
                   </div>
                 </div>
               </div>
-
-              {formErrorMessage && <div className={theme.typography.errorBadge}>{formErrorMessage}</div>}
-
-              <div className="flex gap-3">
-                <Button onClick={prevStep} disabled={isSubmittingData} variant="ghost" className="flex-1" mode="rectangle">DÜZELT</Button>
-                <Button 
-                  onClick={handleProductSubmission}
-                  disabled={isSubmittingData}
-                  variant="primary" 
-                  className="flex-1" 
-                  mode="rectangle"
-                  icon={isSubmittingData ? <div className={THEME.loading.spinner + " w-3.5 h-3.5"}></div> : null}
-                >
-                  {isSubmittingData ? 'EKLENİYOR...' : 'ONAYLA VE EKLE'}
-                </Button>
-              </div>
             </div>
-          )}
-        </div>
+
+            {formErrorMessage && <div className={theme.typography.errorBadge}>{formErrorMessage}</div>}
+
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              <Button onClick={prevStep} disabled={isSubmittingData} variant="ghost" className="w-full" mode="rectangle" icon={<ArrowLeft size={16}/>}>GERİ</Button>
+              <Button 
+                onClick={handleProductSubmission}
+                disabled={isSubmittingData}
+                variant="primary" 
+                className="w-full" 
+                mode="rectangle"
+                icon={isSubmittingData ? <div className={THEME.loading.spinner + " w-3.5 h-3.5"}></div> : null}
+              >
+                {isSubmittingData ? 'EKLENİYOR...' : 'ONAYLA'}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </BaseModal>
   );
 }

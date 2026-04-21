@@ -1,3 +1,6 @@
+// FILE ROLE: Global Settings & Branding Persistence Hook
+// DEPENDS ON: Supabase, Default Config, Currency Utils
+// CONSUMED BY: App.tsx, Navbar.tsx, DisplaySettingsModal.tsx
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { DEFAULT_COMPANY, CATEGORY_ORDER as DEFAULT_ORDER } from '../data/config';
@@ -29,20 +32,21 @@ export interface CompanySettings {
     logo: string;
   }>;
   displayConfig: {
-    showLogo: boolean;
     showAddress: boolean;
     showInstagram: boolean;
-    showCategories: boolean;
-    showSearch: boolean;
     showWhatsapp: boolean;
-    showSubtitle: boolean;
     showReferences: boolean;
     showPrice: boolean;
+    showCarousel: boolean;
+    showCoupons: boolean;
+    showPriceList: boolean;
+    showCurrency: boolean;
   };
   announcementBar: {
     enabled: boolean;
     text: string;
   };
+  socialProofCards?: string[];
   maintenanceMode: {
     enabled: boolean;
     message: string;

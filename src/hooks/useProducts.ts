@@ -1,3 +1,6 @@
+// FILE ROLE: Core Product Data Hook (Supabase + State Management)
+// DEPENDS ON: Supabase Client, THEME constants, Store Utilities
+// CONSUMED BY: App.tsx, ProductGrid.tsx, PriceListModal.tsx
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import {
@@ -9,6 +12,7 @@ import { getActiveStoreSlug } from '../utils/store';
 import { Product } from '../types';
 import { CompanySettings } from './useSettings';
 import { transformCurrencyStringToNumber, formatNumberToCurrency } from '../utils/price';
+import { smartSearch } from '../utils/smartSearch';
 import { processDualQualityVisuals } from '../utils/image';
 
 const REPOSITORY_TABLE = 'prods';
@@ -471,16 +475,19 @@ export function useProducts(
   }, [storeSettings.categoryOrder, updateStoreSetting]);
 
   const filteredCatalog = useMemo(() => {
-    const searchToken = currentSearchQuery.toLowerCase().trim();
-    return catalogProducts.filter(product => {
-      if (!isAdministrativeModeActive && product.is_archived) return false;
-      const matchesSearch = !searchToken || 
-        product.name.toLowerCase().includes(searchToken) || 
-        (product.description || '').toLowerCase().includes(searchToken);
-      const matchesCategory = activeFilterCategories.length === 0 || 
-        activeFilterCategories.includes(product.category);
-      return matchesSearch && matchesCategory;
-    });
+    // 1. Initial Filtering: Hide archived if not admin
+    let baseProducts = catalogProducts;
+    if (!isAdministrativeModeActive) {
+      baseProducts = baseProducts.filter(p => !p.is_archived);
+    }
+
+    // 2. Category Filtering (Hard Filter)
+    if (activeFilterCategories.length > 0) {
+      baseProducts = baseProducts.filter(p => activeFilterCategories.includes(p.category));
+    }
+
+    // 3. Smart Search Orchestration
+    return smartSearch(currentSearchQuery, baseProducts);
   }, [catalogProducts, currentSearchQuery, activeFilterCategories, isAdministrativeModeActive]);
 
   return {

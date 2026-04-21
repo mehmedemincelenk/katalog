@@ -1,3 +1,6 @@
+// FILE ROLE: Root Application Entry Point & Global State Orchestrator
+// DEPENDS ON: React, Framer Motion, All Feature Modals, useProducts, useAdminMode, useSettings
+// CONSUMED BY: main.tsx
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
@@ -181,6 +184,7 @@ function CatalogView() {
               showPrice={settings.displayConfig.showPrice ?? true}
               displayCurrency={displayCurrency}
               exchangeRates={settings.exchangeRates}
+              socialProofCards={settings.socialProofCards}
             />
           </div>
           {settings.displayConfig.showReferences && (
@@ -206,7 +210,7 @@ function CatalogView() {
       {/* OFF-HOURS ENGAGEMENT: Only for customers */}
       {!isAdmin && (
         <div className="print:hidden">
-          <OffHoursNotice whatsappNumber={settings.whatsapp} storeId={settings.id} />
+          <OffHoursNotice whatsappNumber={settings.whatsapp} />
         </div>
       )}
 
@@ -218,6 +222,13 @@ function CatalogView() {
             whatsappNumber={settings.whatsapp}
             onCouponClick={() => setIsCouponModalOpen(true)}
             onExcelClick={() => setIsPriceListModalOpen(true)}
+            onSearchClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              setTimeout(() => {
+                const searchInput = document.querySelector('input[placeholder*="ara"]') as HTMLInputElement;
+                if (searchInput) searchInput.focus();
+              }, 600);
+            }}
           />
         </div>
       )}

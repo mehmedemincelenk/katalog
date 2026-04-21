@@ -1,3 +1,5 @@
+// FILE ROLE: Global Configuration & Immutable Technical Sabitler
+// CONSUMED BY: settings, theme, components, hooks
 /**
  * DEFAULT COMPANY SETTINGS (Premium Global Template)
  */
@@ -9,20 +11,26 @@ export const DEFAULT_COMPANY = {
   instagramUrl: "https://instagram.com/katalogunuz",
   logoUrl: "/default-logo.png",
   displayConfig: {
-    showLogo: true,
     showAddress: true,
     showInstagram: true,
-    showCategories: true,
-    showSearch: true,
     showWhatsapp: true,
-    showSubtitle: true,
     showReferences: true,
-    showPrice: true
+    showPrice: true,
+    showCarousel: true,
+    showCoupons: true,
+    showPriceList: true,
+    showCurrency: true
   },
   announcementBar: {
     enabled: false,
     text: ''
   },
+  socialProofCards: [
+    '📋 340+ Ürün, 12 Kategoride Profesyonel Katalog',
+    '⚡ Hızlı Sipariş ve Anında WhatsApp Desteği',
+    '🚛 Tüm Türkiye\'ye Güvenli Gönderim Seçenekleri',
+    '🔥 En Çok Tercih Edilen Ürünleri İnceleyin'
+  ],
   maintenanceMode: {
     enabled: false,
     message: 'Sistemlerimiz güncelleniyor. Kısa süre içinde tekrar hizmetinizdeyiz.'

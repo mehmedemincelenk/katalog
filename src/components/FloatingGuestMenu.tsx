@@ -1,8 +1,11 @@
+// FILE ROLE: Guest Utility Hub (AssistiveTouch style menu)
+// DEPENDS ON: THEME, motion, All Guest Modals (Price List, Coupons)
+// CONSUMED BY: App.tsx
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { THEME } from '../data/config';
 import Button from './Button';
-import { Phone, FileSpreadsheet, Ticket, Menu, X } from 'lucide-react';
+import { Phone, FileSpreadsheet, Ticket, Menu, X, Search } from 'lucide-react';
 
 /**
  * FLOATING GUEST MENU COMPONENT
@@ -16,6 +19,7 @@ interface FloatingGuestMenuProps {
   whatsappNumber: string;
   onCouponClick: () => void;
   onExcelClick: () => void;
+  onSearchClick: () => void;
 }
 
 export default function FloatingGuestMenu({ 
@@ -23,7 +27,8 @@ export default function FloatingGuestMenu({
   onCurrencyToggle,
   whatsappNumber,
   onCouponClick,
-  onExcelClick
+  onExcelClick,
+  onSearchClick
 }: FloatingGuestMenuProps) {
   const [isMenuExpanded, setIsMenuExpanded] = useState(false);
   const menuContainerRef = useRef<HTMLDivElement>(null);
@@ -130,10 +135,17 @@ export default function FloatingGuestMenu({
                   },
                   { 
                     id: 'call', 
-                    icon: <span className="text-[19px] leading-none">📞</span>, 
+                    icon: <Phone className="w-5 h-5" />, 
                     action: handleCall,
                     label: "Bizi Arayın",
                     className: "bg-emerald-500 text-white border-none hover:bg-emerald-600" 
+                  },
+                  { 
+                    id: 'search', 
+                    icon: <Search className="w-5 h-5" />, 
+                    action: onSearchClick,
+                    label: "Ürün Ara",
+                    className: "bg-stone-100 text-stone-900 border-none hover:bg-stone-200" 
                   },
                   { 
                     id: 'excel', 

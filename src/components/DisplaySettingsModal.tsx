@@ -1,7 +1,8 @@
-import { memo } from 'react';
-import { THEME } from '../data/config';
+import { memo, useState, useEffect } from 'react';
 import { CompanySettings } from '../hooks/useSettings';
 import Button from './Button';
+import BaseModal from './BaseModal';
+import { HelpCircle } from 'lucide-react';
 
 interface DisplaySettingsModalProps {
   isOpen: boolean;
@@ -12,12 +13,28 @@ interface DisplaySettingsModalProps {
   onToggleInline: () => void;
 }
 
-const DisplaySettingsModal = memo(({ isOpen, onClose, settings, updateSetting, isInlineEnabled, onToggleInline }: DisplaySettingsModalProps) => {
-  if (!isOpen) return null;
+interface HelpInfo {
+  title: string;
+  onText: string;
+  offText: string;
+}
 
+const DisplaySettingsModal = memo(({ isOpen, onClose, settings, updateSetting, isInlineEnabled, onToggleInline }: DisplaySettingsModalProps) => {
   const config = settings.displayConfig;
-  const theme = THEME.addProductModal;
-  const globalIcons = THEME.icons;
+  const [helpId, setHelpId] = useState<string | null>(null);
+  const [hiddenHelpIds, setHiddenHelpIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    const hidden = localStorage.getItem('ekatalog_hidden_help_ids');
+    if (hidden) setHiddenHelpIds(JSON.parse(hidden));
+  }, []);
+
+  const hideHelpPermanently = (id: string) => {
+    const updated = [...hiddenHelpIds, id];
+    setHiddenHelpIds(updated);
+    localStorage.setItem('ekatalog_hidden_help_ids', JSON.stringify(updated));
+    setHelpId(null);
+  };
 
   const toggleOption = (key: keyof CompanySettings['displayConfig']) => {
     const updatedConfig = { ...config, [key]: !config[key] };
@@ -34,108 +51,149 @@ const DisplaySettingsModal = memo(({ isOpen, onClose, settings, updateSetting, i
     updateSetting('maintenanceMode', { ...maintenanceConfig, enabled: !maintenanceConfig.enabled });
   };
 
-  // Her seçenek aynı tile stiliyle render edilir
-  const allOptions = [
-    { key: 'announcement', label: 'Duyuru', icon: '📢', isOn: announcementConfig.enabled, onToggle: toggleAnnouncement },
-    { key: 'maintenance', label: 'Bakım Modu', icon: '🛠️', isOn: maintenanceConfig.enabled, onToggle: toggleMaintenance },
-    { key: 'inline', label: 'Düzenleme', icon: '✍️', isOn: isInlineEnabled, onToggle: onToggleInline },
-    { key: 'showPrice', label: 'Fiyat', icon: '💰', isOn: config.showPrice ?? true, onToggle: () => toggleOption('showPrice') },
-    { key: 'showLogo', label: 'Logo', icon: '🖼️', isOn: config.showLogo, onToggle: () => toggleOption('showLogo') },
-    { key: 'showSubtitle', label: 'Slogan', icon: '📝', isOn: config.showSubtitle, onToggle: () => toggleOption('showSubtitle') },
-    { key: 'showAddress', label: 'Adres', icon: '📍', isOn: config.showAddress, onToggle: () => toggleOption('showAddress') },
-    { key: 'showInstagram', label: 'Instagram', icon: '📸', isOn: config.showInstagram, onToggle: () => toggleOption('showInstagram') },
-    { key: 'showWhatsapp', label: 'WhatsApp', icon: '💬', isOn: config.showWhatsapp, onToggle: () => toggleOption('showWhatsapp') },
-    { key: 'showSearch', label: 'Arama', icon: '🔍', isOn: config.showSearch, onToggle: () => toggleOption('showSearch') },
-    { key: 'showCategories', label: 'Kategoriler', icon: '🏷️', isOn: config.showCategories, onToggle: () => toggleOption('showCategories') },
-    { key: 'showReferences', label: 'Referanslar', icon: '🤝', isOn: config.showReferences, onToggle: () => toggleOption('showReferences') },
+  const helpContents: Record<string, HelpInfo> = {
+    'inline': {
+      title: 'Hızlı Düzenleme Nedir?',
+      onText: 'Dükkanınızdaki ürünlerin isimlerine, fiyatlarına veya açıklamalarına doğrudan tıklayarak anında değiştirebilirsiniz. "Kaydet" butonu aramaya gerek kalmadan her şey tıkır tıkır güncellenir.',
+      offText: 'Ürünlerin üzerine tıklandığında sadece ürün detayı açılır. Yanlışlıkla bir şeyleri değiştirme riskini ortadan kaldırmak için bu modu kapalı tutabilirsiniz.'
+    }
+  };
+
+  const groups = [
+    {
+      title: "ŞUNLAR GÖZÜKSÜN",
+      subtitle: "Dükkanınızdaki bölümlerin görünürlük ayarları",
+      options: [
+        { key: 'showPrice', label: 'Ürünlerin Fiyatları', isOn: config.showPrice, onToggle: () => toggleOption('showPrice') },
+        { key: 'showWhatsapp', label: 'WhatsApp Hattı', isOn: config.showWhatsapp, onToggle: () => toggleOption('showWhatsapp') },
+        { key: 'showInstagram', label: 'Instagram Sayfası', isOn: config.showInstagram, onToggle: () => toggleOption('showInstagram') },
+        { key: 'showAddress', label: 'Adres Bilgisi', isOn: config.showAddress, onToggle: () => toggleOption('showAddress') },
+        { key: 'showCarousel', label: 'Ana Sayfa Afişleri', isOn: config.showCarousel, onToggle: () => toggleOption('showCarousel') },
+        { key: 'showReferences', label: 'Referans Bölümü', isOn: config.showReferences, onToggle: () => toggleOption('showReferences') },
+        { key: 'announcement', label: 'Duyuru Panosu', isOn: announcementConfig.enabled, onToggle: toggleAnnouncement },
+      ]
+    },
+    {
+      title: "ŞUNLAR KULLANILABİLSİN",
+      subtitle: "Müşterilerin dükkanda yapabileceği işlemler",
+      options: [
+        { key: 'showCoupons', label: 'İndirim Kuponu', isOn: config.showCoupons, onToggle: () => toggleOption('showCoupons') },
+        { key: 'showCurrency', label: '₺ $ € Çevirici', isOn: config.showCurrency, onToggle: () => toggleOption('showCurrency') },
+        { key: 'showPriceList', label: 'Fiyat Listesi', isOn: config.showPriceList, onToggle: () => toggleOption('showPriceList') },
+      ]
+    },
+    {
+      title: "YÖNETİCİ AYARLARI",
+      subtitle: "Sistem ve dükkan yönetimi kontrolleri",
+      options: [
+        { key: 'inline', label: 'Hızlı Düzenleme', isOn: isInlineEnabled, onToggle: onToggleInline, hasHelp: true },
+        { key: 'maintenance', label: 'Bakım Moduna Al', isOn: maintenanceConfig.enabled, onToggle: toggleMaintenance },
+      ]
+    }
   ];
 
-  return (
-    <div className={theme.overlay} onClick={onClose}>
-      <div className={`${theme.container} max-w-[280px] sm:max-w-[448px]`} onClick={(e) => e.stopPropagation()}>
-        {/* HEADER */}
-        <div className="flex items-center justify-between px-5 sm:px-8 py-4 sm:py-6 border-b border-stone-100">
-          <div className="flex flex-col">
-            <h2 className="text-sm sm:text-[22px] font-black tracking-tight text-stone-900 leading-none">Görünüm Ayarları</h2>
-            <p className="text-[9px] sm:text-[14px] text-stone-400 font-bold uppercase tracking-widest mt-1 sm:mt-1.5">Stilini Belirle</p>
-          </div>
-          <button onClick={onClose} className="p-1.5 sm:p-[10px] hover:bg-stone-100 rounded-full transition-colors">
-            <div className="w-4 h-4 sm:w-6 sm:h-6 text-stone-400">{globalIcons.close}</div>
-          </button>
-        </div>
+  const footer = (
+    <Button onClick={onClose} variant="primary" size="md" mode="rectangle" className="w-full !rounded-[var(--radius-card)] !py-5 !text-[16px]">
+      KAPAT VE KAYDET
+    </Button>
+  );
 
-        {/* GRID */}
-        <div className="p-3 sm:p-5 grid grid-cols-2 gap-2 sm:gap-3">
-          {allOptions.map((option) => (
-            <div
-              key={option.key}
-              onClick={option.onToggle}
-              className={`flex flex-col items-center justify-center p-2.5 sm:p-4 rounded-xl border-2 transition-all cursor-pointer text-center group ${
-                option.isOn
-                  ? 'border-stone-900 bg-stone-900 text-white shadow-lg scale-[0.98]'
-                  : 'border-stone-100 bg-stone-50 text-stone-400 hover:border-stone-200'
-              }`}
-            >
-              <span className={`text-xl sm:text-[32px] transition-all duration-300 ${option.isOn ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]' : 'grayscale opacity-70 group-hover:grayscale-0'}`}>
-                {option.icon}
-              </span>
-              <span className="text-[8px] sm:text-[13px] font-black uppercase tracking-tighter mt-1 sm:mt-1.5 leading-none line-clamp-1">
-                {option.label}
-              </span>
-              <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full mt-1.5 sm:mt-2.5 transition-all duration-300 ${option.isOn ? 'bg-white shadow-[0_0_5px_white]' : 'bg-transparent'}`} />
+  return (
+    <>
+      <BaseModal
+        isOpen={isOpen}
+        onClose={onClose}
+        maxWidth="max-w-md"
+        title="Mağaza Özellikleri"
+        subtitle="Dükkanınızı isteğinize göre yapılandırın"
+        footer={footer}
+      >
+        <div className="space-y-8 pb-4">
+          {groups.map((group) => (
+            <div key={group.title} className="space-y-3">
+              <div className="px-1 border-l-4 border-stone-900 pl-4 py-1">
+                <h5 className="text-[10px] font-black text-stone-900 uppercase tracking-[0.2em]">{group.title}</h5>
+                <p className="text-[11px] text-stone-400 font-medium italic leading-none mt-1">{group.subtitle}</p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3">
+                {group.options.map((option) => (
+                  <div
+                    key={option.key}
+                    onClick={option.onToggle}
+                    className={`relative flex items-center justify-between p-3.5 rounded-2xl border-2 transition-all cursor-pointer group h-12 ${
+                      option.isOn
+                        ? 'border-stone-900 bg-stone-900 text-white shadow-xl scale-[0.98]'
+                        : 'border-stone-100 bg-stone-50 text-stone-400 hover:border-stone-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 overflow-hidden flex-1">
+                      {option.hasHelp && !hiddenHelpIds.includes(option.key) && (
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setHelpId(option.key); }}
+                          className={`shrink-0 p-0.5 transition-all ${option.isOn ? 'text-emerald-400' : 'text-stone-300 hover:text-stone-900'}`}
+                        >
+                          <HelpCircle size={16} />
+                        </button>
+                      )}
+                      <span className="text-[10px] font-black uppercase tracking-tight leading-none truncate">
+                        {option.label}
+                      </span>
+                    </div>
+                    
+                    <div className={`w-2 h-2 rounded-full transition-all duration-300 shrink-0 ${
+                      option.isOn 
+                        ? 'bg-emerald-400 shadow-[0_0_8px_#34d399] border border-emerald-300' 
+                        : 'bg-stone-200'
+                    }`} />
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </div>
-        
-        {/* EXCHANGE RATES */}
-        <div className="px-5 sm:px-8 pb-4">
-          <div className="flex gap-2 sm:gap-3">
-            {/* USD Input */}
-            <div className="flex-1 bg-stone-50 rounded-2xl p-2.5 sm:p-4 border border-stone-100 focus-within:border-stone-900 transition-all">
-              <div className="flex items-center justify-between mb-1 sm:mb-1.5">
-                <span className="text-[8px] sm:text-[11px] font-black text-stone-400 uppercase tracking-widest">USD Kuru</span>
-                <span className="text-[13px] sm:text-[18px]">🇺🇸</span>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-[10px] sm:text-[14px] font-black text-stone-300">₺</span>
-                <input 
-                  type="number" 
-                  step="0.01"
-                  value={settings.exchangeRates.usd}
-                  onChange={(e) => updateSetting('exchangeRates', { ...settings.exchangeRates, usd: parseFloat(e.target.value) })}
-                  className="w-full bg-transparent border-none p-0 text-[14px] sm:text-[20px] font-black text-stone-900 focus:ring-0 outline-none placeholder:text-stone-200"
-                />
-              </div>
-            </div>
+      </BaseModal>
 
-            {/* EUR Input */}
-            <div className="flex-1 bg-stone-50 rounded-2xl p-2.5 sm:p-4 border border-stone-100 focus-within:border-stone-900 transition-all">
-              <div className="flex items-center justify-between mb-1 sm:mb-1.5">
-                <span className="text-[8px] sm:text-[11px] font-black text-stone-400 uppercase tracking-widest">EUR Kuru</span>
-                <span className="text-[13px] sm:text-[18px]">🇪🇺</span>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-[10px] sm:text-[14px] font-black text-stone-300">₺</span>
-                <input 
-                  type="number" 
-                  step="0.01"
-                  value={settings.exchangeRates.eur}
-                  onChange={(e) => updateSetting('exchangeRates', { ...settings.exchangeRates, eur: parseFloat(e.target.value) })}
-                  className="w-full bg-transparent border-none p-0 text-[14px] sm:text-[20px] font-black text-stone-900 focus:ring-0 outline-none placeholder:text-stone-200"
-                />
-              </div>
+      {/* REUSABLE HELP MODAL */}
+      <BaseModal
+        isOpen={!!helpId}
+        onClose={() => setHelpId(null)}
+        maxWidth="max-w-sm"
+        title={helpId ? helpContents[helpId]?.title : ''}
+        footer={
+          <div className="flex flex-col gap-2 w-full">
+            <Button onClick={() => setHelpId(null)} variant="primary" size="md" className="w-full !py-4" mode="rectangle">
+                TAMAM
+            </Button>
+            <Button 
+                onClick={() => helpId && hideHelpPermanently(helpId)} 
+                variant="ghost" 
+                size="sm" 
+                className="w-full text-stone-400 !text-[9px] font-black hover:text-stone-900 underline px-6 text-center leading-tight" 
+                mode="rectangle"
+            >
+                Anladım, bu butondaki "?" işaretini tekrar göstermene gerek yok
+            </Button>
+          </div>
+        }
+      >
+        {helpId && (
+          <div className="space-y-4 py-2">
+            <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl">
+                <div className="flex gap-3">
+                    <div className="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center shrink-0 text-white font-black text-[10px]">AÇIK</div>
+                    <p className="text-xs text-emerald-800 leading-relaxed font-bold">{helpContents[helpId].onText}</p>
+                </div>
+            </div>
+            <div className="bg-stone-50 border border-stone-100 p-4 rounded-2xl">
+                <div className="flex gap-3">
+                    <div className="w-6 h-6 bg-stone-300 rounded-lg flex items-center justify-center shrink-0 text-white font-black text-[10px]">KAPALI</div>
+                    <p className="text-xs text-stone-600 leading-relaxed font-bold">{helpContents[helpId].offText}</p>
+                </div>
             </div>
           </div>
-        </div>
-        
-        {/* FOOTER */}
-        <div className="p-3 sm:p-5 pt-0 sm:pt-0">
-          <Button onClick={onClose} variant="primary" size="md" mode="rectangle" className="w-full !rounded-2xl sm:!py-5 sm:!text-[19px]">
-            KAPAT
-          </Button>
-        </div>
-      </div>
-    </div>
+        )}
+      </BaseModal>
+    </>
   );
 });
 

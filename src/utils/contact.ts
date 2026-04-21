@@ -1,3 +1,5 @@
+// FILE ROLE: Communication Link Generator (WhatsApp, Tel)
+// CONSUMED BY: Navbar, FloatingGuestMenu, ProductCard
 /**
  * CONTACT UTILS
  * -----------------------------------------------------------

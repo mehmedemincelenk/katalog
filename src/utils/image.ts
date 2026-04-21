@@ -1,3 +1,6 @@
+// FILE ROLE: Visual Asset Orchestrator (Processing, Compression, URL Resolution)
+// DEPENDS ON: TECH constants, THEME colors, FileReader API
+// CONSUMED BY: ProductCard.tsx, HeroCarousel.tsx, AddProductModal.tsx
 import { TECH, LABELS, THEME } from '../data/config';
 
 /**

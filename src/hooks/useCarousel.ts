@@ -1,3 +1,6 @@
+// FILE ROLE: Hero Carousel Data & Image Upload Persistence
+// DEPENDS ON: Supabase, Image Utils, TECH config
+// CONSUMED BY: HeroCarousel.tsx
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { CAROUSEL, TECH } from '../data/config';

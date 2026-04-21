@@ -1,7 +1,11 @@
+// FILE ROLE: Main Catalog Display Engine (Categorized Grid)
+// DEPENDS ON: ProductCard, THEME config, Category sorting logic
+// CONSUMED BY: App.tsx
 import { useMemo, memo } from 'react';
 import { THEME, LABELS, sortCategories, TECH } from '../data/config';
 import { Product } from '../types';
 import ProductCard from './ProductCard';
+import SocialProofCard from './SocialProofCard';
 import { ActiveDiscount } from '../hooks/useDiscount';
 import { Plus } from 'lucide-react';
 
@@ -31,6 +35,7 @@ interface ProductGridProps {
   showPrice?: boolean;
   displayCurrency?: 'TRY' | 'USD' | 'EUR';
   exchangeRates?: { usd: number; eur: number };
+  socialProofCards?: string[];
 }
 
 const ProductGrid = memo(({
@@ -51,7 +56,8 @@ const ProductGrid = memo(({
   setActiveAdminProductId,
   showPrice = true,
   displayCurrency = 'TRY',
-  exchangeRates
+  exchangeRates,
+  socialProofCards
 }: ProductGridProps) => {
   const theme = THEME.productGrid;
 
@@ -127,27 +133,38 @@ const ProductGrid = memo(({
                 {categoryProducts.map((product, index) => {
                   const isPriority = priorityCounter < 4;
                   priorityCounter++;
+                  
+                  // Marketing Injection Logic: Every 6 products, show a social proof card
+                  const shouldInjectSocialProof = socialProofCards && socialProofCards.length > 0 && (index + 1) % 6 === 0;
+                  const socialProofMessage = shouldInjectSocialProof 
+                    ? socialProofCards[Math.floor((index + 1) / 6) % socialProofCards.length] 
+                    : null;
+
                   return (
-                    <ProductCard 
-                      key={product.id}
-                      product={product}
-                      categories={categoryOrder}
-                      isAdmin={isAdmin}
-                      isInlineEnabled={isInlineEnabled}
-                      showPrice={showPrice}
-                      onDelete={onDelete}
-                      onUpdate={onUpdate}
-                      onOrderChange={onOrderUpdate}
-                      onImageUpload={onImageUpload}
-                      orderIndex={index + 1}
-                      itemsInCategory={categoryProducts.length}
-                      activeDiscount={activeDiscount}
-                      isPriority={isPriority}
-                      activeAdminProductId={activeAdminProductId}
-                      setActiveAdminProductId={setActiveAdminProductId}
-                      displayCurrency={displayCurrency}
-                      exchangeRates={exchangeRates}
-                    />
+                    <div key={product.id} className="contents">
+                      <ProductCard 
+                        product={product}
+                        categories={categoryOrder}
+                        isAdmin={isAdmin}
+                        isInlineEnabled={isInlineEnabled}
+                        showPrice={showPrice}
+                        onDelete={onDelete}
+                        onUpdate={onUpdate}
+                        onOrderChange={onOrderUpdate}
+                        onImageUpload={onImageUpload}
+                        orderIndex={index + 1}
+                        itemsInCategory={categoryProducts.length}
+                        activeDiscount={activeDiscount}
+                        isPriority={isPriority}
+                        activeAdminProductId={activeAdminProductId}
+                        setActiveAdminProductId={setActiveAdminProductId}
+                        displayCurrency={displayCurrency}
+                        exchangeRates={exchangeRates}
+                      />
+                      {shouldInjectSocialProof && socialProofMessage && (
+                        <SocialProofCard message={socialProofMessage} isAdmin={isAdmin} />
+                      )}
+                    </div>
                   );
                 })}
               </div>

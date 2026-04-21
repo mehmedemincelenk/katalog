@@ -1,3 +1,6 @@
+// FILE ROLE: Interactive Catalog Filtering and Navigation Engine
+// DEPENDS ON: THEME, motion, OrderSelector logic
+// CONSUMED BY: App.tsx
 import React, { useState, useMemo, memo, useEffect, useRef, useCallback } from 'react';
 import { THEME, LABELS, TECH, sortCategories } from '../data/config';
 import { Product } from '../types';

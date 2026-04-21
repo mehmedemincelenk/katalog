@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { THEME } from '../data/config';
 import { Product } from '../types';
 import Button from './Button';
+import BaseModal from './BaseModal';
+import { ArrowLeft } from 'lucide-react';
 import { transformCurrencyStringToNumber } from '../utils/price';
 
 type ActionType = 'PRICE' | 'DELETE' | 'ARCHIVE' | 'STOCK' | null;
@@ -45,9 +47,14 @@ export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, cat
     if (currentStep === 1) {
       const productsForDesk = allProducts.filter(p => selectedCategories.length === 0 || selectedCategories.includes(p.category));
       const initialDesk: typeof deskItems = {};
+      
+      // For STOCK and ARCHIVE, start with included: false because the action of clicking a toggle will include them.
+      // For PRICE and DELETE, we keep the default selection logic.
+      const isStatusAction = actionType === 'STOCK' || actionType === 'ARCHIVE';
+      
       productsForDesk.forEach(p => {
         initialDesk[p.id] = { 
-          included: true,
+          included: !isStatusAction,
           manualInStock: p.inStock,
           manualArchived: p.is_archived
         };
@@ -108,15 +115,27 @@ export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, cat
   const updateManualInStock = (id: string, val: boolean) => {
     setDeskItems(prev => ({
       ...prev,
-      [id]: { ...prev[id], manualInStock: val }
+      [id]: { ...prev[id], manualInStock: val, included: true }
     }));
   };
 
   const updateManualArchived = (id: string, val: boolean) => {
     setDeskItems(prev => ({
       ...prev,
-      [id]: { ...prev[id], manualArchived: val }
+      [id]: { ...prev[id], manualArchived: val, included: true }
     }));
+  };
+
+  const applyBulkStatus = (val: boolean) => {
+    const newDesk = { ...deskItems };
+    initialProductsForDesk.forEach(p => {
+      if (actionType === 'STOCK') {
+        newDesk[p.id] = { ...newDesk[p.id], manualInStock: val, included: true };
+      } else if (actionType === 'ARCHIVE') {
+        newDesk[p.id] = { ...newDesk[p.id], manualArchived: val, included: true };
+      }
+    });
+    setDeskItems(newDesk);
   };
 
   const calculateNewPrice = (current: number, manual?: number) => {
@@ -178,25 +197,19 @@ export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, cat
   if (!isOpen) return null;
 
   return (
-    <div className={modalTheme.overlay}>
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        className={`${modalTheme.container} !max-w-md h-[90vh] sm:h-auto overflow-hidden flex flex-col`}
-      >
-        <div className={modalTheme.header}>
-          <div className="flex flex-col text-left">
-            <h2 className="text-xl sm:text-[32px] font-black text-stone-900 tracking-tighter sm:mb-1.5">İşlem Paneli</h2>
-            <p className="text-[10px] sm:text-[16px] font-bold text-stone-400 uppercase tracking-widest leading-none mt-1">
-              {currentStep === 1 ? 'EYLEM SEÇİN' : (currentStep === 2 ? 'MİKTAR GİRİN' : 'ONAY MANİFESTOSU')}
-            </p>
-          </div>
-          <button onClick={() => { onClose(); resetAll(); }} className={modalTheme.headerButton}>
-            {THEME.icons.close}
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+    <BaseModal
+      isOpen={isOpen}
+      onClose={() => { onClose(); resetAll(); }}
+      maxWidth="max-w-md"
+      title="Toplu İşlem"
+      progress={{ current: currentStep, total: 3 }}
+      disableClickOutside={isProcessing}
+      hideCloseButton={isProcessing}
+    >
+      <div className="space-y-8">
+        <p className="text-[10px] sm:text-xs font-bold text-stone-400 uppercase tracking-widest leading-none text-center m-0">
+          {currentStep === 1 ? 'EYLEM SEÇİN' : (currentStep === 2 ? 'MİKTAR GİRİN' : 'ONAY MANİFESTOSU')}
+        </p>
           {currentStep === 1 && (
             <div className="space-y-6 fade-in">
               {/* ACTION TYPE SELECTION - GRID */}
@@ -321,18 +334,21 @@ export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, cat
                 </div>
               </div>
 
-              <div className="flex gap-3 sm:gap-5">
-                <button 
+              <div className="grid grid-cols-2 gap-3 mt-6">
+                <Button 
                   onClick={prevStep} 
-                  className="w-11 h-11 sm:w-[70px] sm:h-[70px] flex items-center justify-center rounded-xl bg-stone-50 border border-stone-100 text-stone-400 hover:text-stone-900 transition-colors sm:px-5"
+                  variant="ghost" 
+                  className="w-full" 
+                  mode="rectangle"
+                  icon={<ArrowLeft size={16}/>}
                 >
-                  <div className="w-5 h-5 sm:w-8 sm:h-8">{THEME.icons.chevronLeft}</div>
-                </button>
+                  GERİ
+                </Button>
                 <Button 
                    onClick={nextStep} 
                    disabled={inputValue === '' || isIncrease === null || isPercentage === null}
                    variant="primary" 
-                   className="flex-[2] !py-4 sm:!py-6 sm:!text-[19px]" 
+                   className="w-full" 
                    mode="rectangle"
                 >
                   İŞLEM PANELİNE GEÇ
@@ -351,6 +367,48 @@ export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, cat
               </div>
 
               <div className="flex-1 overflow-y-auto space-y-1 min-h-[300px] border border-stone-100 rounded-3xl bg-stone-50/50 p-1.5 custom-scrollbar">
+                {/* GLOBAL BULK ROW - EXACT MATCH TO PRODUCT ROWS */}
+                {(actionType === 'STOCK' || actionType === 'ARCHIVE') && initialProductsForDesk.length > 0 && (
+                  <div className="flex items-center gap-2 p-2 rounded-2xl border border-stone-200 bg-white shadow-sm mb-4 sticky top-0 z-20 backdrop-blur-md">
+                    <div className="flex-1 min-w-0 flex flex-col text-left pl-2">
+                      <p className="text-[10px] font-black text-stone-900 truncate leading-none uppercase tracking-tight">LİSTEDEKİ TÜM ÜRÜNLER</p>
+                    </div>
+
+                    {actionType === 'STOCK' && (
+                      <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200">
+                         <button 
+                           onClick={() => applyBulkStatus(true)}
+                           className="px-3 py-1.5 rounded-lg text-[8px] font-black transition-all text-stone-400 hover:bg-green-600 hover:text-white hover:shadow-sm"
+                         >
+                           STOKTA
+                         </button>
+                         <button 
+                           onClick={() => applyBulkStatus(false)}
+                           className="px-3 py-1.5 rounded-lg text-[8px] font-black transition-all text-stone-400 hover:bg-red-600 hover:text-white hover:shadow-sm"
+                         >
+                           YOK
+                         </button>
+                      </div>
+                    )}
+
+                    {actionType === 'ARCHIVE' && (
+                      <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200">
+                         <button 
+                           onClick={() => applyBulkStatus(false)}
+                           className="px-3 py-1.5 rounded-lg text-[8px] font-black transition-all text-stone-400 hover:bg-amber-600 hover:text-white hover:shadow-sm"
+                         >
+                           GÖRÜNÜR
+                         </button>
+                         <button 
+                           onClick={() => applyBulkStatus(true)}
+                           className="px-3 py-1.5 rounded-lg text-[8px] font-black transition-all text-stone-400 hover:bg-stone-600 hover:text-white hover:shadow-sm"
+                         >
+                           GİZLİ
+                         </button>
+                      </div>
+                    )}
+                  </div>
+                )}
                 {initialProductsForDesk.map((p, index) => {
                   const state = deskItems[p.id] || { included: true };
                   const numericPrice = transformCurrencyStringToNumber(p.price);
@@ -359,58 +417,91 @@ export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, cat
 
                   return (
                     <div key={p.id}>
-                      {showHeader && (
-                        <div className="flex items-center gap-2 px-3 py-3 mt-4 mb-2 first:mt-2">
-                           <div className="h-[1px] flex-1 bg-stone-200"></div>
-                           <span className="text-[9px] font-black text-stone-400 uppercase tracking-[0.3em]">{p.category}</span>
-                           <div className="h-[1px] flex-1 bg-stone-200"></div>
-                        </div>
-                      )}
                       <div className={`flex items-center gap-2 p-2 rounded-2xl border transition-all ${state.included ? 'bg-white border-stone-100 shadow-sm' : 'bg-transparent border-transparent opacity-40'}`}>
-                        <button 
-                          onClick={() => toggleProductInclusion(p.id)}
-                          className={`w-7 h-7 flex items-center justify-center rounded-lg transition-all ${state.included ? 'bg-stone-900 text-white' : 'bg-stone-200 text-stone-400'}`}
-                        >
-                          {state.included ? '✓' : '×'}
-                        </button>
-
-                        <div className="flex-1 min-w-0 flex flex-col text-left">
-                          <p className="text-[10px] font-black text-stone-800 truncate leading-none mb-1 uppercase tracking-tight">{p.name}</p>
+                        <div className={`flex-1 min-w-0 flex flex-col text-left pl-2`}>
+                          <p className={`text-[10px] font-black truncate leading-none mb-1 uppercase tracking-tight ${state.included ? 'text-stone-900' : 'text-stone-400 font-bold'}`}>{p.name}</p>
                         </div>
 
-                        {actionType === 'PRICE' && state.included && (
-                          <div className="flex items-center gap-1.5 bg-stone-50 px-2 py-1.5 rounded-xl border border-stone-100">
-                            <span className="text-[9px] font-bold text-stone-300 line-through tracking-tighter">{p.price}</span>
-                            <input 
-                              type="number"
-                              value={state.manualPrice !== undefined ? String(state.manualPrice) : String(newPrice)}
-                              onChange={(e) => updateManualPrice(p.id, e.target.value)}
-                              className="w-14 bg-transparent text-[11px] font-black text-stone-900 text-right focus:outline-none"
-                            />
-                            <span className="text-[9px] font-black text-stone-400">₺</span>
+                        {actionType === 'PRICE' && (
+                          <div className="flex items-center gap-2">
+                            {state.included && (
+                              <div className="flex items-center gap-1.5 bg-stone-50 px-2 py-1.5 rounded-xl border border-stone-100">
+                                <span className="text-[9px] font-bold text-stone-300 line-through tracking-tighter">{p.price}</span>
+                                <input 
+                                  type="number"
+                                  value={state.manualPrice !== undefined ? String(state.manualPrice) : String(newPrice)}
+                                  onChange={(e) => updateManualPrice(p.id, e.target.value)}
+                                  className="w-12 bg-transparent text-[11px] font-black text-stone-900 text-right focus:outline-none"
+                                />
+                                <span className="text-[9px] font-black text-stone-400">₺</span>
+                              </div>
+                            )}
+                            <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200">
+                               <button 
+                                 onClick={() => !state.included && toggleProductInclusion(p.id)}
+                                 className={`px-2.5 py-1.5 rounded-lg text-[8px] font-black transition-all ${state.included ? 'bg-stone-900 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
+                               >
+                                 YAP
+                               </button>
+                               <button 
+                                 onClick={() => state.included && toggleProductInclusion(p.id)}
+                                 className={`px-2.5 py-1.5 rounded-lg text-[8px] font-black transition-all ${!state.included ? 'bg-stone-400 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
+                               >
+                                 KALSIN
+                               </button>
+                            </div>
                           </div>
                         )}
 
-                        {actionType === 'STOCK' && state.included && (
-                          <button 
-                            onClick={() => updateManualInStock(p.id, !state.manualInStock)}
-                            className={`px-3 py-1.5 rounded-xl text-[8px] font-black transition-all shadow-sm ${state.manualInStock ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100 font-black'}`}
-                          >
-                            {state.manualInStock ? 'STOKTA' : 'STOKTA YOK'}
-                          </button>
+                        {actionType === 'STOCK' && (
+                          <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200">
+                             <button 
+                               onClick={() => updateManualInStock(p.id, true)}
+                               className={`px-3 py-1.5 rounded-lg text-[8px] font-black transition-all ${state.manualInStock ? 'bg-green-600 text-white shadow-sm' : 'text-stone-400 hover:text-green-600 hover:bg-white'}`}
+                             >
+                               STOKTA
+                             </button>
+                             <button 
+                               onClick={() => updateManualInStock(p.id, false)}
+                               className={`px-3 py-1.5 rounded-lg text-[8px] font-black transition-all ${state.manualInStock === false ? 'bg-red-600 text-white shadow-sm' : 'text-stone-400 hover:text-red-600 hover:bg-white'}`}
+                             >
+                               YOK
+                             </button>
+                          </div>
                         )}
 
-                        {actionType === 'ARCHIVE' && state.included && (
-                          <button 
-                            onClick={() => updateManualArchived(p.id, !state.manualArchived)}
-                            className={`px-3 py-1.5 rounded-xl text-[8px] font-black transition-all shadow-sm ${state.manualArchived ? 'bg-stone-100 text-stone-400 border border-stone-200' : 'bg-amber-50 text-amber-700 border border-amber-100'}`}
-                          >
-                            {state.manualArchived ? 'GİZLİ' : 'GÖRÜNÜR'}
-                          </button>
+                        {actionType === 'ARCHIVE' && (
+                          <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200">
+                             <button 
+                               onClick={() => updateManualArchived(p.id, false)}
+                               className={`px-3 py-1.5 rounded-lg text-[8px] font-black transition-all ${!state.manualArchived ? 'bg-amber-600 text-white shadow-sm' : 'text-stone-400 hover:bg-amber-600 hover:text-white hover:shadow-sm'}`}
+                             >
+                               GÖRÜNÜR
+                             </button>
+                             <button 
+                               onClick={() => updateManualArchived(p.id, true)}
+                               className={`px-3 py-1.5 rounded-lg text-[8px] font-black transition-all ${state.manualArchived ? 'bg-stone-600 text-white shadow-sm' : 'text-stone-400 hover:bg-stone-600 hover:text-white hover:shadow-sm'}`}
+                             >
+                               GİZLİ
+                             </button>
+                          </div>
                         )}
 
-                        {actionType === 'DELETE' && state.included && (
-                          <span className="text-[9px] font-black text-red-600 uppercase px-2 tracking-tighter italic">SİLİNECEK</span>
+                        {actionType === 'DELETE' && (
+                          <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200">
+                             <button 
+                               onClick={() => !state.included && toggleProductInclusion(p.id)}
+                               className={`px-3 py-1.5 rounded-lg text-[8px] font-black transition-all ${state.included ? 'bg-red-600 text-white shadow-sm' : 'text-stone-400 hover:text-red-600 hover:bg-white'}`}
+                             >
+                               SİL
+                             </button>
+                             <button 
+                               onClick={() => state.included && toggleProductInclusion(p.id)}
+                               className={`px-3 py-1.5 rounded-lg text-[8px] font-black transition-all ${!state.included ? 'bg-stone-400 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
+                             >
+                               KALSIN
+                             </button>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -423,29 +514,31 @@ export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, cat
                   <span className="text-[10px] sm:text-[16px] font-black text-stone-400 uppercase tracking-widest">Seçili:</span>
                   <span className="text-xs sm:text-[19px] font-black text-stone-900">{Object.values(deskItems).filter(d => d.included).length} / {initialProductsForDesk.length} ÜRÜN</span>
                 </div>
-                <div className="flex gap-3 sm:gap-5 px-1 pb-1">
-                  <button 
+                <div className="grid grid-cols-2 gap-3 px-1 pb-1">
+                  <Button 
                     onClick={prevStep} 
-                    className="w-12 h-12 sm:w-[76px] sm:h-[76px] flex items-center justify-center rounded-xl sm:rounded-2xl bg-stone-100 text-stone-500 hover:text-stone-900 transition-colors shadow-sm"
+                    variant="ghost" 
+                    className="w-full" 
+                    mode="rectangle"
+                    icon={<ArrowLeft size={16}/>}
                   >
-                    <div className="w-5 h-5 sm:w-8 sm:h-8">{THEME.icons.chevronLeft}</div>
-                  </button>
+                    GERİ
+                  </Button>
                   <Button 
                     onClick={handleApply}
                     disabled={isProcessing || Object.values(deskItems).filter(d => d.included).length === 0}
                     variant={actionType === 'DELETE' ? 'danger' : 'primary'} 
-                    className="flex-[2] !py-4 sm:!py-6 sm:!text-[19px] shadow-2xl" 
+                    className="w-full" 
                     mode="rectangle"
                     loading={isProcessing}
                   >
-                    BİTİR VE UYGULA
+                    UYGULA
                   </Button>
                 </div>
               </div>
             </div>
           )}
-        </div>
-      </motion.div>
-    </div>
+      </div>
+    </BaseModal>
   );
 }

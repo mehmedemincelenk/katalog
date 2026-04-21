@@ -7,6 +7,7 @@ import { CompanySettings } from '../hooks/useSettings';
 import { generateWhatsAppLink } from '../utils/contact';
 import { resolveVisualAssetUrl, compressVisualToDataUri } from '../utils/image';
 import { X } from 'lucide-react';
+import QuickEditModal from './QuickEditModal';
 
 /**
  * NAVBAR COMPONENT (Layout Correction)
@@ -75,22 +76,18 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnab
     }
   };
 
+  const [quickEdit, setQuickEdit] = useState<{ key: keyof CompanySettings, value: string, title: string } | null>(null);
+
   const handleInstagramAction = () => {
     if (isAdmin) {
-      // Akıllı Ayıklama: Mevcut URL'den kullanıcı adını çek
       const currentUrl = settings.instagram || '';
       const currentUsername = currentUrl.split('instagram.com/').pop()?.replace(/\//g, '') || '';
       
-      const newUsername = window.prompt('Instagram kullanıcı adınızı girin (örn: toptanambalajcim):', currentUsername);
-      
-      if (newUsername !== null) {
-        const sanitized = newUsername.trim().replace(/^@/, ''); // Baştaki @ işaretini temizle
-        if (sanitized) {
-          updateSetting('instagram', `https://www.instagram.com/${sanitized}`);
-        } else {
-          updateSetting('instagram', ''); // Boşsa temizle
-        }
-      }
+      setQuickEdit({
+        key: 'instagram',
+        value: currentUsername,
+        title: 'Instagram Adresi'
+      });
       return;
     }
     if (settings.instagram) window.open(settings.instagram, '_blank');
@@ -98,10 +95,23 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnab
 
   const handleTextEdit = (key: keyof CompanySettings, current: string, label: string) => {
     if (!isAdmin || isInlineEnabled) return;
-    const newVal = window.prompt(`${label} değerini düzenle:`, current);
-    if (newVal !== null) {
-      updateSetting(key, newVal);
+    setQuickEdit({
+      key,
+      value: current,
+      title: label
+    });
+  };
+
+  const handleQuickSave = (newVal: string) => {
+    if (!quickEdit) return;
+    
+    if (quickEdit.key === 'instagram') {
+      const sanitized = newVal.trim().replace(/^@/, '');
+      updateSetting('instagram', sanitized ? `https://www.instagram.com/${sanitized}` : '');
+    } else {
+      updateSetting(quickEdit.key, newVal);
     }
+    setQuickEdit(null);
   };
 
   const editStyle = isAdmin ? "outline-none focus:ring-0 rounded px-1 -mx-1 transition-colors duration-200 hover:bg-stone-50 cursor-text motion-fix" : "";
@@ -169,8 +179,8 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnab
                 touchAction: 'none'
               }}
             >
-              {/* INVISIBLE SHIELD: Prevents native browser context menus on mobile */}
-              <div className="absolute inset-0 z-[40] cursor-pointer" />
+              {/* INVISIBLE SHIELD: Only present when NOT admin to allow long-press detection without blocking edits */}
+              {!isAdmin && <div className="absolute inset-0 z-[40] cursor-pointer" />}
 
               {settings.displayConfig.showLogo && (
                 <div 
@@ -310,6 +320,15 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnab
         </div>
       </div>
     </nav>
+    <QuickEditModal 
+      isOpen={!!quickEdit} 
+      onClose={() => setQuickEdit(null)} 
+      onSave={handleQuickSave} 
+      title={(quickEdit?.title || '') + ' Düzenle'} 
+      subtitle={`Dükkanınızdaki ${quickEdit?.title.toLowerCase()} bilgisini buradan güncelleyebilirsiniz.`}
+      initialValue={quickEdit?.value || ''} 
+      placeholder={`${quickEdit?.title} girin...`}
+    />
     </>
   );
 });

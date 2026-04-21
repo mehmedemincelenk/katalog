@@ -151,7 +151,7 @@ const ProductCard = memo(({
       <article 
         ref={cardContainerRef} 
         data-product-id={product.id} 
-        className={`${theme.container} ${THEME.radius.card} ${product.inStock === false ? theme.outOfStockBorder : theme.activeBorder} ${theme.shadow}`}
+        className={`${theme.container} ${THEME.radius.card} overflow-hidden ${product.inStock === false ? theme.outOfStockBorder : theme.activeBorder} ${theme.shadow}`}
       >
         {/* IMAGE VISUAL SECTION - SHARP CORNERS */}
         <div 

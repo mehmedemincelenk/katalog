@@ -1,10 +1,10 @@
-import { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { THEME } from '../data/config';
 import { Product } from '../types';
 import Button from './Button';
 import BaseModal from './BaseModal';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Percent, Banknote, Sparkles, LayoutDashboard, Terminal } from 'lucide-react';
 import { transformCurrencyStringToNumber } from '../utils/price';
 
 type ActionType = 'PRICE' | 'DELETE' | 'ARCHIVE' | 'STOCK' | null;
@@ -18,7 +18,8 @@ interface BulkPriceUpdateModalProps {
 }
 
 export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, categories, onGranularUpdate }: BulkPriceUpdateModalProps) {
-  const [currentStep, setCurrentStep] = useState(1);
+  // Step 0: Intro, Step 1: Base Config, Step 1.1: Direction, Step 1.2: Method, Step 1.3: Value, Step 3: Action Desk
+  const [currentStep, setCurrentStep] = useState<number>(0); 
   const [actionType, setActionType] = useState<ActionType>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isPercentage, setIsPercentage] = useState<boolean | null>(null);
@@ -26,13 +27,21 @@ export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, cat
   const [inputValue, setInputValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Desk State: { productId: { included: boolean, manualPrice?: number, manualInStock?: boolean, manualArchived?: boolean } }
+  // Desk State
   const [deskItems, setDeskItems] = useState<Record<string, { included: boolean, manualPrice?: number, manualInStock?: boolean, manualArchived?: boolean }>>({});
 
   const modalTheme = THEME.addProductModal;
 
+  useEffect(() => {
+    if (isOpen) {
+        const skipIntro = localStorage.getItem('ekatalog_skip_bulk_intro');
+        if (skipIntro === 'true') setCurrentStep(1);
+        else setCurrentStep(0);
+    }
+  }, [isOpen]);
+
   const resetAll = () => {
-    setCurrentStep(1);
+    setCurrentStep(0);
     setActionType(null);
     setSelectedCategories([]);
     setIsPercentage(null);
@@ -42,40 +51,52 @@ export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, cat
     setIsProcessing(false);
   };
 
-  const nextStep = () => {
-    // PREPARE INITIAL DESK DATA when entering Step 2 or 3
-    if (currentStep === 1) {
-      const productsForDesk = allProducts.filter(p => selectedCategories.length === 0 || selectedCategories.includes(p.category));
-      const initialDesk: typeof deskItems = {};
-      
-      // For STOCK and ARCHIVE, start with included: false because the action of clicking a toggle will include them.
-      // For PRICE and DELETE, we keep the default selection logic.
-      const isStatusAction = actionType === 'STOCK' || actionType === 'ARCHIVE';
-      
-      productsForDesk.forEach(p => {
-        initialDesk[p.id] = { 
-          included: !isStatusAction,
-          manualInStock: p.inStock,
-          manualArchived: p.is_archived
-        };
-      });
-      setDeskItems(initialDesk);
+  const skipIntroPermanently = () => {
+    localStorage.setItem('ekatalog_skip_bulk_intro', 'true');
+    setCurrentStep(1);
+  };
 
-      // If NOT PRICE, skip the "Value" step (Step 2) and go to the Action Desk (Step 3)
-      if (actionType !== 'PRICE') {
-        setCurrentStep(3);
-        return;
-      }
+  const nextStep = () => {
+    if (currentStep === 1) {
+       if (actionType === 'PRICE') {
+           setCurrentStep(1.1); // Start Price Wizard
+           return;
+       } else {
+           prepareDeskAndDirectTo(3); // Go to desk for non-price actions
+           return;
+       }
     }
-    setCurrentStep(currentStep + 1);
+    
+    if (currentStep === 1.1) { setCurrentStep(1.2); return; }
+    if (currentStep === 1.2) { setCurrentStep(1.3); return; }
+    if (currentStep === 1.3) { prepareDeskAndDirectTo(3); return; }
+
+    setCurrentStep(prev => prev + 1);
+  };
+
+  const prepareDeskAndDirectTo = (targetStep: number) => {
+    const productsForDesk = allProducts.filter(p => selectedCategories.length === 0 || selectedCategories.includes(p.category));
+    const initialDesk: typeof deskItems = {};
+    const isStatusAction = actionType === 'STOCK' || actionType === 'ARCHIVE';
+    
+    productsForDesk.forEach(p => {
+      initialDesk[p.id] = { 
+        included: !isStatusAction,
+        manualInStock: p.inStock,
+        manualArchived: p.is_archived
+      };
+    });
+    setDeskItems(initialDesk);
+    setCurrentStep(targetStep);
   };
   
   const prevStep = () => {
-    if (currentStep === 3 && actionType !== 'PRICE') {
-      setCurrentStep(1);
-    } else {
-      setCurrentStep(currentStep - 1);
-    }
+    if (currentStep === 1.1) { setCurrentStep(1); return; }
+    if (currentStep === 1.2) { setCurrentStep(1.1); return; }
+    if (currentStep === 1.3) { setCurrentStep(1.2); return; }
+    if (currentStep === 3 && actionType === 'PRICE') { setCurrentStep(1.3); return; }
+    if (currentStep === 3) { setCurrentStep(1); return; }
+    setCurrentStep(prev => prev - 1);
   };
 
   const toggleCategory = (cat: string) => {
@@ -159,16 +180,7 @@ export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, cat
         .filter(([, state]) => state.included)
         .map(([id, state]) => {
           const product = allProducts.find(p => p.id === id)!;
-          
-          type Action = { 
-            productId: string; 
-            newPrice?: number; 
-            delete?: boolean; 
-            inStock?: boolean; 
-            is_archived?: boolean 
-          };
-
-          const action: Action = { productId: id };
+          const action: any = { productId: id };
           
           if (actionType === 'PRICE') {
             const currentP = transformCurrencyStringToNumber(product.price);
@@ -180,7 +192,6 @@ export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, cat
           } else if (actionType === 'ARCHIVE') {
             action.is_archived = state.manualArchived;
           }
-          
           return action;
         });
 
@@ -200,343 +211,310 @@ export default function BulkPriceUpdateModal({ isOpen, onClose, allProducts, cat
     <BaseModal
       isOpen={isOpen}
       onClose={() => { onClose(); resetAll(); }}
-      maxWidth="max-w-md"
-      title="Toplu İşlem"
-      progress={{ current: currentStep, total: 3 }}
+      maxWidth={currentStep === 3 ? "max-w-xl" : "max-w-md"}
+      title={currentStep === 0 ? undefined : "Toplu İşlem Merkezi"}
+      progress={currentStep > 0 ? { current: Math.floor(currentStep), total: 3 } : undefined}
       disableClickOutside={isProcessing}
       hideCloseButton={isProcessing}
     >
-      <div className="space-y-8">
-        <p className="text-[10px] sm:text-xs font-bold text-stone-400 uppercase tracking-widest leading-none text-center m-0">
-          {currentStep === 1 ? 'EYLEM SEÇİN' : (currentStep === 2 ? 'MİKTAR GİRİN' : 'ONAY MANİFESTOSU')}
-        </p>
-          {currentStep === 1 && (
-            <div className="space-y-6 fade-in">
-              {/* ACTION TYPE SELECTION - GRID */}
-              <div className="grid grid-cols-2 gap-3 sm:gap-5">
-                <button 
-                  onClick={() => setActionType('PRICE')}
-                  className={`p-4 sm:p-6 rounded-xl border-2 transition-all flex flex-col items-center gap-2 sm:gap-3 ${actionType === 'PRICE' ? 'border-stone-900 bg-stone-900 text-white shadow-xl scale-105' : 'border-stone-100 bg-stone-50 text-stone-500 hover:border-stone-200'}`}
-                >
-                  <span className="text-2xl sm:text-4xl">💰</span>
-                  <span className="text-[9px] sm:text-[14px] font-black uppercase tracking-widest text-center">FİYAT AYARI</span>
-                </button>
-                <button 
-                  onClick={() => setActionType('STOCK')}
-                  className={`p-4 sm:p-6 rounded-xl border-2 transition-all flex flex-col items-center gap-2 sm:gap-3 ${actionType === 'STOCK' ? 'border-blue-600 bg-blue-600 text-white shadow-xl scale-105' : 'border-stone-100 bg-stone-50 text-stone-500 hover:border-blue-200'}`}
-                >
-                  <span className="text-2xl sm:text-4xl">📦</span>
-                  <span className="text-[9px] sm:text-[14px] font-black uppercase tracking-widest text-center">STOKTA VAR/YOK</span>
-                </button>
-                <button 
-                  onClick={() => setActionType('ARCHIVE')}
-                  className={`p-4 sm:p-6 rounded-xl border-2 transition-all flex flex-col items-center gap-2 sm:gap-3 ${actionType === 'ARCHIVE' ? 'border-amber-600 bg-amber-600 text-white shadow-xl scale-105' : 'border-stone-100 bg-stone-50 text-stone-500 hover:border-amber-200'}`}
-                >
-                  <span className="text-2xl sm:text-4xl">👁️</span>
-                  <span className="text-[9px] sm:text-[14px] font-black uppercase tracking-widest text-center">GİZLE/GÖSTER</span>
-                </button>
-                <button 
-                  onClick={() => setActionType('DELETE')}
-                  className={`p-4 sm:p-6 rounded-xl border-2 transition-all flex flex-col items-center gap-2 sm:gap-3 ${actionType === 'DELETE' ? 'border-red-600 bg-red-600 text-white shadow-xl scale-105' : 'border-stone-100 bg-stone-50 text-stone-500 hover:border-red-100'}`}
-                >
-                  <span className="text-2xl sm:text-4xl">🗑️</span>
-                  <span className="text-[9px] sm:text-[14px] font-black uppercase tracking-widest text-center">TOPLU SİLME</span>
-                </button>
-              </div>
+      <div className="space-y-6">
+          
+          {/* STEP 0: INTRO ONBOARDING */}
+          {currentStep === 0 && (
+            <div className="flex flex-col items-center text-center space-y-6 py-4 fade-in">
+                <div className="w-20 h-20 bg-stone-900 rounded-[32px] flex items-center justify-center text-white shadow-2xl rotate-3">
+                    <LayoutDashboard size={40} />
+                </div>
+                
+                <div className="space-y-2">
+                    <h4 className="text-base font-black text-stone-900 uppercase tracking-widest">DÜKKAN EKONOMİSİNİ YÖNETİN</h4>
+                    <p className="text-[11px] text-stone-400 font-bold leading-relaxed px-6">
+                        Bu sihirbaz, yüzlerce ürünün fiyatını, stok durumunu veya görünürlüğünü tek tıkla güncellemenizi sağlar.
+                        <br/><br/>
+                        <span className="text-stone-900 italic">"Zaman kazanın, dükkanınızı saniyeler içinde yeni sezona hazırlayın."</span>
+                    </p>
+                </div>
 
-              {/* CATEGORY SELECTION */}
-              <div className="space-y-3 sm:space-y-5 pt-4 sm:pt-6 border-t border-stone-100">
-                <p className="text-[10px] sm:text-[16px] font-black text-stone-400 uppercase tracking-[0.2em] text-center mb-4 sm:mb-6">İŞLEM YAPILACAK REYONLAR</p>
-                <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
-                  <button 
-                    onClick={() => toggleCategory('TÜMÜ')}
-                    className={`px-4 sm:px-6 py-2 sm:py-3 rounded-full text-[9px] sm:text-[14px] font-black transition-all border-2 ${selectedCategories.length === categories.length ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-400 border-stone-100 shadow-sm'}`}
-                  >
-                    TÜMÜ
-                  </button>
-                  {categories.map(cat => (
+                <div className="w-full bg-stone-50 p-4 rounded-3xl border border-stone-100 flex items-start gap-4 text-left">
+                    <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-stone-100 flex items-center justify-center shrink-0">
+                        <Sparkles size={18} className="text-amber-500" />
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase text-stone-900 tracking-tighter">Diamond Gücü</span>
+                        <p className="text-[10px] font-bold text-stone-400 leading-tight mt-1">Önce ayarları yapın, ardından "Action Desk" üzerinden son kontrolü mühürleyin.</p>
+                    </div>
+                </div>
+
+                <div className="w-full space-y-2 pt-2">
+                    <Button onClick={() => setCurrentStep(1)} variant="primary" size="md" mode="rectangle" className="w-full !rounded-[24px] !py-4 font-black">
+                        SİHİRBAZI BAŞLAT
+                    </Button>
                     <button 
-                      key={cat}
-                      onClick={() => toggleCategory(cat)}
-                      className={`px-4 sm:px-6 py-2 sm:py-3 rounded-full text-[9px] sm:text-[14px] font-black transition-all border-2 ${selectedCategories.includes(cat) ? 'bg-stone-50 text-stone-900 border-stone-900' : 'bg-white text-stone-400 border-stone-100 shadow-sm'}`}
+                       onClick={skipIntroPermanently}
+                       className="text-[10px] font-black text-stone-300 hover:text-stone-900 uppercase tracking-[0.15em] transition-colors"
                     >
-                      {cat}
+                        BUNU TEKRAR GÖSTERME
                     </button>
-                  ))}
                 </div>
-              </div>
-
-              <div className="pt-4">
-                <Button 
-                  onClick={nextStep} 
-                  disabled={!actionType || (selectedCategories.length === 0 && actionType !== 'DELETE')} 
-                  variant="primary" 
-                  className="w-full !py-4 sm:!py-6 sm:text-[19px] shadow-2xl" 
-                  mode="rectangle"
-                >
-                  {!actionType ? 'ÖNCE EYLEMİ SEÇİN' : (selectedCategories.length === 0 ? 'REYON SEÇİN' : 'İŞLEM PANELİNE GEÇ')}
-                </Button>
-              </div>
             </div>
           )}
 
-          {currentStep === 2 && actionType === 'PRICE' && (
-            <div className="space-y-6 sm:space-y-10 fade-in">
-              <div className="text-center space-y-1 sm:space-y-1.5">
-                <h3 className="font-black text-stone-900 text-[10px] sm:text-[16px] uppercase tracking-widest leading-none">DEĞİŞKENİ BELİRLEYİN</h3>
-                <p className="text-[9px] sm:text-[14px] font-bold text-stone-400 tracking-tighter uppercase italic text-center">Miktar girin, zam mı indirim mi karar verin.</p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex gap-2 p-1 bg-stone-50 rounded-xl border border-stone-100">
-                  <button 
-                    onClick={() => setIsPercentage(false)}
-                    className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${isPercentage === false ? 'bg-white text-stone-900 shadow-sm border border-stone-100' : 'text-stone-400 hover:text-stone-600'}`}
-                  >
-                    SABİT ₺
-                  </button>
-                  <button 
-                    onClick={() => setIsPercentage(true)}
-                    className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${isPercentage === true ? 'bg-white text-stone-900 shadow-sm border border-stone-100' : 'text-stone-400 hover:text-stone-600'}`}
-                  >
-                    YÜZDE (%)
-                  </button>
+          {/* STEP 1: BASE ACTION & CATEGORY */}
+          {currentStep === 1 && (
+             <div className="space-y-6 fade-in">
+                <div className="px-1 border-l-4 border-stone-900 pl-4 py-1 mb-6">
+                    <h5 className="text-[10px] font-black text-stone-900 uppercase tracking-[0.2em]">EYLEM SEÇİMİ</h5>
+                    <p className="text-[11px] text-stone-400 font-medium italic mt-1 leading-none">Hangi işlemi yapmak istiyorsunuz?</p>
                 </div>
 
-                <div className="relative">
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="0"
-                    className={`${modalTheme.inputField} !text-center !text-4xl sm:!text-[58px] !font-black !py-8 sm:!py-12 !pr-10 sm:!pr-16 shadow-inner`}
-                    autoFocus
-                  />
-                  <span className="absolute right-6 sm:right-10 top-1/2 -translate-y-1/2 text-2xl sm:text-[38px] font-black text-stone-300">
-                    {isPercentage === true ? '%' : (isPercentage === false ? '₺' : '')}
-                  </span>
+                <div className="grid grid-cols-2 gap-3">
+                    {[
+                        { id: 'PRICE', label: 'FİYAT AYARI', icon: '💰', color: 'bg-stone-900' },
+                        { id: 'STOCK', label: 'STOK DURUMU', icon: '📦', color: 'bg-blue-600' },
+                        { id: 'ARCHIVE', label: 'YAYIN DURUMU', icon: '👁️', color: 'bg-amber-600' },
+                        { id: 'DELETE', label: 'ÜRÜNLERİ SİL', icon: '🗑️', color: 'bg-red-600' }
+                    ].map(opt => (
+                        <button 
+                            key={opt.id}
+                            onClick={() => setActionType(opt.id as any)}
+                            className={`p-4 rounded-3xl border-2 transition-all flex flex-col items-center gap-2 group ${actionType === opt.id ? `${opt.color} text-white border-transparent shadow-xl scale-105` : 'bg-stone-50 border-stone-100 text-stone-400 hover:border-stone-200'}`}
+                        >
+                            <span className="text-3xl mb-1 group-hover:scale-110 transition-transform">{opt.icon}</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">{opt.label}</span>
+                        </button>
+                    ))}
                 </div>
 
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setIsIncrease(true)}
-                    className={`flex-1 py-4 rounded-xl font-black text-[10px] transition-all border-2 ${isIncrease === true ? 'bg-black text-white border-black shadow-xl scale-[1.02]' : 'bg-white text-stone-400 border-stone-100 hover:border-stone-200'}`}
-                  >
-                    ZAM (+)
-                  </button>
-                  <button
-                    onClick={() => setIsIncrease(false)}
-                    className={`flex-1 py-4 rounded-xl font-black text-[10px] transition-all border-2 ${isIncrease === false ? 'bg-red-600 text-white border-red-600 shadow-xl scale-[1.02]' : 'bg-white text-stone-400 border-stone-100 hover:border-red-100'}`}
-                  >
-                    İNDİRİM (-)
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 mt-6">
-                <Button 
-                  onClick={prevStep} 
-                  variant="ghost" 
-                  className="w-full" 
-                  mode="rectangle"
-                  icon={<ArrowLeft size={16}/>}
-                >
-                  GERİ
-                </Button>
-                <Button 
-                   onClick={nextStep} 
-                   disabled={inputValue === '' || isIncrease === null || isPercentage === null}
-                   variant="primary" 
-                   className="w-full" 
-                   mode="rectangle"
-                >
-                  İŞLEM PANELİNE GEÇ
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {currentStep === 3 && (
-            <div className="space-y-4 fade-in flex flex-col h-full">
-              <div className="text-center space-y-1">
-                <h3 className="font-black text-stone-900 text-[10px] uppercase tracking-widest leading-none">İŞLEM PANELİ (ACTION DESK)</h3>
-                <p className="text-[9px] font-bold text-stone-400 uppercase tracking-tighter text-center">
-                  {actionType === 'PRICE' ? 'Yeni fiyatları mühürleyin.' : 'Ürün verilerini denetleyin.'}
-                </p>
-              </div>
-
-              <div className="flex-1 overflow-y-auto space-y-1 min-h-[300px] border border-stone-100 rounded-3xl bg-stone-50/50 p-1.5 custom-scrollbar">
-                {/* GLOBAL BULK ROW - EXACT MATCH TO PRODUCT ROWS */}
-                {(actionType === 'STOCK' || actionType === 'ARCHIVE') && initialProductsForDesk.length > 0 && (
-                  <div className="flex items-center gap-2 p-2 rounded-2xl border border-stone-200 bg-white shadow-sm mb-4 sticky top-0 z-20 backdrop-blur-md">
-                    <div className="flex-1 min-w-0 flex flex-col text-left pl-2">
-                      <p className="text-[10px] font-black text-stone-900 truncate leading-none uppercase tracking-tight">LİSTEDEKİ TÜM ÜRÜNLER</p>
+                <div className="pt-6 border-t border-stone-100">
+                    <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest text-center mb-4">REYON SEÇİN</p>
+                    <div className="flex flex-wrap justify-center gap-1.5">
+                        <button 
+                            onClick={() => toggleCategory('TÜMÜ')}
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all border ${selectedCategories.length === categories.length ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-300 border-stone-100'}`}
+                        >
+                            TÜMÜ
+                        </button>
+                        {categories.map(cat => (
+                            <button 
+                                key={cat}
+                                onClick={() => toggleCategory(cat)}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all border ${selectedCategories.includes(cat) ? 'bg-stone-200 text-stone-900 border-stone-300' : 'bg-white text-stone-300 border-stone-100'}`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
                     </div>
+                </div>
 
-                    {actionType === 'STOCK' && (
-                      <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200">
-                         <button 
-                           onClick={() => applyBulkStatus(true)}
-                           className="px-3 py-1.5 rounded-lg text-[8px] font-black transition-all text-stone-400 hover:bg-green-600 hover:text-white hover:shadow-sm"
-                         >
-                           STOKTA
-                         </button>
-                         <button 
-                           onClick={() => applyBulkStatus(false)}
-                           className="px-3 py-1.5 rounded-lg text-[8px] font-black transition-all text-stone-400 hover:bg-red-600 hover:text-white hover:shadow-sm"
-                         >
-                           YOK
-                         </button>
-                      </div>
-                    )}
+                <Button 
+                    onClick={nextStep} 
+                    disabled={!actionType || (selectedCategories.length === 0 && actionType !== 'DELETE')} 
+                    variant="primary" 
+                    className="w-full !py-4 font-black" 
+                    mode="rectangle"
+                >
+                    DEVAM ET
+                </Button>
+             </div>
+          )}
 
-                    {actionType === 'ARCHIVE' && (
-                      <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200">
-                         <button 
-                           onClick={() => applyBulkStatus(false)}
-                           className="px-3 py-1.5 rounded-lg text-[8px] font-black transition-all text-stone-400 hover:bg-amber-600 hover:text-white hover:shadow-sm"
-                         >
-                           GÖRÜNÜR
-                         </button>
-                         <button 
-                           onClick={() => applyBulkStatus(true)}
-                           className="px-3 py-1.5 rounded-lg text-[8px] font-black transition-all text-stone-400 hover:bg-stone-600 hover:text-white hover:shadow-sm"
-                         >
-                           GİZLİ
-                         </button>
+          {/* PRICE WIZARD: STEP 1.1 - DIRECTION */}
+          {currentStep === 1.1 && (
+              <div className="space-y-8 flex flex-col items-center fade-in">
+                  <div className="text-center space-y-4">
+                      <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center text-stone-900 mx-auto">
+                        <TrendingUp size={28} />
                       </div>
-                    )}
+                      <div>
+                        <h4 className="text-base font-black text-stone-900 uppercase tracking-widest mb-1">NEREYE DOĞRU?</h4>
+                        <p className="text-[11px] text-stone-400 font-bold italic">Fiyatlarımızı artırıyor muyuz yoksa düşürüyor muyuz?</p>
+                      </div>
                   </div>
-                )}
-                {initialProductsForDesk.map((p, index) => {
-                  const state = deskItems[p.id] || { included: true };
-                  const numericPrice = transformCurrencyStringToNumber(p.price);
-                  const newPrice = calculateNewPrice(numericPrice, state.manualPrice);
-                  const showHeader = index === 0 || p.category !== initialProductsForDesk[index - 1].category;
 
-                  return (
-                    <div key={p.id}>
-                      <div className={`flex items-center gap-2 p-2 rounded-2xl border transition-all ${state.included ? 'bg-white border-stone-100 shadow-sm' : 'bg-transparent border-transparent opacity-40'}`}>
-                        <div className={`flex-1 min-w-0 flex flex-col text-left pl-2`}>
-                          <p className={`text-[10px] font-black truncate leading-none mb-1 uppercase tracking-tight ${state.included ? 'text-stone-900' : 'text-stone-400 font-bold'}`}>{p.name}</p>
-                        </div>
-
-                        {actionType === 'PRICE' && (
-                          <div className="flex items-center gap-2">
-                            {state.included && (
-                              <div className="flex items-center gap-1.5 bg-stone-50 px-2 py-1.5 rounded-xl border border-stone-100">
-                                <span className="text-[9px] font-bold text-stone-300 line-through tracking-tighter">{p.price}</span>
-                                <input 
-                                  type="number"
-                                  value={state.manualPrice !== undefined ? String(state.manualPrice) : String(newPrice)}
-                                  onChange={(e) => updateManualPrice(p.id, e.target.value)}
-                                  className="w-12 bg-transparent text-[11px] font-black text-stone-900 text-right focus:outline-none"
-                                />
-                                <span className="text-[9px] font-black text-stone-400">₺</span>
-                              </div>
-                            )}
-                            <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200">
-                               <button 
-                                 onClick={() => !state.included && toggleProductInclusion(p.id)}
-                                 className={`px-2.5 py-1.5 rounded-lg text-[8px] font-black transition-all ${state.included ? 'bg-stone-900 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
-                               >
-                                 YAP
-                               </button>
-                               <button 
-                                 onClick={() => state.included && toggleProductInclusion(p.id)}
-                                 className={`px-2.5 py-1.5 rounded-lg text-[8px] font-black transition-all ${!state.included ? 'bg-stone-400 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
-                               >
-                                 KALSIN
-                               </button>
-                            </div>
+                  <div className="grid grid-cols-1 w-full gap-3">
+                      <button 
+                          onClick={() => { setIsIncrease(true); nextStep(); }}
+                          className="flex items-center justify-between p-6 rounded-3xl bg-emerald-500 text-white shadow-xl shadow-emerald-100 hover:scale-[1.02] transition-all"
+                      >
+                          <div className="flex items-center gap-4">
+                              <div className="p-3 bg-white/20 rounded-xl"><TrendingUp size={24} /></div>
+                              <span className="font-black tracking-widest text-lg">ZAM YAP (📈)</span>
                           </div>
-                        )}
-
-                        {actionType === 'STOCK' && (
-                          <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200">
-                             <button 
-                               onClick={() => updateManualInStock(p.id, true)}
-                               className={`px-3 py-1.5 rounded-lg text-[8px] font-black transition-all ${state.manualInStock ? 'bg-green-600 text-white shadow-sm' : 'text-stone-400 hover:text-green-600 hover:bg-white'}`}
-                             >
-                               STOKTA
-                             </button>
-                             <button 
-                               onClick={() => updateManualInStock(p.id, false)}
-                               className={`px-3 py-1.5 rounded-lg text-[8px] font-black transition-all ${state.manualInStock === false ? 'bg-red-600 text-white shadow-sm' : 'text-stone-400 hover:text-red-600 hover:bg-white'}`}
-                             >
-                               YOK
-                             </button>
+                      </button>
+                      <button 
+                           onClick={() => { setIsIncrease(false); nextStep(); }}
+                           className="flex items-center justify-between p-6 rounded-3xl bg-red-500 text-white shadow-xl shadow-red-100 hover:scale-[1.02] transition-all"
+                      >
+                          <div className="flex items-center gap-4">
+                              <div className="p-3 bg-white/20 rounded-xl"><TrendingDown size={24} /></div>
+                              <span className="font-black tracking-widest text-lg">İNDİRİM YAP (📉)</span>
                           </div>
-                        )}
+                      </button>
+                  </div>
+                  
+                  <Button variant="ghost" size="sm" onClick={prevStep} icon={<ArrowLeft size={16}/>} className="text-stone-400 hover:text-stone-900">GERİ DÖN</Button>
+              </div>
+          )}
 
-                        {actionType === 'ARCHIVE' && (
-                          <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200">
-                             <button 
-                               onClick={() => updateManualArchived(p.id, false)}
-                               className={`px-3 py-1.5 rounded-lg text-[8px] font-black transition-all ${!state.manualArchived ? 'bg-amber-600 text-white shadow-sm' : 'text-stone-400 hover:bg-amber-600 hover:text-white hover:shadow-sm'}`}
-                             >
-                               GÖRÜNÜR
-                             </button>
-                             <button 
-                               onClick={() => updateManualArchived(p.id, true)}
-                               className={`px-3 py-1.5 rounded-lg text-[8px] font-black transition-all ${state.manualArchived ? 'bg-stone-600 text-white shadow-sm' : 'text-stone-400 hover:bg-stone-600 hover:text-white hover:shadow-sm'}`}
-                             >
-                               GİZLİ
-                             </button>
-                          </div>
-                        )}
-
-                        {actionType === 'DELETE' && (
-                          <div className="flex gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200">
-                             <button 
-                               onClick={() => !state.included && toggleProductInclusion(p.id)}
-                               className={`px-3 py-1.5 rounded-lg text-[8px] font-black transition-all ${state.included ? 'bg-red-600 text-white shadow-sm' : 'text-stone-400 hover:text-red-600 hover:bg-white'}`}
-                             >
-                               SİL
-                             </button>
-                             <button 
-                               onClick={() => state.included && toggleProductInclusion(p.id)}
-                               className={`px-3 py-1.5 rounded-lg text-[8px] font-black transition-all ${!state.included ? 'bg-stone-400 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
-                             >
-                               KALSIN
-                             </button>
-                          </div>
-                        )}
+          {/* PRICE WIZARD: STEP 1.2 - METHOD */}
+          {currentStep === 1.2 && (
+              <div className="space-y-8 flex flex-col items-center fade-in">
+                   <div className="text-center space-y-4">
+                      <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center text-stone-900 mx-auto">
+                        <Banknote size={28} />
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                      <div>
+                        <h4 className="text-base font-black text-stone-900 uppercase tracking-widest mb-1">HESAPLAMA METODU</h4>
+                        <p className="text-[11px] text-stone-400 font-bold italic">Değişim sabit mi olsun yoksa yüzdelik mi?</p>
+                      </div>
+                  </div>
 
-              <div className="pt-2 sm:pt-4">
-                <div className="flex justify-between items-center mb-4 sm:mb-6 px-2 sm:px-3">
-                  <span className="text-[10px] sm:text-[16px] font-black text-stone-400 uppercase tracking-widest">Seçili:</span>
-                  <span className="text-xs sm:text-[19px] font-black text-stone-900">{Object.values(deskItems).filter(d => d.included).length} / {initialProductsForDesk.length} ÜRÜN</span>
-                </div>
-                <div className="grid grid-cols-2 gap-3 px-1 pb-1">
-                  <Button 
-                    onClick={prevStep} 
-                    variant="ghost" 
-                    className="w-full" 
-                    mode="rectangle"
-                    icon={<ArrowLeft size={16}/>}
-                  >
-                    GERİ
-                  </Button>
-                  <Button 
-                    onClick={handleApply}
-                    disabled={isProcessing || Object.values(deskItems).filter(d => d.included).length === 0}
-                    variant={actionType === 'DELETE' ? 'danger' : 'primary'} 
-                    className="w-full" 
-                    mode="rectangle"
-                    loading={isProcessing}
-                  >
-                    UYGULA
-                  </Button>
-                </div>
+                  <div className="grid grid-cols-1 w-full gap-3">
+                      <button 
+                          onClick={() => { setIsPercentage(false); nextStep(); }}
+                          className="flex items-center justify-between p-6 rounded-3xl bg-stone-900 text-white shadow-xl hover:scale-[1.02] transition-all"
+                      >
+                          <div className="flex items-center gap-4">
+                              <div className="p-3 bg-white/10 rounded-xl"><Banknote size={24} /></div>
+                              <div className="flex flex-col text-left">
+                                <span className="font-black tracking-widest">SABİT TUTAR</span>
+                                <span className="text-[10px] opacity-60">Örn: Tüm fiyatlara 50₺ ekle</span>
+                              </div>
+                          </div>
+                          <span className="text-2xl font-black">₺</span>
+                      </button>
+                      <button 
+                           onClick={() => { setIsPercentage(true); nextStep(); }}
+                           className="flex items-center justify-between p-6 rounded-3xl bg-stone-900 text-white shadow-xl hover:scale-[1.02] transition-all"
+                      >
+                          <div className="flex items-center gap-4">
+                              <div className="p-3 bg-white/10 rounded-xl"><Percent size={24} /></div>
+                              <div className="flex flex-col text-left">
+                                <span className="font-black tracking-widest">YÜZDE (%)</span>
+                                <span className="text-[10px] opacity-60">Örn: Tüm fiyatlara %10 zam yap</span>
+                              </div>
+                          </div>
+                          <span className="text-2xl font-black">%</span>
+                      </button>
+                  </div>
+
+                  <Button variant="ghost" size="sm" onClick={prevStep} icon={<ArrowLeft size={16}/>} className="text-stone-400 hover:text-stone-900">GERİ DÖN</Button>
               </div>
-            </div>
+          )}
+
+          {/* PRICE WIZARD: STEP 1.3 - VALUE */}
+          {currentStep === 1.3 && (
+              <div className="space-y-8 flex flex-col items-center fade-in">
+                  <div className="text-center space-y-4">
+                      <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center text-stone-100 mx-auto">
+                        <Terminal size={28} className="text-stone-900" />
+                      </div>
+                      <div>
+                        <h4 className="text-base font-black text-stone-900 uppercase tracking-widest mb-1">MİKTARI BELİRLEYİN</h4>
+                        <p className="text-[11px] text-stone-400 font-bold italic">{isIncrease ? 'Zam' : 'İndirim'} yapılacak tutarı girin.</p>
+                      </div>
+                  </div>
+
+                  <div className="relative w-full">
+                    <input
+                        type="text"
+                        inputMode="decimal"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        placeholder="0"
+                        className={`${modalTheme.inputField} !text-center !text-[64px] !font-black !py-10 !pr-16 shadow-2xl rounded-[40px]`}
+                        autoFocus
+                    />
+                    <span className="absolute right-10 top-1/2 -translate-y-1/2 text-4xl font-black text-stone-200">
+                        {isPercentage ? '%' : '₺'}
+                    </span>
+                  </div>
+
+                  <div className="w-full flex flex-col gap-2">
+                    <Button onClick={nextStep} disabled={!inputValue} variant="primary" className="w-full !py-5 font-black">MANIFESTOYA GEÇ</Button>
+                    <Button variant="ghost" size="sm" onClick={prevStep} icon={<ArrowLeft size={16}/>} className="text-stone-400 hover:text-stone-900">GERİ DÖN</Button>
+                  </div>
+              </div>
+          )}
+
+          {/* FINAL STEP: ACTION DESK / MANIFESTO */}
+          {currentStep === 3 && (
+             <div className="space-y-4 fade-in flex flex-col h-full">
+                <div className="text-center space-y-1 mb-2">
+                    <h3 className="font-black text-stone-900 text-[10px] uppercase tracking-widest leading-none">ONAY MANİFESTOSU (ACTION DESK)</h3>
+                    <p className="text-[9px] font-bold text-stone-400 uppercase tracking-tighter text-center">İnceleyin ve mühürleyin. Geri dönüşü yoktur.</p>
+                </div>
+
+                <div className="flex-1 overflow-y-auto space-y-1 min-h-[350px] border border-stone-100 rounded-[32px] bg-stone-50/50 p-2 custom-scrollbar">
+                    {/* GLOBAL STATUS TOGGLES */}
+                    {(actionType === 'STOCK' || actionType === 'ARCHIVE') && initialProductsForDesk.length > 0 && (
+                        <div className="flex items-center gap-3 p-3 rounded-2xl border border-stone-300 bg-white shadow-xl mb-4 sticky top-0 z-20">
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[10px] font-black text-stone-900 uppercase tracking-tight">TÜMÜNÜ DEĞİŞTİR</p>
+                            </div>
+                            <div className="flex gap-1 bg-stone-100 p-1 rounded-xl">
+                                <button onClick={() => applyBulkStatus(actionType === 'STOCK' ? true : false)} className="px-4 py-2 bg-white text-[9px] font-black rounded-lg shadow-sm">
+                                    {actionType === 'STOCK' ? '✅ STOKTA' : '👁️ GÖRÜNÜR'}
+                                </button>
+                                <button onClick={() => applyBulkStatus(actionType === 'STOCK' ? false : true)} className="px-4 py-2 bg-stone-900 text-white text-[9px] font-black rounded-lg shadow-lg">
+                                    {actionType === 'STOCK' ? '❌ YOK' : '📦 GİZLİ'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {initialProductsForDesk.map((p, index) => {
+                        const state = deskItems[p.id] || { included: true };
+                        const numericPrice = transformCurrencyStringToNumber(p.price);
+                        const newPriceValue = calculateNewPrice(numericPrice, state.manualPrice);
+
+                        return (
+                            <div key={p.id} className={`flex items-center gap-2 p-1.5 px-2.5 rounded-xl border transition-all ${state.included ? 'bg-white border-stone-100 shadow-sm' : 'bg-transparent border-transparent opacity-25 shadow-none'}`}>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] font-black text-stone-900 truncate uppercase tracking-tighter leading-none">{p.name}</p>
+                                    <p className="text-[8px] font-bold text-stone-300 uppercase mt-0.5">{p.category}</p>
+                                </div>
+
+                                {actionType === 'PRICE' && state.included && (
+                                    <div className="flex flex-col items-end gap-0.5 px-2">
+                                        <span className="text-[7px] font-black text-stone-300 line-through leading-none">{p.price}</span>
+                                        <span className="text-[10px] font-black text-stone-900 leading-none">{newPriceValue.toLocaleString('tr-TR')} ₺</span>
+                                    </div>
+                                )}
+
+                                <div className="flex items-center gap-1">
+                                    <button 
+                                        onClick={() => toggleProductInclusion(p.id)}
+                                        className={`px-2 py-1 rounded-lg text-[8px] font-black transition-all ${state.included ? 'bg-stone-900 text-white shadow-md' : 'text-stone-400 hover:text-stone-900 border border-stone-100'}`}
+                                    >
+                                        {state.included ? 'YAP' : 'KALSIN'}
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                <div className="pt-4 space-y-4">
+                    <div className="flex justify-between items-center px-4">
+                        <span className="text-[11px] font-black text-stone-400 uppercase tracking-widest">HEDEF:</span>
+                        <span className="text-[13px] font-black text-stone-900">{Object.values(deskItems).filter(d => d.included).length} ÜRÜN</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                        <Button onClick={prevStep} variant="ghost" mode="rectangle" className="h-14 font-black" icon={<ArrowLeft size={16}/>}>GERİ DÖN</Button>
+                        <Button 
+                            onClick={handleApply} 
+                            disabled={isProcessing || Object.values(deskItems).filter(d => d.included).length === 0} 
+                            variant={actionType === 'DELETE' ? 'danger' : 'primary'} 
+                            className="h-14 font-black !rounded-2xl shadow-xl" 
+                            mode="rectangle"
+                            loading={isProcessing}
+                        >
+                            {actionType === 'DELETE' ? 'TOPLU SİL' : 'MÜHÜRLE VE UYGULA'}
+                        </Button>
+                    </div>
+                </div>
+             </div>
           )}
       </div>
     </BaseModal>

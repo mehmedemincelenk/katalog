@@ -6,6 +6,7 @@ import { THEME, LABELS, TECH, sortCategories } from '../data/config';
 import { Product } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import OrderSelector from './OrderSelector';
+import InfoHint from './InfoHint';
 
 /**
  * SEARCH FILTER COMPONENT (Smart Hybrid Version)
@@ -173,6 +174,10 @@ export default function SearchFilter({
                 onChange={(e) => setInternalSearch(e.target.value)}
                 placeholder={LABELS.filter.searchPlaceholder}
                 className={`${filterTheme.searchArea.input} ${THEME.radius.input} h-full`}
+              />
+              <InfoHint 
+                message="Akıllı aramamızla hem ürün adlarını hem de reyonları saniyeler içinde bulabilirsiniz." 
+                className="mr-3"
               />
             </div>
             

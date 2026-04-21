@@ -12,6 +12,8 @@ import { AdminActionMenu } from './AdminActionMenu';
 import { MarqueeText } from './MarqueeText';
 import { ActiveDiscount } from '../hooks/useDiscount';
 import OrderSelector from './OrderSelector';
+import BaseModal from './BaseModal';
+import InfoHint from './InfoHint';
 
 /**
  * PRODUCT CARD COMPONENT (100% Tokenized & Professional English)
@@ -196,13 +198,18 @@ const ProductCard = memo(({
                 transition={{ duration: 0.3 }}
                 className="absolute inset-0 z-[30] pointer-events-none"
               >
-                <div className="absolute top-2 right-2 z-[30] pointer-events-auto">
+                <div className="absolute top-2 right-2 z-[30] pointer-events-auto flex flex-col items-end gap-1">
                   <OrderSelector 
                     currentOrder={orderIndex}
                     totalCount={itemsInCategory}
                     onChange={(newPos) => onOrderChange?.(product.id, newPos)}
                     onIndexChange={(newIdx) => onOrderIndexChange?.(product.id, newIdx)}
                     className="shadow-xl"
+                  />
+                  <InfoHint 
+                    message="Bu numara ürünün reyonundaki vitrin sırasıdır. Değiştirdiğinizde ürün dükkanda yeni yerine kayar." 
+                    position="bottom"
+                    className="mr-1"
                   />
                 </div>
                 <div className="pointer-events-auto">
@@ -320,53 +327,58 @@ const ProductCard = memo(({
         </div>
       </article>
 
-      {/* QUICK VIEW MODAL (LEFT ALIGNED CONTENT) */}
-      {isZoomDetailOpen && highDefinitionImageSource && (
-        <div className={THEME.modal.overlay} onClick={() => setIsZoomDetailOpen(false)}>
-          <div className="absolute top-4 right-4 z-[210]">
-            <Button onClick={() => setIsZoomDetailOpen(false)} icon={THEME.icons.close} variant="secondary" size="md" mode="rectangle" className="!rounded-full shadow-2xl" />
-          </div>
-          
-          <div className="bg-white w-full max-w-lg mx-auto overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 duration-500 rounded-3xl" onClick={e => e.stopPropagation()}>
-            {/* PRODUCT VISUAL */}
-            <div className="relative aspect-[4/3] bg-stone-50">
-              <img src={highDefinitionImageSource} alt={product.name} className="w-full h-full object-cover" />
+      <BaseModal 
+        isOpen={isZoomDetailOpen} 
+        onClose={() => setIsZoomDetailOpen(false)}
+        maxWidth="max-w-lg"
+        className="!p-0 overflow-hidden"
+        hideCloseButton={false}
+      >
+        <div className="-m-6 flex flex-col">
+          {/* PRODUCT VISUAL */}
+          {highDefinitionImageSource && (
+            <div className="relative aspect-[4/3] bg-stone-50 overflow-hidden">
+              <img 
+                src={highDefinitionImageSource} 
+                alt={product.name} 
+                className="w-full h-full object-cover" 
+              />
+            </div>
+          )}
+
+          {/* PRODUCT INFO & ACTIONS - LEFT ALIGNED */}
+          <div className="p-8 space-y-6">
+            <div className="space-y-2 text-left">
+              <div className="mb-3">
+                <span className="bg-stone-100 text-stone-500 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest inline-block border border-stone-200">
+                  {product.category}
+                </span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tighter leading-none">
+                {product.name}
+              </h3>
+              {product.description && (
+                <p className="text-stone-500 text-xs sm:text-sm font-medium leading-relaxed max-w-full">
+                  {product.description}
+                </p>
+              )}
             </div>
 
-            {/* PRODUCT INFO & ACTIONS - LEFT ALIGNED */}
-            <div className="p-8 space-y-6">
-              <div className="space-y-2 text-left">
-                <div className="mb-3">
-                  <span className="bg-stone-100 text-stone-500 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest inline-block border border-stone-200">
-                    {product.category}
-                  </span>
-                </div>
-                <h3 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tighter leading-none">
-                  {product.name}
-                </h3>
-                {product.description && (
-                  <p className="text-stone-500 text-xs sm:text-sm font-medium leading-relaxed max-w-full">
-                    {product.description}
-                  </p>
+            <div className="pt-4 flex flex-col items-start gap-2">
+              <div className="flex flex-col items-start">
+                {isPromotionActive ? (
+                  <div className="flex items-center gap-3">
+                    <span className="text-stone-300 line-through text-sm font-bold">{originalPriceLabel}</span>
+                    <span className="text-green-600 text-2xl font-black tracking-tighter">{discountedPriceLabel}</span>
+                  </div>
+                ) : (
+                  <span className="text-stone-900 text-2xl font-black tracking-tighter">{originalPriceLabel}</span>
                 )}
-              </div>
-
-              <div className="pt-4 flex flex-col items-start gap-2">
-                <div className="flex flex-col items-start">
-                  {isPromotionActive ? (
-                    <div className="flex items-center gap-3">
-                      <span className="text-stone-300 line-through text-sm font-bold">{originalPriceLabel}</span>
-                      <span className="text-green-600 text-2xl font-black tracking-tighter">{discountedPriceLabel}</span>
-                    </div>
-                  ) : (
-                    <span className="text-stone-900 text-2xl font-black tracking-tighter">{originalPriceLabel}</span>
-                  )}
-                </div>
               </div>
             </div>
           </div>
         </div>
-      )}
+      </BaseModal>
     </>
   );
 });

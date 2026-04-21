@@ -60,12 +60,6 @@ const QRModal: React.FC<QRModalProps> = ({ isOpen, onClose }) => {
           <span className="text-[10px] font-black uppercase tracking-widest text-white">PAYLAŞ</span>
         </Button>
       </div>
-      <button 
-        onClick={onClose}
-        className="text-[10px] font-black text-stone-300 hover:text-stone-900 transition-colors uppercase tracking-[0.2em] mt-2 block w-full text-center"
-      >
-        Kapat
-      </button>
     </div>
   );
 
@@ -74,10 +68,10 @@ const QRModal: React.FC<QRModalProps> = ({ isOpen, onClose }) => {
       isOpen={isOpen}
       onClose={onClose}
       maxWidth="max-w-[320px]"
-      title={DEFAULT_COMPANY.name}
+      title="DÜKKAN QR KODU"
       subtitle={displayUrl}
       footer={footer}
-      hideCloseButton={true}
+      hideCloseButton={false}
     >
       <div className="flex justify-center my-2">
         <div className="p-4 bg-white border border-stone-100 rounded-2xl shadow-sm">

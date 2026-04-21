@@ -23,14 +23,6 @@ export default function References({ isAdmin = false, isInlineEnabled = true }: 
     updateSetting('referencesData', updated);
   };
 
-  const handleAdd = () => {
-    const name = window.prompt('Referans/Partner Adı:');
-    if (!name) return; 
-    
-    const newRef = { id: Date.now(), name, logo: '' }; // Logo alanını boş tutuyoruz ama şema bozulmasın diye tutuyoruz
-    updateSetting('referencesData', [...activeReferences, newRef]);
-  };
-
   const handleOrderChange = (id: number, targetPos: number) => {
     const items = Array.from(activeReferences);
     const currentIndex = items.findIndex(r => r.id === id);
@@ -60,20 +52,12 @@ export default function References({ isAdmin = false, isInlineEnabled = true }: 
             REFERANSLARIMIZ
           </h2>
           <div className="w-12 h-1 bg-stone-900 mt-4 mb-2 rounded-full opacity-10"></div>
-          
-          {isAdmin && activeReferences.length > 0 && (
-            <button 
-              onClick={handleAdd}
-              className="mt-2 text-[10px] font-black uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors flex items-center gap-1"
-            >
-              <span className="w-4 h-4">{globalIcons.plus}</span> EKLE
-            </button>
-          )}
         </div>
 
         <div className={referencesTheme.grid}>
           {activeReferences.map((ref, index) => (
-            <div key={ref.id} className={`${referencesTheme.card.base} relative group flex items-center justify-center p-6 text-center border-stone-100 bg-white shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all`}>
+            <div key={ref.id} className={`${referencesTheme.card.base} relative group flex items-center justify-center p-8 text-center border-stone-100 bg-white shadow-[0_2px_15px_-5px_rgba(0,0,0,0.08)] hover:shadow-xl hover:shadow-stone-200/50 transition-all rounded-[32px]`}>
+              
               <span 
                 contentEditable={isAdmin && isInlineEnabled}
                 suppressContentEditableWarning
@@ -84,30 +68,33 @@ export default function References({ isAdmin = false, isInlineEnabled = true }: 
                 }}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), e.currentTarget.blur())}
                 onClick={() => handleTextEdit(ref.id, ref.name)}
-                className={`text-[11px] font-black uppercase tracking-[0.15em] text-stone-800 leading-tight outline-none ${isAdmin ? 'hover:bg-stone-100 focus:bg-stone-100 focus:ring-2 focus:ring-stone-900/10 px-2 -mx-2 rounded transition-all cursor-text' : ''}`}
+                className={`text-[12px] font-black uppercase tracking-[0.2em] text-stone-800 leading-tight outline-none ${isAdmin ? 'hover:bg-stone-50 focus:bg-stone-50 focus:ring-2 focus:ring-stone-900/10 px-3 py-1 -mx-3 rounded-xl transition-all cursor-text' : ''}`}
               >
                 {ref.name}
               </span>
               
               {isAdmin && (
                 <>
-                  {/* ORDER SELECTOR */}
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 opacity-100 transition-opacity">
+                  {/* ORDER SELECTOR - DARK THEME & TOP LEFT */}
+                  <div className="absolute top-2 left-2 z-10 transition-transform hover:scale-105">
                     <OrderSelector 
                       currentOrder={index + 1}
                       totalCount={activeReferences.length}
                       onChange={(newPos) => handleOrderChange(ref.id, newPos)}
+                      isDark={true}
+                      className="shadow-xl"
                     />
                   </div>
  
-                  {/* DELETE BUTTON: Repositioned to bottom for visual balance */}
-                  <div className="absolute -bottom-2 right-4 z-20 opacity-100 transition-all">
+                  {/* DELETE BUTTON - TOP RIGHT */}
+                  <div className="absolute top-2 right-2 z-20 transition-transform hover:scale-105">
                     <Button 
                       onClick={() => handleDelete(ref.id)}
                       variant="danger"
-                      mode="square"
-                      size="xs"
+                      mode="circle"
+                      size="sm"
                       icon={globalIcons.trash}
+                      className="!w-7 !h-7 shadow-lg"
                       title="Referansı Sil"
                     />
                   </div>
@@ -117,11 +104,16 @@ export default function References({ isAdmin = false, isInlineEnabled = true }: 
           ))}
           
           {isAdmin && activeReferences.length === 0 && (
-            <div onClick={handleAdd} className="col-span-full border-2 border-dashed border-stone-100 rounded-2xl py-12 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-stone-50 transition-all text-stone-400 group">
-              <div className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center group-hover:bg-white transition-colors">
-                <span className="w-5 h-5">{globalIcons.plus}</span>
+            <div className="col-span-full border-2 border-dashed border-stone-100 rounded-[40px] py-16 flex flex-col items-center justify-center gap-3 text-stone-300 bg-stone-50/50">
+              <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm border border-stone-100 mb-2">
+                <span className="text-xl">🤝</span>
               </div>
-              <span className="text-[10px] font-black uppercase tracking-widest">İlk Referansı Yazıyla Ekle</span>
+              <span className="text-[11px] font-black uppercase tracking-[0.3em] text-center px-8 leading-loose opacity-60">
+                HENÜZ REFERANS EKLENMEMİŞ
+              </span>
+              <p className="text-[9px] font-bold text-stone-400 italic">
+                Sağ alttaki "+" butonuna basıp "Yeni Referans"ı seçin
+              </p>
             </div>
           )}
         </div>

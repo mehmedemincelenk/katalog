@@ -9,6 +9,7 @@ import { transformCurrencyStringToNumber, formatNumberToCurrency } from '../util
 import { TECH } from '../data/config';
 import html2canvas from 'html2canvas';
 import { Download, Printer, ArrowLeft, Layers3, CheckSquare, Square } from 'lucide-react';
+import InfoHint from './InfoHint';
 
 interface PriceListModalProps {
   isOpen: boolean;
@@ -204,6 +205,10 @@ export default function PriceListModal({
                 </div>
                 <h4 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tighter text-left leading-tight">
                   Fiyat Listemizi Galerinize İndirin
+                  <InfoHint 
+                    message="Liste fotoğraf formatında iner, böylece WhatsApp'tan paylaşmak veya arşivlemek çok kolay olur!" 
+                    className="ml-2"
+                  />
                 </h4>
               </div>
               
@@ -232,7 +237,7 @@ export default function PriceListModal({
                 </div>
                 <button 
                   onClick={selectAllCategories}
-                  className="flex items-center gap-1.5 text-[9px] font-black text-stone-900 hover:text-stone-600 transition-colors bg-stone-100 px-3 py-1.5 rounded-lg active:scale-95"
+                  className="flex items-center gap-1.5 text-[9px] font-black text-stone-900 hover:text-stone-600 transition-colors bg-stone-100 px-3 py-1.5 rounded-lg active:scale-95 whitespace-nowrap shrink-0"
                 >
                   {selectedCategories.length === populatedCategories.length ? <CheckSquare size={14} /> : <Square size={14} />}
                   HEPSİNİ SEÇ
@@ -273,82 +278,82 @@ export default function PriceListModal({
                 {/* LIST HEADER */}
                 <div className="flex flex-col mb-10 border-b-8 border-stone-900 pb-8 relative pt-4 text-center items-center">
                    <div className="absolute top-0 px-6 py-1.5 bg-stone-900 text-white rounded-b-2xl shadow-xl">
-                      <span className="text-[9px] font-black uppercase tracking-[0.3em]">
+                      <span className="text-[8px] font-black uppercase tracking-[0.25em] opacity-80">
                         {window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
                           ? `${storeName.toUpperCase()}.EKATALOG.SITE`
                           : window.location.hostname.toUpperCase()}
                       </span>
                    </div>
                    
-                   <h1 className="text-3xl sm:text-4xl font-black text-stone-900 tracking-tighter mt-10 uppercase px-4">{storeName}</h1>
+                   <h1 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tighter mt-10 uppercase px-4">{storeName}</h1>
                    <div className="flex items-center gap-2 mt-2">
-                       <div className="w-8 h-[2px] bg-stone-200"></div>
-                       <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.4em]">FİYAT LİSTESİ</p>
-                       <div className="w-8 h-[2px] bg-stone-200"></div>
+                       <div className="w-8 h-[1px] bg-stone-200"></div>
+                       <p className="text-[9px] font-black text-stone-400 uppercase tracking-[0.4em]">FİYAT LİSTESİ</p>
+                       <div className="w-8 h-[1px] bg-stone-200"></div>
                    </div>
 
                    <div className="mt-8 flex gap-4 sm:gap-6 text-center">
                       <div>
-                        <p className="text-[8px] sm:text-[9px] font-black text-stone-300 uppercase tracking-widest">GÜNCELLEME</p>
-                        <p className="text-[11px] sm:text-xs font-black text-stone-900">{new Date().toLocaleDateString('tr-TR')}</p>
+                        <p className="text-[7px] sm:text-[8px] font-black text-stone-300 uppercase tracking-widest">GÜNCELLEME</p>
+                        <p className="text-[10px] sm:text-[11px] font-black text-stone-900">{new Date().toLocaleDateString('tr-TR')}</p>
                       </div>
                       <div className="w-[1px] h-6 sm:h-8 bg-stone-100"></div>
                       <div>
-                        <p className="text-[8px] sm:text-[9px] font-black text-stone-300 uppercase tracking-widest">KATEGORİ</p>
-                        <p className="text-[11px] sm:text-xs font-black text-stone-900">{selectedCategories.length} REYON</p>
+                        <p className="text-[7px] sm:text-[8px] font-black text-stone-300 uppercase tracking-widest">KATEGORİ</p>
+                        <p className="text-[10px] sm:text-[11px] font-black text-stone-900">{selectedCategories.length} REYON</p>
                       </div>
                       <div className="w-[1px] h-6 sm:h-8 bg-stone-100"></div>
                       <div>
-                        <p className="text-[8px] sm:text-[9px] font-black text-stone-300 uppercase tracking-widest">TOPLAM</p>
-                        <p className="text-[11px] sm:text-xs font-black text-stone-900">{filteredProductsCount} ÜRÜN</p>
+                        <p className="text-[7px] sm:text-[8px] font-black text-stone-300 uppercase tracking-widest">TOPLAM</p>
+                        <p className="text-[10px] sm:text-[11px] font-black text-stone-900">{filteredProductsCount} ÜRÜN</p>
                       </div>
                    </div>
 
                    {activeDiscount && (
                       <div className="mt-6 px-4 py-2 bg-emerald-50 rounded-2xl border border-emerald-100 inline-flex items-center gap-2">
-                         <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                         <span className="text-[10px] font-black text-emerald-700 uppercase tracking-tight">Kupon İndirimi %{activeDiscount.rate * 100} Dahildir</span>
+                         <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                         <span className="text-[9px] font-black text-emerald-700 uppercase tracking-tight">Kupon İndirimi %{activeDiscount.rate * 100} Dahildir</span>
                       </div>
                    )}
                 </div>
 
-                <div className="space-y-12 pb-10">
+                <div className="space-y-10 pb-10">
                   {selectedCategories.map(cat => {
                     const categoryProducts = groupedProducts[cat];
                     if (!categoryProducts || categoryProducts.length === 0) return null;
 
                     return (
                       <div key={cat} className="break-inside-avoid">
-                        <div className="flex items-center gap-4 mb-6">
-                           <h2 className="text-lg sm:text-xl font-black text-stone-900 uppercase tracking-tight shrink-0">{cat}</h2>
-                           <div className="h-[2px] flex-1 bg-stone-100"></div>
+                        <div className="flex items-center gap-3 mb-5">
+                           <h2 className="text-base sm:text-lg font-black text-stone-900 uppercase tracking-tight shrink-0">{cat}</h2>
+                           <div className="h-[1px] flex-1 bg-stone-100"></div>
                         </div>
 
-                        <div className="space-y-2 sm:space-y-3">
+                        <div className="space-y-2 sm:space-y-2.5">
                           {categoryProducts.map(product => (
-                            <div key={product.id} className="flex items-start justify-between gap-3 sm:gap-4 p-3 sm:p-4 rounded-[24px] sm:rounded-[32px] border border-stone-50 bg-white hover:bg-stone-50 transition-colors">
+                            <div key={product.id} className="flex items-start justify-between gap-3 sm:gap-4 p-2.5 sm:p-3.5 rounded-[20px] sm:rounded-[28px] border border-stone-50 bg-white hover:bg-stone-50 transition-colors">
                               <div className="flex gap-3 sm:gap-4 flex-1 min-w-0">
                                 {product.image ? (
                                   <img 
                                     src={product.image} 
                                     alt={product.name} 
-                                    className="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-lg sm:rounded-xl border border-stone-100 shadow-sm shrink-0 bg-white"
+                                    className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-md sm:rounded-lg border border-stone-100 shadow-sm shrink-0 bg-white"
                                     crossOrigin="anonymous" 
                                   />
                                 ) : (
-                                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border border-stone-100 bg-stone-50 shrink-0 flex items-center justify-center">
-                                    <Layers3 size={20} className="opacity-20 text-stone-900" />
+                                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md sm:rounded-lg border border-stone-100 bg-stone-50 shrink-0 flex items-center justify-center">
+                                    <Layers3 size={18} className="opacity-20 text-stone-900" />
                                   </div>
                                 )}
-                                <div className="flex flex-col min-w-0 py-0.5 sm:py-1">
-                                  <h4 className="font-black text-stone-900 text-[13px] sm:text-sm leading-tight uppercase tracking-tight">{product.name}</h4>
-                                  <p className="text-[9px] sm:text-[10px] text-stone-400 font-bold mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-2 leading-relaxed">
+                                <div className="flex flex-col min-w-0 py-0.5">
+                                  <h4 className="font-black text-stone-900 text-[11px] sm:text-xs leading-tight uppercase tracking-tight">{product.name}</h4>
+                                  <p className="text-[8px] sm:text-[9px] text-stone-400 font-bold mt-0.5 line-clamp-1 leading-normal">
                                     {product.shortDescription || product.description || 'Standart Ürün'}
                                   </p>
                                 </div>
                               </div>
-                              <div className="text-right shrink-0 pt-0.5 sm:pt-1">
-                                <span className="text-[14px] sm:text-base font-black text-stone-900 tracking-tighter">
+                              <div className="text-right shrink-0 pt-0.5">
+                                <span className="text-[12px] sm:text-[14px] font-black text-stone-900 tracking-tighter">
                                   {calculateFinalPrice(product)}
                                 </span>
                               </div>
@@ -360,9 +365,9 @@ export default function PriceListModal({
                   })}
                 </div>
 
-                <div className="mt-4 pt-10 border-t-2 border-stone-100 text-center flex flex-col items-center">
-                   <p className="text-[8px] sm:text-[9px] font-black text-stone-300 uppercase tracking-[0.4em] mb-4">WWW.EKATALOG.SITE</p>
-                   <div className="px-5 py-1.5 bg-stone-50 rounded-full text-[8px] sm:text-[9px] font-black text-stone-400 border border-stone-100 lowercase">
+                <div className="mt-4 pt-10 border-t border-stone-100 text-center flex flex-col items-center">
+                   <p className="text-[7px] sm:text-[8px] font-black text-stone-300 uppercase tracking-[0.4em] mb-4">WWW.EKATALOG.SITE</p>
+                   <div className="px-4 py-1.5 bg-stone-50 rounded-full text-[7px] sm:text-[8px] font-black text-stone-400 border border-stone-100 lowercase">
                      {storeName.toLowerCase().replace(/\s+/g, '')}@ekatalog.site
                    </div>
                 </div>

@@ -5,7 +5,7 @@ export const LABELS = {
   loadMoreBtn: "Daha Fazla Ürün",
   allProductsLoaded: "Tüm Ürünler Gösteriliyor",
   deleteConfirm: "Bu ürünü silmek istediğinize emin misiniz?",
-  saveError: "Kaydedilirken bir hata oluştu.",
+  saveError: "İşlem şu an gerçekleştirilemiyor, lütfen kısa süre sonra tekrar dener misin? 🙏",
   backBtn: "Geri Dön",
   noProductsFound: "Aradığınız kriterlerde ürün bulunamadı.",
   noProductsAdmin: "Mağazada henüz ürün yok. Hemen yeni bir ürün ekleyerek başlayın!",
@@ -23,7 +23,7 @@ export const LABELS = {
   },
   errors: {
     adminPinNotFound: "Yönetici şifresi veritabanında bulunamadı.",
-    genericUpdate: "Güncelleme sırasında bir hata oluştu.",
+    genericUpdate: "Güncelleme yapılamadı, bağlantını kontrol edip tekrar deneyebilirsin.",
     imageLoad: "Resim dosyası açılamadı.",
     fileRead: "Dosya okuma hatası.",
   },

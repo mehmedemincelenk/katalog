@@ -133,14 +133,14 @@ export default function FloatingGuestMenu({
                     ), 
                     action: onCurrencyToggle,
                     label: "Para Birimi",
-                    className: "border-2 border-stone-900 text-stone-900 bg-white" 
+                    className: "border-2 border-stone-100 text-stone-900 bg-white" 
                   },
                   { 
                     id: 'qr', 
                     icon: <QrCode className="w-5 h-5" />, 
                     action: onQRClick,
                     label: "Dükkan QR",
-                    className: "bg-stone-900 text-white border-none hover:bg-black" 
+                    className: "bg-purple-600 text-white border-none hover:bg-purple-700" 
                   },
                   { 
                     id: 'call', 
@@ -150,23 +150,25 @@ export default function FloatingGuestMenu({
                     className: "bg-emerald-500 text-white border-none hover:bg-emerald-600" 
                   },
                   { 
-                    id: 'search', 
-                    icon: <Search className="w-5 h-5" />, 
-                    action: onSearchClick,
-                    label: "Ürün Ara",
-                    className: "bg-stone-100 text-stone-900 border-none hover:bg-stone-200" 
-                  },
-                  { 
                     id: 'excel', 
                     icon: <FileSpreadsheet className="w-5 h-5" />, 
                     action: onExcelClick,
                     label: "Fiyat Listesi",
+                    className: "bg-blue-600 text-white border-none hover:bg-blue-700"
                   },
                   { 
                     id: 'coupon', 
                     icon: <Ticket className="w-5 h-5" />, 
                     action: onCouponClick,
                     label: "Kupon Gir",
+                    className: "bg-rose-500 text-white border-none hover:bg-rose-600"
+                  },
+                  { 
+                    id: 'search', 
+                    icon: <Search className="w-5 h-5" />, 
+                    action: onSearchClick,
+                    label: "Ürün Ara",
+                    className: "bg-stone-900 text-white border-none hover:bg-black" 
                   }
                 ].filter(Boolean) as { id: string; icon: React.ReactNode; action: () => void; label: string; primary?: boolean; className?: string }[]
               ).map((btn) => (

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { LABELS, THEME } from '../data/config';
 import { Product } from '../types';
 import Button from './Button';
+import { Trash2, Smartphone, Archive, X, Download, RotateCcw, Image as ImageIcon } from 'lucide-react';
 
 interface AdminActionMenuProps {
   product: Product;
@@ -15,15 +16,15 @@ interface AdminActionMenuProps {
 }
 
 /**
- * ADMIN ACTION MENU COMPONENT (100% Tokenized & Professional English)
+ * ADMIN ACTION MENU COMPONENT (Diamond Edition)
  * -----------------------------------------------------------
- * Product management interface. Fully managed via THEME tokens.
+ * Re-imagined product management with segmented controls and media hub.
  */
 export const AdminActionMenu = memo(({ 
   product, categories, onDelete, onUpdate, onImageChangeClick, isOpen, setIsOpen
 }: AdminActionMenuProps) => {
   const adminLabels = LABELS.adminActions;
-  const modalTheme = THEME.addProductModal; // Reuse overlay/container styles
+  const modalTheme = THEME.addProductModal;
   const globalIcons = THEME.icons;
 
   const downloadHighQualityImage = async () => {
@@ -45,15 +46,15 @@ export const AdminActionMenu = memo(({
     }
   };
 
-  const handleAction = (type: 'DELETE' | 'ARCHIVE' | 'STOCK' | 'DOWNLOAD' | 'CATEGORY', value?: string) => {
+  const handleAction = (type: 'DELETE' | 'ARCHIVE' | 'STOCK' | 'DOWNLOAD' | 'CATEGORY', value?: any) => {
     if (type === 'DELETE') { 
       if (window.confirm(adminLabels.confirmDelete)) {
         onDelete(product.id);
         setIsOpen(false);
       }
     }
-    else if (type === 'ARCHIVE') onUpdate(product.id, { is_archived: !product.is_archived });
-    else if (type === 'STOCK') onUpdate(product.id, { inStock: !product.inStock });
+    else if (type === 'ARCHIVE') onUpdate(product.id, { is_archived: value });
+    else if (type === 'STOCK') onUpdate(product.id, { inStock: value });
     else if (type === 'DOWNLOAD') downloadHighQualityImage();
     else if (type === 'CATEGORY' && value) onUpdate(product.id, { category: value });
   };
@@ -64,110 +65,139 @@ export const AdminActionMenu = memo(({
       {isOpen && (
         <div className={modalTheme.overlay} onClick={() => setIsOpen(false)} style={{ zIndex: 1000 }}>
           <div 
-            className={`${modalTheme.container} max-w-[300px] p-0 overflow-hidden animate-in zoom-in-95 duration-200`} 
+            className={`${modalTheme.container} max-w-[340px] p-0 overflow-hidden animate-in zoom-in-95 duration-200 border-none shadow-[0_30px_100px_rgba(0,0,0,0.3)]`} 
             onClick={(e) => e.stopPropagation()}
           >
-            {/* HEADER */}
+            {/* HEADER WITH TRASH ACTION */}
             <div className="bg-stone-50 border-b border-stone-100 px-5 py-4 flex items-center justify-between">
               <div className="flex flex-col text-left">
-                <h3 className="text-xs font-black uppercase tracking-widest text-stone-900 leading-none">Ürünü Yönet</h3>
-                <span className="text-[10px] font-bold text-stone-400 mt-1 truncate max-w-[180px]">{product.name}</span>
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 leading-none">Ürünü Yönet</h3>
+                <span className="text-[11px] font-bold text-stone-400 mt-1.5 truncate max-w-[160px]">{product.name}</span>
               </div>
-              <Button 
-                onClick={() => setIsOpen(false)}
-                icon={globalIcons.close}
-                variant="ghost"
-                size="sm"
-                className="!p-0"
-              />
+              <div className="flex items-center gap-1">
+                <Button 
+                  onClick={() => handleAction('DELETE')}
+                  icon={<Trash2 size={16} />}
+                  variant="danger"
+                  size="sm"
+                  mode="circle"
+                  className="!w-9 !h-9 shadow-md"
+                />
+                <Button 
+                  onClick={() => setIsOpen(false)}
+                  icon={<X size={18} />}
+                  variant="secondary"
+                  size="sm"
+                  mode="circle"
+                  className="!w-9 !h-9 shadow-sm"
+                />
+              </div>
             </div>
 
-            <div className="p-4 space-y-4">
-              {/* 3-COLUMN ACTION GRID (Image & Product Management) */}
-              <div className="grid grid-cols-3 gap-2">
-                {/* 1. Image Change */}
-                <div 
-                  onClick={() => { setIsOpen(false); onImageChangeClick?.(); }}
-                  className="flex flex-col items-center justify-center p-2 rounded-xl border border-stone-100 bg-stone-50 text-stone-600 hover:bg-white hover:border-stone-200 transition-all cursor-pointer text-center group"
-                >
-                  <span className="text-lg mb-1">📸</span>
-                  <span className="text-[8px] font-black uppercase tracking-tighter leading-none">Değiştir</span>
+            <div className="p-5 space-y-6">
+              
+              {/* MEDIA HUB */}
+              <div className="space-y-3">
+                <label className="text-[9px] font-black text-stone-400 uppercase tracking-widest px-1">Görsel Yönetimi</label>
+                <div className="relative group rounded-2xl overflow-hidden bg-stone-50 aspect-video border border-stone-100 flex items-center justify-center">
+                  {product.image ? (
+                    <img src={product.image} alt="Preview" className="w-full h-full object-contain" />
+                  ) : (
+                    <div className="flex flex-col items-center opacity-20">
+                       <ImageIcon size={32} />
+                       <span className="text-[10px] font-black mt-2">GÖRSEL YOK</span>
+                    </div>
+                  )}
+                  
+                  {/* FLOATING MEDIA BAR */}
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur shadow-2xl rounded-xl p-1 flex items-center gap-1 border border-white/20">
+                    <button 
+                      onClick={() => { setIsOpen(false); onImageChangeClick?.(); }}
+                      className="p-2 hover:bg-stone-100 rounded-lg transition-colors text-stone-600"
+                      title="Değiştir"
+                    >
+                      <RotateCcw size={16} />
+                    </button>
+                    {product.image && (
+                      <>
+                        <button 
+                          onClick={() => downloadHighQualityImage()}
+                          className="p-2 hover:bg-stone-100 rounded-lg transition-colors text-stone-600"
+                          title="İndir"
+                        >
+                          <Download size={16} />
+                        </button>
+                        <button 
+                          onClick={() => { if(window.confirm('Görseli kaldırmak istediğinize emin misiniz?')) onUpdate(product.id, { image: '' }); }}
+                          className="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-500"
+                          title="Sil"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
+              </div>
 
-                {/* 2. Image Download */}
-                <div 
-                  onClick={() => product.image && handleAction('DOWNLOAD')}
-                  className={`flex flex-col items-center justify-center p-2 rounded-xl border border-stone-100 bg-stone-50 transition-all cursor-pointer text-center group ${!product.image ? 'opacity-30 pointer-events-none' : 'hover:bg-white hover:border-stone-200'}`}
-                >
-                  <span className="text-lg mb-1">🖼️</span>
-                  <span className="text-[8px] font-black uppercase tracking-tighter leading-none">İndir</span>
-                </div>
+              {/* SEGMENTED STATUS CONTROLS */}
+              <div className="grid grid-cols-1 gap-4">
+                 {/* STOCK CONTROL */}
+                 <div className="space-y-2">
+                    <label className="text-[9px] font-black text-stone-400 uppercase tracking-widest px-1">Stok Durumu</label>
+                    <div className="grid grid-cols-2 p-1 bg-stone-100 rounded-xl gap-1">
+                       <button 
+                          onClick={() => handleAction('STOCK', true)}
+                          className={`py-2 text-[10px] font-black rounded-lg transition-all ${product.inStock ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
+                       >
+                          STOKTA VAR
+                       </button>
+                       <button 
+                          onClick={() => handleAction('STOCK', false)}
+                          className={`py-2 text-[10px] font-black rounded-lg transition-all ${!product.inStock ? 'bg-stone-900 text-white shadow-lg' : 'text-stone-400 hover:text-stone-600'}`}
+                       >
+                          TÜKENDİ
+                       </button>
+                    </div>
+                 </div>
 
-                {/* 3. Clear Image (New) */}
-                <div 
-                  className={`flex flex-col items-center justify-center p-2 rounded-xl border border-stone-100 bg-stone-50 transition-all cursor-pointer text-center group ${!product.image ? 'opacity-30 pointer-events-none' : 'hover:bg-red-50 hover:border-red-100 text-red-500'}`}
-                  onClick={(e) => {
-                    if (!product.image) return;
-                    e.stopPropagation();
-                    if(window.confirm('Resmi kaldırmak istediğinize emin misiniz?')) onUpdate(product.id, { image: '' });
-                  }}
-                >
-                  <span className="text-lg mb-1">🧹</span>
-                  <span className="text-[8px] font-black uppercase tracking-tighter leading-none">Resmi Sil</span>
-                </div>
-
-                {/* 4. Stock Toggle */}
-                <div 
-                  onClick={() => handleAction('STOCK')}
-                  className={`flex flex-col items-center justify-center p-2 rounded-xl border-2 transition-all cursor-pointer text-center group ${
-                    product.inStock 
-                      ? 'border-stone-900 bg-stone-900 text-white shadow-lg scale-[0.98]' 
-                      : 'border-stone-100 bg-stone-50 text-stone-400'
-                  }`}
-                >
-                  <span className="text-lg mb-1">{product.inStock ? '✅' : '❌'}</span>
-                  <span className="text-[8px] font-black uppercase tracking-tighter leading-none">Stokta</span>
-                </div>
-
-                {/* 5. Archive Toggle */}
-                <div 
-                  onClick={() => handleAction('ARCHIVE')}
-                  className={`flex flex-col items-center justify-center p-2 rounded-xl border-2 transition-all cursor-pointer text-center group ${
-                    product.is_archived 
-                      ? 'border-stone-900 bg-stone-900 text-white shadow-lg scale-[0.98]' 
-                      : 'border-stone-100 bg-stone-50 text-stone-400'
-                  }`}
-                >
-                  <span className="text-xl mb-1">{product.is_archived ? '📤' : '📦'}</span>
-                  <span className="text-[8px] font-black uppercase tracking-tighter leading-none">Arşiv</span>
-                </div>
-
-                {/* 6. Delete Product */}
-                <div 
-                  onClick={() => handleAction('DELETE')}
-                  className="flex flex-col items-center justify-center p-2 rounded-xl border-2 border-red-50 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all cursor-pointer text-center group active:scale-95"
-                >
-                  <span className="text-xl mb-1 drop-shadow-sm">🗑️</span>
-                  <span className="text-[8px] font-black uppercase tracking-tighter leading-none">Ürünü Sil</span>
-                </div>
+                 {/* ARCHIVE CONTROL */}
+                 <div className="space-y-2">
+                    <label className="text-[9px] font-black text-stone-400 uppercase tracking-widest px-1">Yayın Durumu</label>
+                    <div className="grid grid-cols-2 p-1 bg-stone-100 rounded-xl gap-1">
+                       <button 
+                          onClick={() => handleAction('ARCHIVE', false)}
+                          className={`py-2 text-[10px] font-black rounded-lg transition-all ${!product.is_archived ? 'bg-emerald-500 text-white shadow-lg' : 'text-stone-400 hover:text-stone-600'}`}
+                       >
+                          YAYINDA
+                       </button>
+                       <button 
+                          onClick={() => handleAction('ARCHIVE', true)}
+                          className={`py-2 text-[10px] font-black rounded-lg transition-all ${product.is_archived ? 'bg-stone-900 text-white shadow-lg' : 'text-stone-400 hover:text-stone-600'}`}
+                       >
+                          ARŞİVDE
+                       </button>
+                    </div>
+                 </div>
               </div>
 
               {/* CATEGORY SELECTOR */}
-              <div className="space-y-2 border-t border-stone-100 pt-4 text-left">
-                <label className="text-[9px] font-bold text-stone-400 uppercase tracking-widest px-1">Reyon Değiştir</label>
+              <div className="space-y-2 border-t border-stone-100 pt-5">
+                <label className="text-[9px] font-black text-stone-400 uppercase tracking-widest px-1">Reyon Bilgisi</label>
                 <div className="flex flex-wrap gap-1.5">
                   {categories.map(categoryName => (
-                    <Button 
+                    <button 
                       key={categoryName}
                       onClick={() => handleAction('CATEGORY', categoryName)}
-                      variant={product.category === categoryName ? 'primary' : 'secondary'}
-                      mode="rectangle"
-                      size="sm"
-                      className="!text-[9px] !py-1 !px-2.5 !rounded-lg"
-                      disabled={product.category === categoryName}
+                      className={`
+                        text-[10px] font-black px-3 py-1.5 rounded-lg border transition-all
+                        ${product.category === categoryName 
+                          ? 'bg-stone-900 text-white border-stone-900 shadow-md' 
+                          : 'bg-white text-stone-500 border-stone-100 hover:border-stone-300'}
+                      `}
                     >
                       {categoryName}
-                    </Button>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -179,9 +209,9 @@ export const AdminActionMenu = memo(({
                 onClick={() => setIsOpen(false)}
                 variant="primary"
                 mode="rectangle"
-                className="w-full !rounded-xl !py-3"
+                className="w-full !rounded-xl !py-3 font-black text-stone-900 uppercase"
               >
-                KAPAT
+                İşlemi Tamamla
               </Button>
             </div>
           </div>

@@ -121,7 +121,7 @@ export default function PinModal({
 
         {/* CAPTCHA & FEEDBACK AREA (Diamond UX) */}
         {requiresCaptcha && (
-          <div className="flex flex-col items-center justify-center min-h-[100px] mb-2 px-6">
+          <div className="flex flex-col items-center justify-center min-h-[80px] mb-2 px-6">
             {!isRobotVerified ? (
               <div className="flex flex-col items-center animate-in fade-in zoom-in duration-700">
                 <span className="text-[9px] font-black tracking-[0.2em] text-stone-400 uppercase mb-3 animate-pulse">
@@ -130,7 +130,7 @@ export default function PinModal({
                 <Turnstile onVerify={() => setIsRobotVerified(true)} options={{ theme: 'light', size: 'normal' }} />
               </div>
             ) : (
-              <div className="flex flex-col items-center gap-3 animate-in fade-in zoom-in duration-500 py-4">
+              <div className="flex flex-col items-center gap-3 animate-in fade-in zoom-in duration-500 pt-1 pb-4">
                 <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center border border-emerald-100 shadow-sm shadow-emerald-100/50">
                   <Check className="w-6 h-6 stroke-[3]" />
                 </div>

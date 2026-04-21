@@ -1,4 +1,4 @@
-// FILE ROLE: High-Impact Visual Showcase Component
+// FILE ROLE: High-Impact Visual Showcase Component (Hero Carousel)
 // DEPENDS ON: THEME, useCarousel hook, CarouselSlideUnit
 // CONSUMED BY: App.tsx
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -8,9 +8,9 @@ import Button from './Button';
 import CarouselSlideUnit from './CarouselSlideUnit';
 
 /**
- * HERO CAROUSEL COMPONENT (100% Tokenized & Professional English)
+ * HERO CAROUSEL COMPONENT (Diamond Standard Upgrade)
  * -----------------------------------------------------------
- * High-impact brand showcase. Manages sliding visual assets.
+ * High-impact brand showcase with intelligent focus and rapid asset ingestion.
  */
 
 interface HeroCarouselProps { 
@@ -20,9 +20,14 @@ interface HeroCarouselProps {
 export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
   const { slides, uploadHeroImage, addSlide, deleteSlide, reorderSlides, loading } = useCarousel(isAdminModeActive);
   const fileUploadInputRef = useRef<HTMLInputElement>(null);
+  
+  // States for sophisticated interaction management
   const [activeEditingSlideId, setActiveEditingSlideId] = useState<number | null>(null);
+  const [isAddingNewSlide, setIsAddingNewSlide] = useState(false);
   const [isAssetUploading, setIsAssetUploading] = useState(false);
   const [currentlyActiveSlideIndex, setCurrentlyActiveSlideIndex] = useState(0);
+  
+  // Touch/Swipe state
   const [swipeTouchStart, setSwipeTouchStart] = useState(0);
   const [swipeTouchEnd, setSwipeTouchEnd] = useState(0);
 
@@ -38,6 +43,20 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
     if (slides.length === 0) return;
     setCurrentlyActiveSlideIndex((previousIndex) => (previousIndex - 1 + slides.length) % slides.length);
   }, [slides.length]);
+
+  // Handle reordering with automatic focus jump
+  const handleReorderWithFocus = async (slideId: number, targetDisplayIndex: number) => {
+    await reorderSlides(slideId, targetDisplayIndex);
+    // Focus the new position immediately
+    setCurrentlyActiveSlideIndex(targetDisplayIndex - 1);
+  };
+
+  // Add slide logic: Trigger file input directly
+  const handleAddSlideTrigger = () => {
+    setIsAddingNewSlide(true);
+    setActiveEditingSlideId(null);
+    fileUploadInputRef.current?.click();
+  };
 
   const handleTouchStart = useCallback((event: React.TouchEvent) => {
     setSwipeTouchStart(event.targetTouches[0].clientX);
@@ -70,7 +89,7 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
     return (
       <div className={`${carouselTheme.layout} ${carouselTheme.container} !aspect-[21/9] sm:!aspect-[3/1]`}>
         <div 
-          onClick={addSlide}
+          onClick={handleAddSlideTrigger}
           className="w-full h-full border-2 border-dashed border-stone-200 flex flex-col items-center justify-center gap-3 cursor-pointer hover:bg-stone-50 transition-all rounded-2xl bg-white shadow-sm"
         >
           <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-400">
@@ -78,6 +97,26 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
           </div>
           <span className="text-stone-500 font-black uppercase text-xs tracking-widest">İlk Slider Görselini Ekle</span>
         </div>
+        <input ref={fileUploadInputRef} type="file" accept="image/*" className="hidden" 
+          onChange={async (event) => {
+            const selectedFile = event.target.files?.[0];
+            if (!selectedFile) return;
+            setIsAssetUploading(true);
+            try {
+              // Creating a placeholder first to get an ID
+              const nextId = slides.length > 0 ? Math.max(...slides.map(s => s.id)) + 1 : 1;
+              await addSlide();
+              // After adding, we need the latest ID. Since addSlide is async and updates state, 
+              // it's cleaner to handle this in the main input's onChange.
+              await uploadHeroImage(nextId, selectedFile);
+              setCurrentlyActiveSlideIndex(slides.length); // Focus the newest slide
+            } catch {
+              console.error("Resim yükleme hatası");
+            } finally { 
+              setIsAssetUploading(false); 
+            }
+          }}
+        />
       </div>
     );
   }
@@ -87,8 +126,6 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
       ${carouselTheme.layout} 
       ${carouselTheme.container}
     `}>
-      {/* ADMIN: ADD SLIDE FUNCTIONALITY */}
-      
       <div 
         className={`relative w-full h-full overflow-hidden ${THEME.radius.carousel}`} 
         onTouchStart={handleTouchStart} 
@@ -104,10 +141,10 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
             isAdmin={isAdminModeActive} 
             isCurrentlyUploading={isAssetUploading} 
             editingTargetSlideId={activeEditingSlideId} 
-            onImageUpdateTrigger={(id) => { setActiveEditingSlideId(id); fileUploadInputRef.current?.click(); }} 
+            onImageUpdateTrigger={(id) => { setIsAddingNewSlide(false); setActiveEditingSlideId(id); fileUploadInputRef.current?.click(); }} 
             onDeleteSlide={deleteSlide}
-            onAddSlide={addSlide}
-            onReorderSlide={reorderSlides}
+            onAddSlide={handleAddSlideTrigger}
+            onReorderSlide={handleReorderWithFocus}
             currentIndex={index + 1}
             totalSlides={slides.length}
           />
@@ -135,7 +172,7 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
           </>
         )}
 
-        {/* HIDDEN FILE INPUT FOR IMAGE UPDATES */}
+        {/* HIDDEN FILE INPUT FOR IMAGE UPDATES & ADDS */}
         <input 
           ref={fileUploadInputRef} 
           type="file" 
@@ -143,15 +180,28 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
           className="hidden" 
           onChange={async (event) => {
             const selectedFile = event.target.files?.[0];
-            if (!selectedFile || !activeEditingSlideId) return;
+            if (!selectedFile) return;
             setIsAssetUploading(true);
+            
             try {
-              await uploadHeroImage(activeEditingSlideId, selectedFile);
-            } catch {
-              console.error("Resim yükleme hatası");
+              if (isAddingNewSlide) {
+                 // 1. Create a dummy slide entry, get its ID (deterministic based on hook logic)
+                 const nextId = slides.length > 0 ? Math.max(...slides.map(s => s.id)) + 1 : 1;
+                 await addSlide(); // This adds to DB/State
+                 // 2. Immediately upload the image to this new ID
+                 await uploadHeroImage(nextId, selectedFile);
+                 // 3. Focus the new slide (last index)
+                 setCurrentlyActiveSlideIndex(slides.length);
+              } else if (activeEditingSlideId) {
+                 // Regular update
+                 await uploadHeroImage(activeEditingSlideId, selectedFile);
+              }
+            } catch (err) {
+              console.error("Carousel update error:", err);
             } finally { 
               setIsAssetUploading(false); 
-              setActiveEditingSlideId(null); 
+              setActiveEditingSlideId(null);
+              setIsAddingNewSlide(false); 
             }
             event.target.value = '';
           }} 

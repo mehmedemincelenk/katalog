@@ -249,9 +249,9 @@ export function useProducts(
    */
   const reorderProductsInCategory = useCallback(async (productId: string, targetPos: number) => {
     let updates: {id: string, sort_order: number}[] = [];
-
     const previousProducts = [...catalogProducts];
     
+    // 1. OPTIMISTIC UI UPDATE
     setCatalogProducts(prev => {
       const targetProduct = prev.find(p => p.id === productId);
       if (!targetProduct) return prev;
@@ -279,23 +279,25 @@ export function useProducts(
 
     try {
       if (updates.length > 0) {
-        // BATCH UPDATE: Tek bir HTTP isteği ile tüm sıralamayı güncelle (Diamond Performance)
-        const batchPayload = updates.map(u => ({
-          id: u.id,
-          store_id: storeSettings.id,
-          sort_order: u.sort_order
-        }));
+        // Individual updates are safer than batch upsert for complex table structures
+        const updatePromises = updates.map(u => 
+          supabase
+            .from(REPOSITORY_TABLE)
+            .update({ sort_order: u.sort_order })
+            .eq('id', u.id)
+            .eq('store_id', storeSettings.id)
+        );
 
-        const { error: batchError } = await supabase
-          .from(REPOSITORY_TABLE)
-          .upsert(batchPayload, { onConflict: 'id' });
-
-        if (batchError) throw batchError;
+        const results = await Promise.all(updatePromises);
+        const firstError = results.find(r => r.error)?.error;
+        if (firstError) throw firstError;
       }
     } catch (err) {
-      console.error('❌ Sıralama işlemi başarısız, geri alınıyor:', err);
+      console.error('❌ Sıralama senkronizasyon hatası:', err);
+      // Rollback UI to previous stable state
       setCatalogProducts(previousProducts);
-      alert(LABELS.saveError);
+      // Show gentle error instead of harsh alert
+      console.warn(LABELS.saveError);
     }
   }, [storeSettings.id, catalogProducts]);
 

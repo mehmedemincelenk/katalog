@@ -21,6 +21,7 @@ import MaintenancePage from './components/MaintenancePage';
 import FloatingGuestMenu from './components/FloatingGuestMenu';
 import CouponModal from './components/CouponModal';
 import PriceListModal from './components/PriceListModal';
+import GlobalAddMenuModal from './components/GlobalAddMenuModal';
 import { useProducts } from './hooks/useProducts';
 import { useAdminMode } from './hooks/useAdminMode';
 import { useDiscount } from './hooks/useDiscount';
@@ -91,8 +92,62 @@ function CatalogView() {
   const [isDisplaySettingsOpen, setIsDisplaySettingsOpen] = useState(false);
   const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
   const [isPriceListModalOpen, setIsPriceListModalOpen] = useState(false);
+  const [isGlobalAddMenuOpen, setIsGlobalAddMenuOpen] = useState(false);
   const [activeAdminProductId, setActiveAdminProductId] = useState<string | null>(null);
   const [visibleCategoryLimit, setVisibleCategoryLimit] = useState(2);
+
+  const handleGlobalAddAction = (type: 'PRODUCT' | 'CATEGORY' | 'REFERENCE' | 'CAROUSEL') => {
+    if (type === 'PRODUCT') setIsAddModalOpen(true);
+    else if (type === 'CATEGORY') {
+      const name = window.prompt('Yeni Reyon/Kategori Adı:');
+      if (name) {
+        // useProducts hook should expose addCategory
+        // (Checking line 85 of App.tsx, I need to add it to the destructuring)
+        const addCategoryFn = (window as any).__ekatalog_addCategory;
+        if (addCategoryFn) addCategoryFn(name);
+      }
+    }
+    else if (type === 'REFERENCE') {
+      const name = window.prompt('Yeni Referans/İş Ortağı Adı:');
+      if (name) {
+        const currentRefs = settings.referencesData || [];
+        updateSetting('referencesData', [...currentRefs, { id: Date.now(), name, logo: '' }]);
+      }
+    }
+    else if (type === 'CAROUSEL') {
+      // Trigger Hero Carousel's plus button logic
+      const heroPlusBtn = document.querySelector('button[title="Yeni Slide Ekle"]') as HTMLButtonElement;
+      if (heroPlusBtn) heroPlusBtn.click();
+      else {
+        // Fallback: If no slide exists yet, look for the big empty state plus
+        const emptyPlus = document.querySelector('span.w-6.h-6') as HTMLElement;
+        emptyPlus?.parentElement?.click();
+      }
+    }
+  };
+
+  const { 
+    products, 
+    allProducts,
+    categoryOrder, 
+    addProduct, 
+    updateProduct, 
+    deleteProduct, 
+    reorderCategory: updateCategoryOrder, 
+    reorderProductsInCategory,
+    renameCategory, 
+    addCategory, 
+    executeGranularBulkActions,
+    uploadImage,
+    loading: productsLoading 
+  } = useProducts(search, activeCategories, isAdmin, settings, updateSetting);
+
+  // Sync addCategory to window for the modal to call (simple way to bridge hooks without over-engineering)
+  useEffect(() => {
+    (window as any).__ekatalog_addCategory = addCategory;
+  }, [addCategory]);
+
+  const { activeDiscount, applyCode, error: discountError } = useDiscount();
 
   // FAVICON & TITLE SYNC (With Fallback Protection)
   useEffect(() => {
@@ -178,7 +233,7 @@ function CatalogView() {
               onImageUpload={uploadImage}
               activeDiscount={activeDiscount} visibleCategoryLimit={visibleCategoryLimit}
               onLoadMore={() => setVisibleCategoryLimit(prev => prev + 3)}
-              activeCategories={activeCategories} onAddClick={() => setIsAddModalOpen(true)}
+              activeCategories={activeCategories} onAddClick={() => setIsGlobalAddMenuOpen(true)}
               activeAdminProductId={activeAdminProductId}
               setActiveAdminProductId={setActiveAdminProductId}
               showPrice={settings.displayConfig.showPrice ?? true}
@@ -224,10 +279,13 @@ function CatalogView() {
             onExcelClick={() => setIsPriceListModalOpen(true)}
             onSearchClick={() => {
               window.scrollTo({ top: 0, behavior: 'smooth' });
+              // Wait for the scroll animation to settle before focusing
               setTimeout(() => {
                 const searchInput = document.querySelector('input[placeholder*="ara"]') as HTMLInputElement;
-                if (searchInput) searchInput.focus();
-              }, 600);
+                if (searchInput) {
+                  searchInput.focus({ preventScroll: true });
+                }
+              }, 800);
             }}
             onQRClick={() => setIsQRModalOpen(true)}
           />
@@ -246,7 +304,7 @@ function CatalogView() {
               className="fixed bottom-2 right-2 z-[150] print:hidden"
             >
               <FloatingAdminMenu 
-                onProductAddTrigger={() => setIsAddModalOpen(true)} 
+                onProductAddTrigger={() => setIsGlobalAddMenuOpen(true)} 
                 onBulkUpdateTrigger={() => setIsBulkUpdateModalOpen(true)} 
                 onSettingsTrigger={() => setIsDisplaySettingsOpen(true)}
                 activeCurrency={settings.activeCurrency}
@@ -270,6 +328,11 @@ function CatalogView() {
               updateSetting={updateSetting}
               isInlineEnabled={isInlineEnabled}
               onToggleInline={toggleInlineEdit}
+            />
+            <GlobalAddMenuModal 
+              isOpen={isGlobalAddMenuOpen} 
+              onClose={() => setIsGlobalAddMenuOpen(false)} 
+              onAction={handleGlobalAddAction} 
             />
           </>
         )}

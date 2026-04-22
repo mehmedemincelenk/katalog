@@ -29,8 +29,9 @@ const AIStudioCompareModal = ({
 }: AIStudioCompareModalProps) => {
   if (!product || !product.polishedImage) return null;
 
-  const originalUrl = resolveVisualAssetUrl(product.originalImage || product.image);
-  const polishedUrl = resolveVisualAssetUrl(product.polishedImage);
+  const v = Date.now();
+  const originalUrl = `${resolveVisualAssetUrl(product.originalImage || product.image)}?v=${v}`;
+  const polishedUrl = `${resolveVisualAssetUrl(product.polishedImage)}?v=${v}`;
 
   return (
     <BaseModal

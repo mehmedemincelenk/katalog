@@ -28,7 +28,7 @@ export async function processProductInDiamondStudio(
   formPayload.append('imageFile', imageFile);
   
   // DIAMOND STUDIO RECIPE (Parameters optimized for B2B Catalog)
-  formPayload.append('removeBackground', 'true');
+  formPayload.append('background.prompt', 'Professional product photography in a clean white studio, centered, front view, sharp focus, soft lighting');
   formPayload.append('background.color', '#ffffff');
   formPayload.append('shadow.mode', 'ai.soft'); // High-end contact shadow
   formPayload.append('padding', '0.1');       // 10% safe zone for consistent grid

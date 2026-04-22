@@ -112,3 +112,45 @@ export async function compressVisualToDataUri(visualFile: File, maximumDimension
   
   return drawingCanvas.toDataURL('image/jpeg', compressionQuality);
 }
+/**
+ * resizeImageForAI: Downscales image to AI-friendly dimensions to prevent 413 errors.
+ */
+export async function resizeImageForAI(imageFile: File | Blob): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = URL.createObjectURL(imageFile);
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let width = img.width;
+      let height = img.height;
+
+      const maxSize = 1024;
+      if (width > height) {
+        if (width > maxSize) {
+          height *= maxSize / width;
+          width = maxSize;
+        }
+      } else {
+        if (height > maxSize) {
+          width *= maxSize / height;
+          height = maxSize;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error('Resize failed'));
+        URL.revokeObjectURL(img.src);
+      }, 'image/jpeg', 0.82);
+    };
+    img.onerror = (err) => {
+      URL.revokeObjectURL(img.src);
+      reject(err);
+    };
+  });
+}

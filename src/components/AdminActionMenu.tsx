@@ -28,21 +28,45 @@ export const AdminActionMenu = memo(({
   const globalIcons = THEME.icons;
 
   const downloadHighQualityImage = async () => {
-    if (!product.image) return;
+    const targetUrl = product.polishedImage || product.image;
+    if (!targetUrl) return;
+    
     try {
-      const highQualityUrl = product.image.replace('/lq/', '/hq/').split('?')[0];
-      const response = await fetch(highQualityUrl);
-      const blob = await response.blob();
-      const localUrl = window.URL.createObjectURL(blob);
-      const downloadLink = document.createElement('a');
-      downloadLink.href = localUrl;
-      downloadLink.download = `hq-${product.name.replace(/\s+/g, '-').toLowerCase()}.jpg`;
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      window.URL.revokeObjectURL(localUrl);
-      document.body.removeChild(downloadLink);
-    } catch {
-      alert(LABELS.saveError);
+      const hqUrl = !product.polishedImage ? targetUrl.replace('/lq/', '/hq/').split('?')[0] : targetUrl;
+      
+      // Rasyonel Canvas Operasyonu
+      const img = new Image();
+      img.crossOrigin = 'anonymous'; // CORS izni alarak resmi oku
+      img.src = hqUrl;
+      
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        ctx.drawImage(img, 0, 0);
+        
+        const dataUrl = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.href = dataUrl;
+        
+        const cleanName = product.name.replace(/\s+/g, '-').toLowerCase();
+        downloadLink.download = `diamond-${cleanName}.png`;
+        
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      };
+      
+      img.onerror = () => {
+        // Fallback: Eğer canvas çizemezse direkt linke git
+        window.open(targetUrl, '_blank');
+      };
+    } catch (err) {
+      console.error('Download error:', err);
+      window.open(targetUrl, '_blank');
     }
   };
 
@@ -100,8 +124,8 @@ export const AdminActionMenu = memo(({
               <div className="space-y-3">
                 <label className="text-[9px] font-black text-stone-400 uppercase tracking-widest px-1">Görsel Yönetimi</label>
                 <div className="relative group rounded-2xl overflow-hidden bg-stone-50 aspect-video border border-stone-100 flex items-center justify-center">
-                  {product.image ? (
-                    <img src={product.image} alt="Preview" className="w-full h-full object-contain" />
+                  {(product.polishedImage || product.image) ? (
+                    <img src={product.polishedImage || product.image} alt="Preview" className="w-full h-full object-contain" />
                   ) : (
                     <div className="flex flex-col items-center opacity-20">
                        <ImageIcon size={32} />

@@ -14,6 +14,9 @@ import { CompanySettings } from './useSettings';
 import { transformCurrencyStringToNumber, formatNumberToCurrency } from '../utils/price';
 import { smartSearch } from '../utils/smartSearch';
 import { processDualQualityVisuals } from '../utils/image';
+import { processProductInDiamondStudio } from '../utils/aiStudio';
+import { processInReplicateStudio } from '../utils/replicateStudio';
+import { processImageForStorage, resizeImageForAI } from '../utils/image';
 
 const REPOSITORY_TABLE = 'prods';
 
@@ -143,27 +146,30 @@ export function useProducts(
    * triggerAIStudioUpgrade: Asynchronously initiates the Photoroom polishing cycle.
    */
   const triggerAIStudioUpgrade = useCallback(async (productId: string, visualFile: File) => {
-    const apiKey = storeSettings.photoroomApiKey || import.meta.env.VITE_PHOTOROOM_API_KEY;
-    if (!apiKey) return;
+    const isReplicateReady = !!import.meta.env.VITE_REPLICATE_API_KEY;
+    if (!isReplicateReady) {
+      console.warn('⚠️ Replicate API Key eksik.');
+      return;
+    }
 
     try {
-      // 1. Mark as pending and save original
-      await modifyProductRecord(productId, { isPolishedPending: true });
+      console.log('🚀 Diamond Generative Studio Başlatılıyor [Engine: Replicate-FLUX]...');
+      // 1. Mark as pending
+      await modifyProductRecord(productId, { isPolishedPending: true, polishedReadyDismissed: false });
 
-      // 2. Call AI Studio (Server-side heavy lift)
-      const { processProductInDiamondStudio } = await import('../utils/aiStudio');
-      const polishedBlob = await processProductInDiamondStudio(visualFile, apiKey);
+      // 2. High-End Reconstruction via Replicate (FLUX)
+      const polishedBlob = await processInReplicateStudio(visualFile);
+      console.log('✅ Replicate-FLUX Üretimi Tamamlandı.');
 
-      // 3. Prepare for storage
-      const polishedFile = new File([polishedBlob], 'polished.jpg', { type: 'image/jpeg' });
-      const turkishCharMap: Record<string, string> = { 'ç':'c','ğ':'g','ı':'i','ö':'o','ş':'s','ü':'u','Ç':'C','Ğ':'G','İ':'I','Ö':'O','Ş':'S','Ü':'U' };
-      const nanoId = Math.random().toString(36).substring(2, 7);
-      const fileName = `polished-${productId.substring(0, 4)}-${nanoId}.jpg`;
-      const lqPath = `${TECH.storage.lqFolder}/${fileName}`;
-      const hqPath = `${TECH.storage.hqFolder}/${fileName}`;
+      // 3. Dosya isimlerini ve yollarını belirle (Daha benzersiz PNG nizamı)
+      const ts = Date.now();
+      const polishedFileName = `${productId}_diamond_${ts}.png`;
+      const lqPath = `${TECH.storage.lqFolder}/${polishedFileName}`;
+      const hqPath = `${TECH.storage.hqFolder}/${polishedFileName}`;
 
       // 4. Process and upload polished version
-      const { hq: polishedHq, lq: polishedLq } = await processDualQualityVisuals(polishedFile);
+      const { hq: polishedHq, lq: polishedLq } = await processDualQualityVisuals(polishedBlob);
+      
       await Promise.all([
         supabase.storage.from(TECH.storage.bucket).upload(lqPath, polishedLq, { upsert: true, cacheControl: TECH.storage.cacheControl }),
         supabase.storage.from(TECH.storage.bucket).upload(hqPath, polishedHq, { upsert: true, cacheControl: TECH.storage.cacheControl })
@@ -172,18 +178,17 @@ export function useProducts(
       const { data: { publicUrl } } = supabase.storage.from(TECH.storage.bucket).getPublicUrl(lqPath);
       const finalizedPolishedUrl = `${publicUrl}?t=${Date.now()}`;
 
-      // 5. Update product with the polished version ready to review
+      // 5. Update product record
       await modifyProductRecord(productId, { 
         polishedImage: finalizedPolishedUrl, 
-        isPolishedPending: false,
-        polishedReadyDismissed: false 
+        isPolishedPending: false 
       });
 
     } catch (err) {
-      console.error('Diamond Studio Processing Failed:', err);
+      console.error('Diamond Generative Studio Failed:', err);
       await modifyProductRecord(productId, { isPolishedPending: false });
     }
-  }, [storeSettings.photoroomApiKey, modifyProductRecord]);
+  }, [modifyProductRecord]);
 
   /**
    * uploadProductVisualAsset: Direct storage deployment with dual-quality processing.

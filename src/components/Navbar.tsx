@@ -179,13 +179,21 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnab
                 touchAction: 'none'
               }}
             >
-              {/* INVISIBLE SHIELD: Only present when NOT admin to allow long-press detection without blocking edits */}
-              {!isAdmin && <div className="absolute inset-0 z-[40] cursor-pointer" />}
+              {/* INVISIBLE SHIELD: Explicitly handles gestures when NOT admin to avoid bubbling issues */}
+              {!isAdmin && (
+                <div 
+                  className="absolute inset-0 z-[40] cursor-pointer touch-none" 
+                  onPointerDown={handlePressStart}
+                  onPointerUp={handlePressEnd}
+                  onPointerLeave={handlePressEnd}
+                  onPointerCancel={handlePressEnd}
+                />
+              )}
 
               {settings.displayConfig.showLogo && (
                 <div 
                   onClick={() => isAdmin && document.getElementById('logo-upload-input')?.click()}
-                  className={`${theme.brand.logoWrapper} select-none touch-none cursor-pointer overflow-hidden flex items-center justify-center relative z-[30]`}
+                  className={`${theme.brand.logoWrapper} select-none touch-none cursor-pointer overflow-hidden flex items-center justify-center relative z-[30] ${!isAdmin ? 'pointer-events-none' : ''}`}
                 >
                   <input 
                     id="logo-upload-input"
@@ -202,7 +210,7 @@ const Navbar = memo(({ onLogoPointerDown, onLogoPointerUp, isAdmin, isInlineEnab
                 </div>
               )}
 
-              <div className={`${theme.brand.textWrapper} cursor-pointer relative z-[30]`}>
+              <div className={`${theme.brand.textWrapper} cursor-pointer relative z-[30] ${!isAdmin ? 'pointer-events-none' : ''}`}>
                 <div className="flex items-center">
                   <span 
                     contentEditable={isAdmin && isInlineEnabled}

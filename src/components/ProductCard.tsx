@@ -86,16 +86,20 @@ const ProductCard = memo(({
     return () => window.removeEventListener('scroll', handleScrollClose);
   }, [isZoomDetailOpen]);
 
-  // Reset optimistic preview when real image arrives & CLEANUP memory
+  // CLEANUP memory ONLY on unmount to prevent race conditions during upload transitions
+  useEffect(() => {
+    return () => {
+      if (optimisticImagePreview) {
+        URL.revokeObjectURL(optimisticImagePreview);
+      }
+    };
+  }, [optimisticImagePreview]);
+
+  // When real image arrives, just clear the preview state (revocation stays in cleanup)
   useEffect(() => {
     if (product.image && optimisticImagePreview) {
-      URL.revokeObjectURL(optimisticImagePreview);
       setOptimisticImagePreview(null);
     }
-    // Cleanup on unmount
-    return () => {
-      if (optimisticImagePreview) URL.revokeObjectURL(optimisticImagePreview);
-    };
   }, [product.image, optimisticImagePreview]);
 
   const handleImageFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,40 +183,44 @@ const ProductCard = memo(({
           
           <AnimatePresence>
             {isAdmin && !isUploadingImage && (
-              <div className="absolute top-2 left-2 z-[35] flex flex-col gap-1.5">
+              <div className="absolute top-3 left-3 z-[45] flex flex-col gap-2">
+                {/* DIAGNOSTIC LOG (Silent in prod, active in dev) */}
+                {/* {console.log(`💎 Card [${product.name}]: ready=${!!product.polishedImage}, pending=${product.isPolishedPending}`)} */}
+
                 {/* PENDING INDICATOR */}
                 {product.isPolishedPending && (
                   <motion.div 
                     key="studio-pending"
                     initial={{ scale: 0, rotate: -20 }}
                     animate={{ scale: 1, rotate: 0 }}
-                    className="w-7 h-7 bg-white/90 backdrop-blur shadow-lg border border-stone-100 flex items-center justify-center rounded-full"
+                    className="w-9 h-9 bg-white/95 backdrop-blur-xl shadow-2xl border-2 border-blue-100 flex items-center justify-center rounded-full"
                   >
-                    <div className="w-4 h-4 border-2 border-stone-200 border-t-stone-600 rounded-full animate-spin"></div>
+                    <div className="w-5 h-5 border-2 border-stone-200 border-t-blue-600 rounded-full animate-spin"></div>
                   </motion.div>
                 )}
 
-                {/* READY BADGE (DIAMOND) */}
+                {/* READY BADGE (DIAMOND) - HIGH VISIBILITY */}
                 {product.polishedImage && !product.polishedReadyDismissed && !product.isPolishedPending && (
                   <motion.button 
                     key="studio-ready"
-                    whileHover={{ scale: 1.15 }}
+                    whileHover={{ scale: 1.2, rotate: 5 }}
                     whileTap={{ scale: 0.9 }}
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ 
-                      scale: [1, 1.1, 1],
+                      scale: [1, 1.2, 1],
                       opacity: 1,
-                      boxShadow: ["0 0 0px rgba(0,0,0,0)", "0 0 20px rgba(139,184,255,0.4)", "0 0 0px rgba(0,0,0,0)"]
+                      boxShadow: ["0 0 0px rgba(59,130,246,0)", "0 0 25px rgba(59,130,246,0.5)", "0 0 0px rgba(59,130,246,0)"]
                     }}
-                    transition={{ repeat: Infinity, duration: 2.5 }}
+                    transition={{ repeat: Infinity, duration: 2 }}
                     onClick={(e) => {
                       e.stopPropagation();
+                      console.log('🚀 Opening Comparison for:', product.name);
                       (window as any).__ekatalog_openAIStudioCompare?.(product);
                     }}
-                    className="w-8 h-8 bg-blue-50 text-blue-600 border border-blue-100 shadow-xl flex items-center justify-center rounded-full pointer-events-auto"
-                    title="Stüdyo Kalitesi Hazır!"
+                    className="w-10 h-10 bg-blue-600 text-white border-2 border-white shadow-[0_10px_30px_rgba(37,99,235,0.4)] flex items-center justify-center rounded-full pointer-events-auto"
+                    title="Diamond Stüdyo Kalitesi Hazır! Görmek için tıkla."
                   >
-                    <div className="w-5 h-5">{THEME.icons.diamond}</div>
+                    <div className="w-6 h-6 drop-shadow-md">{THEME.icons.diamond}</div>
                   </motion.button>
                 )}
               </div>

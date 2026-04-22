@@ -39,6 +39,31 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  server: {
+    allowedHosts: true,
+    proxy: {
+      '/api/replicate': {
+        target: 'https://api.replicate.com/v1',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/replicate/, ''),
+      },
+      '/api/hf': {
+        target: 'https://api-inference.huggingface.co',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/hf/, ''),
+      },
+      '/api/photoroom': {
+        target: 'https://image-api.photoroom.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/photoroom/, ''),
+      },
+      '/api/openai': {
+        target: 'https://api.openai.com/v1',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/openai/, ''),
+      },
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',

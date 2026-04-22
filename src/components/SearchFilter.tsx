@@ -155,8 +155,8 @@ export default function SearchFilter({
     return { sortedList: sortCategories(consolidated, categoryOrder), stats: statsObj };
   }, [products, categoryOrder]);
 
-  const pcVisibleCategories = isAllCategoriesVisiblePC ? sortedList : sortedList.slice(0, 6);
-  const hasMorePC = !isAllCategoriesVisiblePC && sortedList.length > 6;
+  const pcVisibleCategories = isAllCategoriesVisiblePC ? sortedList : sortedList.slice(0, 5);
+  const hasMorePC = !isAllCategoriesVisiblePC && sortedList.length > 5;
 
   const showAll = displayConfig.showSearch || displayConfig.showCategories;
   if (!showAll && !isAdmin) return null;

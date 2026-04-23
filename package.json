@@ -14,7 +14,10 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\""
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.103.0",
+    "@tanstack/react-query": "^5.99.2",
+    "clsx": "^2.1.1",
     "dotenv": "^17.4.1",
     "framer-motion": "^12.38.0",
     "html2canvas": "^1.4.1",
@@ -23,7 +26,9 @@
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-parallax-tilt": "^1.7.324"
+    "react-parallax-tilt": "^1.7.324",
+    "tailwind-merge": "^3.5.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",

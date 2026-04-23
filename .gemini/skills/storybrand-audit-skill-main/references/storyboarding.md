@@ -22,9 +22,10 @@
 
 ## 1. Core SB7 Framework
 
-The StoryBrand Framework (SB7) is a 7-part messaging framework created by Donald Miller in *Building a StoryBrand* (2017). It applies universal story structure to brand messaging.
+The StoryBrand Framework (SB7) is a 7-part messaging framework created by Donald Miller in _Building a StoryBrand_ (2017). It applies universal story structure to brand messaging.
 
 **The Story Formula:**
+
 > A **CHARACTER** who wants something encounters a **PROBLEM** before they can get it. At the peak of their despair, a **GUIDE** steps into their lives, gives them a **PLAN**, and **CALLS THEM TO ACTION**. That action helps them avoid **FAILURE** and ends in **SUCCESS**.
 
 **Core insight:** Your customer is the hero. Your brand is the guide.
@@ -36,25 +37,31 @@ The StoryBrand Framework (SB7) is a 7-part messaging framework created by Donald
 ## 2. Key Principles
 
 ### "If You Confuse, You Lose"
+
 The brain is a survival organ that conserves energy. Confusing messages get filtered out. Your message must be simple, repetitive, and relevant. If a customer can't explain what you do after 5 seconds, you've failed.
 
 ### The Grunt Test
+
 Within 5 seconds, a visitor must answer three questions:
+
 1. **What do you offer?**
 2. **How will it make my life better?**
 3. **What do I need to do to buy it?**
 
 ### Hero vs. Guide
+
 Most companies position themselves as the hero (founding story, awards, journey). This fails because every person is the hero of their own story. Your brand is the Guide — the Yoda to their Luke. Guides demonstrate **empathy** (I understand your pain) and **authority** (I can actually help).
 
 ### Three Levels of Problem
+
 - **External:** The tangible obstacle ("My roof is leaking")
-- **Internal:** How it makes them *feel* ("I'm embarrassed my house looks terrible")
+- **Internal:** How it makes them _feel_ ("I'm embarrassed my house looks terrible")
 - **Philosophical:** Why it's just wrong ("Homeowners shouldn't live in fear of their roof collapsing")
 
-**Critical insight:** Companies sell solutions to external problems, but customers *buy* solutions to internal problems.
+**Critical insight:** Companies sell solutions to external problems, but customers _buy_ solutions to internal problems.
 
 ### The 7 StoryBrand Principles
+
 1. The customer is the hero, not your brand
 2. Companies sell external solutions; customers buy internal solutions
 3. Customers want a guide, not another hero
@@ -68,12 +75,14 @@ Most companies position themselves as the hero (founding story, awards, journey)
 ## 3. The 7 Elements
 
 ### Element 1: Character (The Hero = Customer)
+
 - Define ONE clear desire tied to survival (money, time, status, belonging, meaning)
 - Must be singular — multiple desires create confusion
 - **Mistakes:** Making the brand the hero, too many desires, being vague, leading with features
 - **10/10:** Crystal clear single desire from customer's perspective. Visitor immediately thinks "yes, that's what I want."
 
 ### Element 2: Problem (Villain + Three Layers)
+
 - **Villain:** A force/condition (not a person), singular, relatable, real
 - **External:** The tangible issue
 - **Internal:** The emotional frustration (THIS drives purchase decisions)
@@ -82,7 +91,9 @@ Most companies position themselves as the hero (founding story, awards, journey)
 - **10/10:** All three layers articulated with a clear villain. Customer feels deeply understood.
 
 ### Element 3: Guide (Your Brand)
+
 Two qualities:
+
 - **Empathy:** "We understand your pain." Activates bonding.
 - **Authority:** Testimonials, stats, logos, awards. Creates confidence.
 - Balance matters: too much authority = arrogance; too much empathy = weakness
@@ -90,12 +101,14 @@ Two qualities:
 - **10/10:** Perfect empathy + authority balance. Customer thinks: "They get me AND they can help."
 
 ### Element 4: Plan (Bridge of Confidence)
+
 - **Process Plan:** 3-4 simple steps showing how to engage
 - **Agreement Plan:** Commitments that reduce risk (guarantees, promises)
 - **Mistakes:** No plan, too many steps, jargon in steps, no risk reduction
 - **10/10:** Clean 3-step plan + clear agreement. Customer thinks: "This is easy and safe."
 
 ### Element 5: Call to Action
+
 - **Direct CTA:** Buy/schedule/start — bold, repeated, unambiguous
 - **Transitional CTA:** Free resource for those not ready — captures emails
 - Direct = "Marry me." Transitional = "Let's go on a date."
@@ -103,6 +116,7 @@ Two qualities:
 - **10/10:** Bold direct CTA above fold AND repeated 3-5x. Transitional CTA clearly secondary but present.
 
 ### Element 6: Failure (Stakes)
+
 - Show what happens if they DON'T act
 - Like salt in bread: too much ruins it, none makes it bland
 - Loss aversion: humans are 2x more motivated to avoid loss than achieve gain
@@ -110,8 +124,9 @@ Two qualities:
 - **10/10:** Specific, credible failure outcomes. Real, relatable, just scary enough to motivate.
 
 ### Element 7: Success (Transformation)
+
 - Paint what life looks like AFTER
-- Include **character transformation** (from _____ to _____)
+- Include **character transformation** (from **\_** to **\_**)
 - Must be specific, visual, aspirational
 - **Mistakes:** Not defining success, being vague, defining in company terms, overpromising
 - **10/10:** Vivid transformation with emotional resonance. Reader can picture themselves in the success state.
@@ -143,10 +158,13 @@ Two qualities:
 - **Navigation:** ≤7 items. Don't clutter.
 
 ### The One-Liner
+
 Elevator pitch formula: **Problem + Solution + Result**
+
 > "Most businesses waste money on marketing that doesn't work. At StoryBrand, we help you clarify your message so customers will listen."
 
 ### The BrandScript
+
 Complete all 7 elements on one page BEFORE touching your website. This is the messaging DNA. You can create multiple BrandScripts per division, product, or customer segment.
 
 ---
@@ -154,6 +172,7 @@ Complete all 7 elements on one page BEFORE touching your website. This is the me
 ## 5. Communications Beyond Websites
 
 ### Email: Sales Sequence (6 emails)
+
 1. Deliver the asset
 2. Name the problem + position solution
 3. Testimonial / social proof
@@ -162,35 +181,42 @@ Complete all 7 elements on one page BEFORE touching your website. This is the me
 6. Full story (BrandScript in narrative form) + direct CTA
 
 ### Email: Nurture Sequence (ongoing weekly)
+
 Rotate 4 types: Value, Problem + insight, Testimonial, Curated content. Every email provides genuine value even if they never buy.
 
 ### Subject Lines
+
 - 40 characters or fewer
 - Open a "story loop" (curiosity)
 - Clear over clever
 - Spend 6 minutes brainstorming before picking
 
 ### Sales Decks (10-12 slides)
-| Slides | SB7 Element |
-|--------|------------|
-| 1-2 | Customer's desire + problem (NOT your logo/history) |
-| 3 | Guide introduction (empathy + authority, 1 slide max) |
-| 4-5 | The plan (3 steps) |
-| 6 | CTA |
-| 7 | Stakes/failure |
-| 8-9 | Success + testimonials |
-| 10 | Closing CTA |
+
+| Slides | SB7 Element                                           |
+| ------ | ----------------------------------------------------- |
+| 1-2    | Customer's desire + problem (NOT your logo/history)   |
+| 3      | Guide introduction (empathy + authority, 1 slide max) |
+| 4-5    | The plan (3 steps)                                    |
+| 6      | CTA                                                   |
+| 7      | Stakes/failure                                        |
+| 8-9    | Success + testimonials                                |
+| 10     | Closing CTA                                           |
 
 ### The "So That" Technique
+
 Chain features to outcomes: Feature → so that → Benefit → so that → Aspiration/Identity
 
 ### Social Media
+
 Compressed formula: Problem → Stakes → Resolve → Climactic Scene → CTA. Hooks always start with the customer or problem, never your company.
 
 ### Video Scripts (60-120 seconds)
+
 0:00-0:10 Hook (customer's problem) → 0:10-0:25 Stakes → 0:25-0:40 Guide (empathy + authority) → 0:40-0:55 Plan (3 steps) → 0:55-1:10 Success → 1:10-1:20 CTA
 
 ### Internal Communications
+
 - Mission statement formula: "We help [character] overcome [problem] so they can [success]."
 - Onboarding: Day 1 = story you're joining; Week 1 = YOUR story; Month 1 = how we know we're winning
 - Every internal announcement: Problem → Guide → Plan → Success → CTA
@@ -217,33 +243,38 @@ Each element scored on specificity, clarity, emotional resonance, and customer-c
 **Max Weighted Score: 86**
 
 ### Grunt Test (Pass/Fail × 3)
+
 - 3/3 = +5 bonus
 - 2/3 = No modifier
 - 1/3 = −5 penalty
 - 0/3 = −10 penalty
 
 ### Deduction Patterns
-| Pattern | Minor | Moderate | Severe |
-|---------|-------|----------|--------|
-| Jargon | −1 (1-2 terms) | −3 (3-5 terms) | −5 (glossary needed) |
-| Company-as-Hero | −1 ("we" before "you") | −3 (>25% is company story) | −5 (entire piece about company) |
-| Missing CTA | −1 (weak language) | −3 (buried) | −5 (none) |
-| Confusion/Complexity | −1 (one instance) | −3 (multiple competing messages) | −5 (creates more questions) |
-| No Stakes | −1 (vague) | −2 (zero mention) | — |
+
+| Pattern              | Minor                  | Moderate                         | Severe                          |
+| -------------------- | ---------------------- | -------------------------------- | ------------------------------- |
+| Jargon               | −1 (1-2 terms)         | −3 (3-5 terms)                   | −5 (glossary needed)            |
+| Company-as-Hero      | −1 ("we" before "you") | −3 (>25% is company story)       | −5 (entire piece about company) |
+| Missing CTA          | −1 (weak language)     | −3 (buried)                      | −5 (none)                       |
+| Confusion/Complexity | −1 (one instance)      | −3 (multiple competing messages) | −5 (creates more questions)     |
+| No Stakes            | −1 (vague)             | −2 (zero mention)                | —                               |
 
 ### Grading Scale
-| Score | Grade | Interpretation |
-|-------|-------|---------------|
-| 75-86+ | A | Exceptional. Minor tweaks only. |
-| 60-74 | B | Strong foundation. Clear improvement opportunities. |
-| 45-59 | C | Functional but missing key elements. Significant revision. |
-| 30-44 | D | Weak. Multiple structural problems. Major rewrite. |
-| Below 30 | F | Fundamentally broken. Start from BrandScript. |
+
+| Score    | Grade | Interpretation                                             |
+| -------- | ----- | ---------------------------------------------------------- |
+| 75-86+   | A     | Exceptional. Minor tweaks only.                            |
+| 60-74    | B     | Strong foundation. Clear improvement opportunities.        |
+| 45-59    | C     | Functional but missing key elements. Significant revision. |
+| 30-44    | D     | Weak. Multiple structural problems. Major rewrite.         |
+| Below 30 | F     | Fundamentally broken. Start from BrandScript.              |
 
 ### Content-Type Rubrics
+
 Separate rubrics exist for: Website homepage (10 criteria/20pts), Email (8/16pts), Sales deck (9/18pts), Social media (6/12pts), Video script (8/16pts). Each criterion scored 0/1/2.
 
 ### Fix Priority
+
 1. Grunt Test failures (clarity first)
 2. Character/Hero positioning
 3. Problem articulation
@@ -258,25 +289,30 @@ Separate rubrics exist for: Website homepage (10 criteria/20pts), Email (8/16pts
 ## 7. Intellectual Roots & Context
 
 ### From Joseph Campbell
+
 Miller compressed Campbell's 12-stage Hero's Journey into 7 elements, stripped mythological/spiritual elements, shifted the hero to the customer, and added commercial mechanics (CTAs, lead generators). Miller doesn't cite Campbell in the book despite the clear derivation.
 
 ### From Robert McKee
+
 The three-level problem structure (external/internal/philosophical) maps directly to McKee's teaching that great stories operate on multiple conflict levels simultaneously.
 
 ### From Christopher Vogler
+
 Vogler made Campbell practical for screenwriters; Miller made Vogler practical for marketers.
 
 ### Miller's Bibliography
-| Year | Book | Focus |
-|------|------|-------|
-| 2009 | A Million Miles in a Thousand Years | The pivot — story structure meets life |
-| 2017 | Building a StoryBrand | The core SB7 framework |
-| 2020 | Marketing Made Simple | Implementation guide (funnels, wireframes) |
-| 2021 | Business Made Simple | Broader business application |
-| 2022 | Hero on a Mission | Personal productivity through story |
-| 2023 | How to Grow Your Small Business | Synthesis playbook |
+
+| Year | Book                                | Focus                                      |
+| ---- | ----------------------------------- | ------------------------------------------ |
+| 2009 | A Million Miles in a Thousand Years | The pivot — story structure meets life     |
+| 2017 | Building a StoryBrand               | The core SB7 framework                     |
+| 2020 | Marketing Made Simple               | Implementation guide (funnels, wireframes) |
+| 2021 | Business Made Simple                | Broader business application               |
+| 2022 | Hero on a Mission                   | Personal productivity through story        |
+| 2023 | How to Grow Your Small Business     | Synthesis playbook                         |
 
 ### Neuroscience Claims
+
 Miller cites: brain conserves calories, story is a sense-making device, narrative void creates engagement. These loosely align with Kahneman's cognitive ease research, Hasson's neural coupling studies, and Zak's oxytocin research — but Miller presents simplifications as settled science.
 
 ---
@@ -293,23 +329,25 @@ Miller cites: brain conserves calories, story is a sense-making device, narrativ
 8. **Transactional focus** — Excels at direct response; weak at long-term brand building, thought leadership, community
 
 ### Where It Works Best
+
 Local services, professional services (advisors, consultants), simple SaaS, nonprofits, coaches, niche e-commerce
 
 ### Where It Struggles
+
 Enterprise SaaS/platforms, commodities, deep tech, luxury brands, multi-sided platforms
 
 ---
 
 ## 9. Framework Comparisons
 
-| Need | Use |
-|------|-----|
-| Understand *why* customers buy | **Jobs-to-be-Done** |
-| Validate product-market fit | **Value Proposition Canvas** |
-| Create messaging framework | **StoryBrand** |
-| Write specific copy (ads, emails) | **PAS** or **AIDA** |
-| Position against competitors | **Obviously Awesome** (April Dunford) |
-| Build a category narrative | **Strategic Narrative** (Andy Raskin) |
+| Need                              | Use                                   |
+| --------------------------------- | ------------------------------------- |
+| Understand _why_ customers buy    | **Jobs-to-be-Done**                   |
+| Validate product-market fit       | **Value Proposition Canvas**          |
+| Create messaging framework        | **StoryBrand**                        |
+| Write specific copy (ads, emails) | **PAS** or **AIDA**                   |
+| Position against competitors      | **Obviously Awesome** (April Dunford) |
+| Build a category narrative        | **Strategic Narrative** (Andy Raskin) |
 
 **The mature approach:** These are layers, not competitors. JTBD for insight → VPC for fit → Positioning for context → StoryBrand for narrative → PAS/AIDA for tactical copy.
 
@@ -317,4 +355,4 @@ StoryBrand's lasting contribution: making one powerful insight accessible — yo
 
 ---
 
-*Sources: Building a StoryBrand (Miller, 2017), Marketing Made Simple (Miller & Peterson, 2020), Business Made Simple (Miller, 2021), Hero on a Mission (Miller, 2022), StoryBrand.com, StoryBrand Certified Guide resources, multiple practitioner analyses. [web-sourced]*
+_Sources: Building a StoryBrand (Miller, 2017), Marketing Made Simple (Miller & Peterson, 2020), Business Made Simple (Miller, 2021), Hero on a Mission (Miller, 2022), StoryBrand.com, StoryBrand Certified Guide resources, multiple practitioner analyses. [web-sourced]_

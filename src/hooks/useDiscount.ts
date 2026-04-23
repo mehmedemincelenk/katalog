@@ -1,11 +1,8 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { TECH, LABELS } from '../data/config';
+import { useStore } from '../store/useStore';
 
-export type ActiveDiscount = {
-  code: string;
-  rate: number;
-  category?: string;
-};
+import { ActiveDiscount } from '../types';
 
 /**
  * USE DISCOUNT HOOK (LOYALTY & PROMOTION ENGINE)
@@ -13,13 +10,24 @@ export type ActiveDiscount = {
  * Manages customer promotion codes and dynamic discount calculation.
  */
 export function useDiscount() {
-  const [currentlyActiveDiscount, setCurrentlyActiveDiscount] = useState<ActiveDiscount | null>(null);
-  const [promotionErrorMessage, setPromotionErrorMessage] = useState<string | null>(null);
+  const setActiveDiscountStore = useStore((state) => state.setActiveDiscount);
+  const [currentlyActiveDiscount, setCurrentlyActiveDiscount] =
+    useState<ActiveDiscount | null>(null);
+  const [promotionErrorMessage, setPromotionErrorMessage] = useState<
+    string | null
+  >(null);
   const errorResetTimer = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync with global store for vibe coding efficiency
+  useEffect(() => {
+    setActiveDiscountStore(currentlyActiveDiscount);
+  }, [currentlyActiveDiscount, setActiveDiscountStore]);
 
   // Lifecycle Cleanup: Ensure timers are cleared on unmount
   useEffect(() => {
-    return () => { if (errorResetTimer.current) clearTimeout(errorResetTimer.current); };
+    return () => {
+      if (errorResetTimer.current) clearTimeout(errorResetTimer.current);
+    };
   }, []);
 
   /**
@@ -28,7 +36,7 @@ export function useDiscount() {
    */
   const processPromotionCode = useCallback((rawInput: string) => {
     const sanitizedCode = rawInput.toUpperCase().trim();
-    
+
     if (errorResetTimer.current) clearTimeout(errorResetTimer.current);
 
     // Reset workflow if input is cleared
@@ -45,37 +53,40 @@ export function useDiscount() {
       const parsedDiscountRate = parseInt(discountMatch[1], 10);
 
       // Boundary Validation: Ensure rate is within professional technical limits
-      if (parsedDiscountRate >= TECH.discount.min && parsedDiscountRate <= TECH.discount.max) {
-        setCurrentlyActiveDiscount({ 
-          code: sanitizedCode, 
-          rate: parsedDiscountRate / 100 
+      if (
+        parsedDiscountRate >= TECH.discount.min &&
+        parsedDiscountRate <= TECH.discount.max
+      ) {
+        setCurrentlyActiveDiscount({
+          code: sanitizedCode,
+          rate: parsedDiscountRate / 100,
         });
         setPromotionErrorMessage(null);
       } else {
         setCurrentlyActiveDiscount(null);
         setPromotionErrorMessage(LABELS.discount.invalidRate);
-        
+
         // UX Pattern: Transient error feedback
         errorResetTimer.current = setTimeout(
-          () => setPromotionErrorMessage(null), 
-          TECH.discount.errorResetMs
+          () => setPromotionErrorMessage(null),
+          TECH.discount.errorResetMs,
         );
       }
     } else {
       // Input Validation: Codes without numerical suffixes are invalid
       setCurrentlyActiveDiscount(null);
       setPromotionErrorMessage(LABELS.discount.invalidCode);
-      
+
       errorResetTimer.current = setTimeout(
-        () => setPromotionErrorMessage(null), 
-        TECH.discount.errorResetMs
+        () => setPromotionErrorMessage(null),
+        TECH.discount.errorResetMs,
       );
     }
   }, []);
 
-  return { 
-    activeDiscount: currentlyActiveDiscount, 
-    applyCode: processPromotionCode, 
-    error: promotionErrorMessage 
+  return {
+    activeDiscount: currentlyActiveDiscount,
+    applyCode: processPromotionCode,
+    error: promotionErrorMessage,
   };
 }

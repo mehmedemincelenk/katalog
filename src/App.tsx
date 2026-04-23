@@ -1,93 +1,92 @@
 // FILE ROLE: Root Application Entry Point & Global State Orchestrator
 // DEPENDS ON: React, Framer Motion, All Feature Modals, useProducts, useAdminMode, useSettings
 // CONSUMED BY: main.tsx
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
+import { LABELS, UI } from './data/config';
+import { Product } from './types';
 import HeroCarousel from './components/HeroCarousel';
 import SearchFilter from './components/SearchFilter';
 import ProductGrid from './components/ProductGrid';
+import Loading from './components/Loading';
+import Button from './components/Button';
 import Footer from './components/Footer';
 import FloatingAdminMenu from './components/FloatingAdminMenu';
-import AddProductModal from './components/AddProductModal';
-import BulkPriceUpdateModal from './components/BulkPriceUpdateModal';
-import PinModal from './components/PinModal';
-import QRModal from './components/QRModal';
 import References from './components/References';
 import LandingPage from './components/LandingPage';
-import DisplaySettingsModal from './components/DisplaySettingsModal';
 import OffHoursNotice from './components/OffHoursNotice';
 import MaintenancePage from './components/MaintenancePage';
 import FloatingGuestMenu from './components/FloatingGuestMenu';
-import CouponModal from './components/CouponModal';
-import PriceListModal from './components/PriceListModal';
-import GlobalAddMenuModal from './components/GlobalAddMenuModal';
-import AIStudioCompareModal from './components/AIStudioCompareModal';
-import { useProducts } from './hooks/useProducts';
+import PinModal from './components/PinModal';
+import AppModals from './components/AppModals';
+import { useSyncMetadata } from './hooks/useUI';
+import { useProducts } from './hooks/useProductsHub';
 import { useAdminMode } from './hooks/useAdminMode';
 import { useDiscount } from './hooks/useDiscount';
-import { useSettings } from './hooks/useSettings';
-import { UI } from './data/config';
+import { useSettings } from './hooks/useSettingsHub';
+import { useStore } from './store/useStore';
 import { getActiveStoreSlug } from './utils/store';
 
 /**
  * CATALOG VIEW: Sadece dükkanlar için çalışan ana bileşen.
  */
 function CatalogView() {
-  const { 
-    isAdmin, 
-    handleLogoPointerDown, 
-    handleLogoPointerUp, 
-    isPinModalOpen, 
-    setIsPinModalOpen, 
+  const {
+    isAdmin,
+    settings,
+    searchQuery: search,
+    visitorCurrency,
+    updateSetting,
+    activeDiscount,
+  } = useStore();
+
+  const {
+    handleLogoPointerDown,
+    handleLogoPointerUp,
+    isPinModalOpen,
+    setIsPinModalOpen,
     isQRModalOpen,
     setIsQRModalOpen,
-    verifyPinWithServer, 
+    verifyPinWithServer,
     onPinSuccess,
     isInlineEnabled,
     toggleInlineEdit,
     isLockedOut,
-    failedAttempts
+    failedAttempts,
   } = useAdminMode();
-  const { settings, updateSetting, loading: settingsLoading, notFound, isError, retry } = useSettings(isAdmin);
-  const [search, setSearch] = useState('');
-  const [activeCategories, setActiveCategories] = useState<string[]>([]);
 
-  const [visitorCurrency, setVisitorCurrency] = useState<'TRY' | 'USD' | 'EUR'>(() => {
-    return (localStorage.getItem('ekatalog_visitor_currency') as 'TRY' | 'USD' | 'EUR') || 'TRY';
-  });
+  const {
+    loading: settingsLoading,
+    notFound,
+    isError,
+    retry,
+  } = useSettings(isAdmin);
 
-  const handleVisitorCurrencyToggle = useCallback(() => {
-    const cycle: Record<string, 'TRY' | 'USD' | 'EUR'> = { 'TRY': 'USD', 'USD': 'EUR', 'EUR': 'TRY' };
-    const next = cycle[visitorCurrency] || 'TRY';
-    setVisitorCurrency(next);
-    localStorage.setItem('ekatalog_visitor_currency', next);
-  }, [visitorCurrency]);
+  const displayCurrency = isAdmin
+    ? settings?.activeCurrency || 'TRY'
+    : visitorCurrency;
 
-  const displayCurrency = isAdmin ? settings.activeCurrency : visitorCurrency;
-
-  const handleCurrencyToggle = useCallback(() => {
-    const cycle: Record<string, CompanySettings['activeCurrency']> = { 'TRY': 'USD', 'USD': 'EUR', 'EUR': 'TRY' };
-    updateSetting('activeCurrency', cycle[settings.activeCurrency] || 'TRY');
-  }, [settings.activeCurrency, updateSetting]);
-
-  const { 
-    products, 
+  const {
+    products,
     allProducts,
-    categoryOrder, 
-    addProduct, 
-    updateProduct, 
-    deleteProduct, 
-    reorderCategory: updateCategoryOrder, 
+    categoryOrder,
+    addProduct,
+    updateProduct,
+    deleteProduct,
+    reorderCategory: updateCategoryOrder,
     reorderProductsInCategory,
-    renameCategory, 
-    addCategory, 
+    renameCategory,
+    addCategory,
     executeGranularBulkActions,
     uploadImage,
-    loading: productsLoading 
-  } = useProducts(search, activeCategories, isAdmin, settings, updateSetting);
-  
-  const { activeDiscount, applyCode, error: discountError } = useDiscount();
+    loading: productsLoading,
+  } = useProducts(search, [], isAdmin, settings);
+
+  const { applyCode, error: discountError } = useDiscount();
+
+  // Otopilot: Sync Metadata
+  useSyncMetadata(settings, isAdmin);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isBulkUpdateModalOpen, setIsBulkUpdateModalOpen] = useState(false);
@@ -95,65 +94,59 @@ function CatalogView() {
   const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
   const [isPriceListModalOpen, setIsPriceListModalOpen] = useState(false);
   const [isGlobalAddMenuOpen, setIsGlobalAddMenuOpen] = useState(false);
-  const [activeAdminProductId, setActiveAdminProductId] = useState<string | null>(null);
+  const [activeAdminProductId, setActiveAdminProductId] = useState<
+    string | null
+  >(null);
   const [visibleCategoryLimit, setVisibleCategoryLimit] = useState(2);
   const [aiStudioProduct, setAiStudioProduct] = useState<Product | null>(null);
+  const [pendingAddCategory, setPendingAddCategory] = useState<
+    string | undefined
+  >(undefined);
 
-  const handleGlobalAddAction = (type: 'PRODUCT' | 'CATEGORY' | 'REFERENCE' | 'CAROUSEL') => {
+  const handleOpenAddModal = (category?: string) => {
+    setPendingAddCategory(category);
+    setIsAddModalOpen(true);
+  };
+
+  const handleGlobalAddAction = (
+    type: 'PRODUCT' | 'CATEGORY' | 'REFERENCE' | 'CAROUSEL',
+  ) => {
     if (type === 'PRODUCT') setIsAddModalOpen(true);
     else if (type === 'CATEGORY') {
       const name = window.prompt('Yeni Reyon/Kategori Adı:');
       if (name) {
-        const addCategoryFn = (window as any).__ekatalog_addCategory;
+        const addCategoryFn = window.__ekatalog_addCategory;
         if (addCategoryFn) addCategoryFn(name);
       }
-    }
-    else if (type === 'REFERENCE') {
+    } else if (type === 'REFERENCE') {
       const name = window.prompt('Yeni Referans/İş Ortağı Adı:');
       if (name) {
-        const currentRefs = settings.referencesData || [];
-        updateSetting('referencesData', [...currentRefs, { id: Date.now(), name, logo: '' }]);
+        const currentRefs = settings?.referencesData || [];
+        updateSetting('referencesData', [
+          ...currentRefs,
+          { id: Date.now(), name, logo: '' },
+        ]);
       }
-    }
-    else if (type === 'CAROUSEL') {
-      const heroPlusBtn = document.querySelector('button[title="Yeni Slide Ekle"]') as HTMLButtonElement;
-      if (heroPlusBtn) heroPlusBtn.click();
-      else {
-        const emptyPlus = document.querySelector('span.w-6.h-6') as HTMLElement;
-        emptyPlus?.parentElement?.click();
-      }
+    } else if (type === 'CAROUSEL') {
+      window.dispatchEvent(new CustomEvent('ekatalog:add-carousel-slide'));
     }
   };
 
-  // Bridge for Diamond Studio Compare (Called from ProductCard)
+  // Bridge for Global Actions & Diamond Studio
   useEffect(() => {
-    (window as any).__ekatalog_addCategory = addCategory;
-    (window as any).__ekatalog_openAIStudioCompare = (product: Product) => setAiStudioProduct(product);
-  }, [addCategory]);
-
-  // FAVICON & TITLE SYNC (With Fallback Protection)
-  useEffect(() => {
-    // 1. Title Sync
-    const baseTitle = settings.title || 'E-Katalog';
-    document.title = isAdmin ? `[Admin] ${baseTitle}` : baseTitle;
-
-    // 2. Favicon Sync
-    if (!settings.id) return;
-    const link: HTMLLinkElement = document.querySelector("link[rel*='icon']") || document.createElement('link');
-    link.type = 'image/x-icon';
-    link.rel = 'shortcut icon';
-    
-    // Fallback logic: Use logoUrl if it's a valid path/URI
-    if (settings.logoUrl) {
-      link.href = settings.logoUrl;
-      document.getElementsByTagName('head')[0].appendChild(link);
-    }
-  }, [settings.logoUrl, settings.title, settings.id, isAdmin]);
+    window.__ekatalog_addCategory = (name: string) => {
+      addCategory(name);
+    };
+    window.__ekatalog_openAIStudioCompare = (productId: string) => {
+      const p = allProducts.find((x) => x.id === productId);
+      if (p) setAiStudioProduct(p);
+    };
+  }, [addCategory, allProducts]);
 
   if (settingsLoading || productsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50">
-        <div className="w-10 h-10 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin"></div>
+        <Loading size="xl" label={LABELS.loading} />
       </div>
     );
   }
@@ -164,8 +157,18 @@ function CatalogView() {
         <div className={UI.errorState.card}>
           <span className={UI.errorState.icon}>📡</span>
           <h2 className={UI.errorState.title}>Bağlantı Hatası</h2>
-          <p className={UI.errorState.description}>Dükkan verileri yüklenirken bir sorun oluştu. Lütfen bağlantınızı kontrol edip tekrar deneyin.</p>
-          <button onClick={retry} className={UI.errorState.button}>TEKRAR DENE</button>
+          <p className={UI.errorState.description}>
+            Dükkan verileri yüklenirken bir sorun oluştu. Lütfen bağlantınızı
+            kontrol edip tekrar deneyin.
+          </p>
+          <Button
+            onClick={retry}
+            variant="primary"
+            mode="rectangle"
+            className="w-full !py-3 font-black tracking-widest uppercase"
+          >
+            TEKRAR DENE
+          </Button>
         </div>
       </div>
     );
@@ -175,14 +178,18 @@ function CatalogView() {
     return <LandingPage />;
   }
 
-  if (settings.maintenanceMode?.enabled && !isAdmin) {
+  if (settings && settings.maintenanceMode?.enabled && !isAdmin) {
     return (
       <>
-        <MaintenancePage settings={settings} onLogoPointerDown={handleLogoPointerDown} onLogoPointerUp={handleLogoPointerUp} />
+        <MaintenancePage
+          settings={settings}
+          onLogoPointerDown={handleLogoPointerDown}
+          onLogoPointerUp={handleLogoPointerUp}
+        />
         {isPinModalOpen && (
-          <PinModal 
-            isModalOpen={isPinModalOpen} 
-            onModalClose={() => setIsPinModalOpen(false)} 
+          <PinModal
+            isModalOpen={isPinModalOpen}
+            onModalClose={() => setIsPinModalOpen(false)}
             onAuthenticationSuccess={onPinSuccess}
             onVerify={verifyPinWithServer}
             isLockedOut={isLockedOut}
@@ -194,58 +201,52 @@ function CatalogView() {
   }
 
   return (
-    <div className={`min-h-screen ${UI.layout.bodyBg} ${UI.layout.selection} font-sans fade-in`}>
+    <div
+      className={`min-h-screen ${UI.layout.bodyBg} ${UI.layout.selection} font-sans fade-in`}
+    >
       <div className="print:hidden">
-        <Navbar onLogoPointerDown={handleLogoPointerDown} onLogoPointerUp={handleLogoPointerUp} isAdmin={isAdmin} isInlineEnabled={isInlineEnabled} settings={settings} updateSetting={updateSetting} search={search} onSearchChange={setSearch} />
+        <Navbar
+          onLogoPointerDown={handleLogoPointerDown}
+          onLogoPointerUp={handleLogoPointerUp}
+          isInlineEnabled={isInlineEnabled}
+        />
         <main>
           <HeroCarousel isAdminModeActive={isAdmin} />
-          <SearchFilter 
-            products={products} categoryOrder={categoryOrder} onCategoryOrderChange={updateCategoryOrder}
-            search={search} onSearchChange={setSearch} activeCategories={activeCategories} onCategoryToggle={(cat) => {
-              if (cat === 'Tüm Ürünler') setActiveCategories([]);
-              else setActiveCategories((prev) => prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]);
-            }}
-            isAdmin={isAdmin} renameCategory={renameCategory}
-            displayConfig={settings.displayConfig}
+          <SearchFilter
+            products={products}
+            categoryOrder={categoryOrder}
+            onCategoryOrderChange={updateCategoryOrder}
+            renameCategory={(oldName, newName) =>
+              renameCategory({ oldName, newName })
+            }
+            onAddCategory={addCategory}
           />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <ProductGrid 
-              products={products} categoryOrder={categoryOrder} isAdmin={isAdmin} isInlineEnabled={isInlineEnabled}
-              onDelete={deleteProduct} onUpdate={updateProduct} onOrderUpdate={reorderProductsInCategory}
-              onImageUpload={uploadImage}
-              activeDiscount={activeDiscount} visibleCategoryLimit={visibleCategoryLimit}
-              onLoadMore={() => setVisibleCategoryLimit(prev => prev + 3)}
-              activeCategories={activeCategories} onAddClick={() => setIsGlobalAddMenuOpen(true)}
+            <ProductGrid
+              products={products}
+              categoryOrder={categoryOrder}
+              isInlineEnabled={isInlineEnabled}
+              onDelete={deleteProduct}
+              onUpdate={(id, changes) => updateProduct({ id, changes })}
+              onOrderUpdate={reorderProductsInCategory}
+              onImageUpload={(id, file) => uploadImage({ id, file })}
+              visibleCategoryLimit={visibleCategoryLimit}
+              onLoadMore={() => setVisibleCategoryLimit((prev) => prev + 3)}
+              onAddClick={handleOpenAddModal}
               activeAdminProductId={activeAdminProductId}
               setActiveAdminProductId={setActiveAdminProductId}
-              showPrice={settings.displayConfig.showPrice ?? true}
-              displayCurrency={displayCurrency}
-              exchangeRates={settings.exchangeRates}
-              socialProofCards={settings.socialProofCards}
+              visitorCurrency={visitorCurrency}
             />
           </div>
-          {settings.displayConfig.showReferences && (
-            <>
-              {!isAdmin && <References isInlineEnabled={isInlineEnabled} />}
-              {isAdmin && <References isAdmin={true} isInlineEnabled={isInlineEnabled} />}
-            </>
+          {settings?.displayConfig?.showReferences && (
+            <References isInlineEnabled={isInlineEnabled} isAdmin={isAdmin} />
           )}
         </main>
-        <Footer 
-          onLogoClick={() => {}} 
-          onQRClick={() => setIsQRModalOpen(true)}
-          isAdmin={isAdmin} 
-          activeDiscount={activeDiscount} 
-          onApplyDiscount={applyCode} 
-          discountError={discountError} 
-          settings={settings} 
-        />
+        <Footer />
       </div>
-      
-      <QRModal isOpen={isQRModalOpen} onClose={() => setIsQRModalOpen(false)} />
 
       {/* OFF-HOURS ENGAGEMENT: Only for customers */}
-      {!isAdmin && (
+      {!isAdmin && settings && (
         <div className="print:hidden">
           <OffHoursNotice whatsappNumber={settings.whatsapp} />
         </div>
@@ -253,20 +254,16 @@ function CatalogView() {
 
       {!isAdmin && (
         <div className="fixed bottom-2 right-2 z-[90] print:hidden">
-          <FloatingGuestMenu 
-            activeCurrency={visitorCurrency} 
-            onCurrencyToggle={handleVisitorCurrencyToggle} 
-            whatsappNumber={settings.whatsapp}
+          <FloatingGuestMenu
             onCouponClick={() => setIsCouponModalOpen(true)}
             onExcelClick={() => setIsPriceListModalOpen(true)}
             onSearchClick={() => {
               window.scrollTo({ top: 0, behavior: 'smooth' });
-              // Wait for the scroll animation to settle before focusing
               setTimeout(() => {
-                const searchInput = document.querySelector('input[placeholder*="ara"]') as HTMLInputElement;
-                if (searchInput) {
-                  searchInput.focus({ preventScroll: true });
-                }
+                const searchInput = document.querySelector(
+                  'input[placeholder*="ara"]',
+                ) as HTMLInputElement;
+                if (searchInput) searchInput.focus({ preventScroll: true });
               }, 800);
             }}
             onQRClick={() => setIsQRModalOpen(true)}
@@ -274,99 +271,65 @@ function CatalogView() {
         </div>
       )}
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isAdmin && (
-          <>
-            <motion.div
-              key="floating-menu"
-              initial={false}
-              animate={{ opacity: 1, scale: 1, transform: 'translateZ(0)' }}
-              exit={{ opacity: 0, filter: 'blur(15px)', scale: 0.95 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-              className="fixed bottom-2 right-2 z-[150] print:hidden"
-            >
-              <FloatingAdminMenu 
-                onProductAddTrigger={() => setIsGlobalAddMenuOpen(true)} 
-                onBulkUpdateTrigger={() => setIsBulkUpdateModalOpen(true)} 
-                onSettingsTrigger={() => setIsDisplaySettingsOpen(true)}
-                activeCurrency={settings.activeCurrency}
-                onCurrencyToggle={handleCurrencyToggle}
-              />
-            </motion.div>
-
-            {/* Admin Modals (Separated to stay full-screen) */}
-            <AddProductModal isModalOpen={isAddModalOpen} onModalClose={() => setIsAddModalOpen(false)} onProductAddition={addProduct} availableCategories={categoryOrder} />
-            <BulkPriceUpdateModal 
-              isOpen={isBulkUpdateModalOpen} 
-              onClose={() => setIsBulkUpdateModalOpen(false)} 
-              allProducts={allProducts} 
-              categories={categoryOrder} 
-              onGranularUpdate={executeGranularBulkActions}
+          <motion.div
+            key="floating-menu"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-2 right-2 z-[150] print:hidden"
+          >
+            <FloatingAdminMenu
+              onProductAddTrigger={() => setIsGlobalAddMenuOpen(true)}
+              onBulkUpdateTrigger={() => setIsBulkUpdateModalOpen(true)}
+              onSettingsTrigger={() => setIsDisplaySettingsOpen(true)}
             />
-            <DisplaySettingsModal 
-              isOpen={isDisplaySettingsOpen} 
-              onClose={() => setIsDisplaySettingsOpen(false)} 
-              settings={settings} 
-              updateSetting={updateSetting}
-              isInlineEnabled={isInlineEnabled}
-              onToggleInline={toggleInlineEdit}
-            />
-            <GlobalAddMenuModal 
-              isOpen={isGlobalAddMenuOpen} 
-              onClose={() => setIsGlobalAddMenuOpen(false)} 
-              onAction={handleGlobalAddAction} 
-            />
-          </>
+          </motion.div>
         )}
       </AnimatePresence>
-      <AnimatePresence>
-        {isPinModalOpen && (
-          <PinModal 
-            isModalOpen={true} 
-            onVerify={verifyPinWithServer} 
-            onAuthenticationSuccess={onPinSuccess} 
-            onModalClose={() => setIsPinModalOpen(false)} 
-            isLockedOut={isLockedOut} 
-            failedAttempts={failedAttempts}
-          />
-        )}
-      </AnimatePresence>
-      
-      <CouponModal 
-        isOpen={isCouponModalOpen} 
-        onClose={() => setIsCouponModalOpen(false)} 
-        onApplyDiscount={applyCode} 
-        activeDiscount={activeDiscount} 
-        discountError={discountError} 
-      />
 
-      <PriceListModal 
-        isOpen={isPriceListModalOpen}
-        onClose={() => setIsPriceListModalOpen(false)}
-        products={allProducts}
-        categories={categoryOrder}
-        displayCurrency={displayCurrency}
-        exchangeRates={settings.exchangeRates}
+      <AppModals
+        isAdmin={isAdmin}
+        settings={settings}
+        categoryOrder={categoryOrder}
+        allProducts={allProducts}
+        isAddModalOpen={isAddModalOpen}
+        setIsAddModalOpen={setIsAddModalOpen}
+        isBulkUpdateModalOpen={isBulkUpdateModalOpen}
+        setIsBulkUpdateModalOpen={setIsBulkUpdateModalOpen}
+        isDisplaySettingsOpen={isDisplaySettingsOpen}
+        setIsDisplaySettingsOpen={setIsDisplaySettingsOpen}
+        isQRModalOpen={isQRModalOpen}
+        setIsQRModalOpen={setIsQRModalOpen}
+        isPinModalOpen={isPinModalOpen}
+        setIsPinModalOpen={setIsPinModalOpen}
+        isCouponModalOpen={isCouponModalOpen}
+        setIsCouponModalOpen={setIsCouponModalOpen}
+        isPriceListModalOpen={isPriceListModalOpen}
+        setIsPriceListModalOpen={setIsPriceListModalOpen}
+        isGlobalAddMenuOpen={isGlobalAddMenuOpen}
+        setIsGlobalAddMenuOpen={setIsGlobalAddMenuOpen}
+        aiStudioProduct={aiStudioProduct}
+        setAiStudioProduct={setAiStudioProduct}
+        pendingAddCategory={pendingAddCategory}
+        setPendingAddCategory={setPendingAddCategory}
+        addProduct={addProduct}
+        uploadImage={uploadImage}
+        updateProduct={updateProduct}
+        updateSetting={updateSetting}
+        executeGranularBulkActions={executeGranularBulkActions}
+        handleGlobalAddAction={handleGlobalAddAction}
+        verifyPinWithServer={verifyPinWithServer}
+        onPinSuccess={onPinSuccess}
+        isLockedOut={isLockedOut}
+        failedAttempts={failedAttempts}
+        isInlineEnabled={isInlineEnabled}
+        toggleInlineEdit={toggleInlineEdit}
+        applyCode={applyCode}
         activeDiscount={activeDiscount}
-        storeName={settings.title || 'Katalog'}
-      />
-
-      {/* DIAMOND STUDIO LABORATORY */}
-      <AIStudioCompareModal 
-        isOpen={!!aiStudioProduct}
-        product={aiStudioProduct}
-        onClose={() => setAiStudioProduct(null)}
-        onApply={(productId, polishedUrl) => {
-          updateProduct(productId, { 
-            image: polishedUrl, 
-            polishedReadyDismissed: true 
-          });
-          setAiStudioProduct(null);
-        }}
-        onDismiss={(productId) => {
-          updateProduct(productId, { polishedReadyDismissed: true });
-          setAiStudioProduct(null);
-        }}
+        discountError={discountError}
+        displayCurrency={displayCurrency}
       />
     </div>
   );

@@ -15,15 +15,19 @@ Audit any piece of communication against Donald Miller's StoryBrand SB7 framewor
 ## Audit Procedure
 
 ### Step 1: Identify Content Type
+
 Determine: website homepage, email, sales deck, social post, video script, or other. This selects which content-type checklist to apply alongside the core 7-element audit.
 
 ### Step 2: Gather the Content
+
 - **Websites/URLs:** Fetch or screenshot the page. Capture above-fold content separately — this is where the Grunt Test applies.
 - **Documents/text:** Read the full content.
 - **Videos:** Work from the script or transcript.
 
 ### Step 3: Run the Grunt Test (do this FIRST)
+
 Read ONLY the headline, sub-headline, and first visible CTA. Within 5 seconds, can someone answer:
+
 1. What do you offer?
 2. How will it make my life better?
 3. What do I need to do to buy it?
@@ -31,12 +35,15 @@ Read ONLY the headline, sub-headline, and first visible CTA. Within 5 seconds, c
 Score each Pass/Fail. This frames the entire audit.
 
 ### Step 4: Score Each of the 7 Elements (1-10)
+
 For each element:
+
 - Quote the relevant passage (or note its absence)
 - Assign a score with one-sentence justification
 - Note red/green flags from the rubric
 
 ### Step 5: Apply Deduction Patterns
+
 - Count "we/us/our" vs "you/your"
 - Flag jargon terms
 - Check CTA presence and strength
@@ -45,16 +52,20 @@ For each element:
 - Apply penalties per rubric
 
 ### Step 6: Calculate Composite Score
+
 ```
 Weighted Score = (Character × 1.2) + (Problem × 1.3) + (Guide × 1.0)
               + (Plan × 1.0) + (CTA × 1.3) + (Failure × 0.8) + (Success × 1.0)
 Final Score = Weighted Score − Penalties + Grunt Test Modifier + Bonuses
 ```
+
 For website homepages: add Hero Image bonus (+0 to +3) and Hero Specificity bonus (+0 to +2). Max score = 91.
 Assign letter grade: A (80-91), B (65-79), C (50-64), D (35-49), F (<35).
 
 ### Step 7: Generate Recommendations
+
 This is the most valuable part of the audit. Follow these rules strictly:
+
 - For ALL elements scored ≤7: generate before/after rewrites using the Rewrite Engine patterns in the scoring rubric
 - **Always provide actual copy they can paste in** — never give vague directions like "make it more customer-focused"
 - **Match the brand's existing tone** — don't rewrite casual copy in corporate language
@@ -64,7 +75,9 @@ This is the most valuable part of the audit. Follow these rules strictly:
 - Prioritize fixes: Grunt Test → Character → Problem → CTA → Plan → Guide → Stakes → Success
 
 ### Step 8: Format Output
+
 Use the standard audit template from `references/scoring-rubric.md`. Always include:
+
 1. Overall grade and score
 2. Grunt Test results
 3. Element score table
@@ -102,6 +115,7 @@ When asked to write or rewrite content using StoryBrand:
 ## Limitations to Note
 
 StoryBrand is a messaging framework, not a complete marketing strategy. Flag these honestly when relevant:
+
 - Works best for clear single-audience, single-product contexts
 - B2B with multiple stakeholders may need separate BrandScripts per persona
 - Complex/technical products may need supplementary frameworks for differentiation

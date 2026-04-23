@@ -1,38 +1,43 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Button from './Button';
 
-interface InfoHintProps {
-  message: string;
-  className?: string;
-  position?: 'top' | 'bottom' | 'left' | 'right';
-}
+import { InfoHintProps } from '../types';
 
 /**
  * INFOHINT COMPONENT (Diamond Guidance)
  * -----------------------------------------------------------
  * A sophisticated "?" button that reveals context-rich tooltips.
  */
-export default function InfoHint({ message, className = '', position = 'top' }: InfoHintProps) {
+export default function InfoHint({
+  message,
+  className = '',
+  position = 'top',
+}: InfoHintProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   const positionClasses = {
     top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
     bottom: 'top-full left-1/2 -translate-x-1/2 mt-2',
     left: 'right-full top-1/2 -translate-y-1/2 mr-2',
-    right: 'left-full top-1/2 -translate-y-1/2 ml-2'
+    right: 'left-full top-1/2 -translate-y-1/2 ml-2',
   };
 
   return (
-    <div className={`relative inline-flex items-center justify-center ${className}`}>
-      <button
+    <div
+      className={`relative inline-flex items-center justify-center ${className}`}
+    >
+      <Button
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
         onClick={() => setIsVisible(!isVisible)}
-        className="text-stone-400 hover:text-stone-900 transition-colors focus:outline-none p-1"
-      >
-        <HelpCircle size={14} strokeWidth={2.5} />
-      </button>
+        variant="ghost"
+        mode="circle"
+        size="sm"
+        className="!p-1 !w-6 !h-6 shadow-none border-none !text-stone-400 hover:!text-stone-900"
+        icon={<HelpCircle size={14} strokeWidth={2.5} />}
+      />
 
       <AnimatePresence>
         {isVisible && (
@@ -47,14 +52,14 @@ export default function InfoHint({ message, className = '', position = 'top' }: 
           >
             {message}
             {/* TOOLTIP ARROW */}
-            <div 
+            <div
               className={`
                 absolute w-2 h-2 bg-stone-900 rotate-45
                 ${position === 'top' ? 'bottom-[-4px] left-1/2 -translate-x-1/2' : ''}
                 ${position === 'bottom' ? 'top-[-4px] left-1/2 -translate-x-1/2' : ''}
                 ${position === 'left' ? 'right-[-4px] top-1/2 -translate-y-1/2' : ''}
                 ${position === 'right' ? 'left-[-4px] top-1/2 -translate-y-1/2' : ''}
-              `} 
+              `}
             />
           </motion.div>
         )}

@@ -1,49 +1,62 @@
-// FILE ROLE: SaaS Store Resolver (Subdomain & Environment Logic)
-// CONSUMED BY: useProducts, useSettings, useAdminMode, Navbar
+// FILE ROLE: SaaS Store Resolver & Communication Link Generator
+// CONSUMED BY: useProducts, useSettings, useAdminMode, Navbar, FloatingGuestMenu, ProductCard
+
 /**
- * STORE UTILS
+ * STORE & CONTACT UTILS
  * -----------------------------------------------------------
- * SaaS mimarisinde aktif dükkanı URL'den veya çevreden çözer.
+ * SaaS mimarisinde aktif dükkanı çözer ve iletişim linklerini standardize eder.
  */
 
+/**
+ * getActiveStoreSlug: Resolves the active store slug from URL or Environment.
+ */
 export const getActiveStoreSlug = (): string => {
   if (typeof window === 'undefined') return 'main-site';
 
   const hostname = window.location.hostname.toLowerCase();
   const urlParams = new URLSearchParams(window.location.search);
 
-  // EĞER URL'de ?main=1 VARSA ANA SAYFAYI GÖSTER (Debug/Preview için)
-  if (urlParams.get('main') === '1') {
-    return 'main-site';
-  }
-  
-  // 1. Yerel geliştirme (localhost, LAN veya DEV modu)
+  if (urlParams.get('main') === '1') return 'main-site';
+
   if (
-    hostname === 'localhost' || 
-    hostname === '127.0.0.1' || 
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
     hostname.startsWith('192.168.') ||
     hostname.startsWith('172.') ||
     hostname.startsWith('10.') ||
     import.meta.env.DEV
   ) {
     let envSlug = import.meta.env.VITE_STORE_SLUG;
-    
-    // Tireleri her durumda temizle (toptan-ambalajcim -> toptanambalajcim)
-    if (envSlug) {
-      envSlug = envSlug.replace(/-/g, '');
-    }
-
-    const finalSlug = (envSlug && envSlug !== 'mainsite') ? envSlug : 'toptanambalajcim';
-    return finalSlug;
+    if (envSlug) envSlug = envSlug.replace(/-/g, '');
+    return envSlug && envSlug !== 'mainsite' ? envSlug : 'toptanambalajcim';
   }
 
-  // 2. Ana Domain Kontrolü (ekatalog.site veya www.ekatalog.site)
   const parts = hostname.split('.');
-  
   if (parts.length <= 2 || (parts.length === 3 && parts[0] === 'www')) {
     return 'main-site';
   }
 
-  // 3. SaaS Subdomain (musteri.ekatalog.site)
-  return parts[0]; 
+  return parts[0];
+};
+
+/**
+ * formatPhoneNumberForWhatsApp:
+ * Strips all non-numeric characters from a string.
+ */
+export const formatPhoneNumberForWhatsApp = (phoneNumber: string): string => {
+  if (!phoneNumber) return '';
+  return phoneNumber.replace(/\D/g, '');
+};
+
+/**
+ * generateWhatsAppLink:
+ * Creates a professional encoded WhatsApp API link.
+ */
+export const generateWhatsAppLink = (
+  number: string,
+  message?: string,
+): string => {
+  const cleanNumber = formatPhoneNumberForWhatsApp(number);
+  const encodedText = message ? encodeURIComponent(message) : '';
+  return `https://wa.me/${cleanNumber}${encodedText ? `?text=${encodedText}` : ''}`;
 };

@@ -5,7 +5,15 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { THEME } from '../data/config';
 import Button from './Button';
-import { Phone, FileSpreadsheet, Ticket, Menu, X, Search, QrCode } from 'lucide-react';
+import {
+  Phone,
+  FileSpreadsheet,
+  Ticket,
+  Menu,
+  X,
+  Search,
+  QrCode,
+} from 'lucide-react';
 
 /**
  * FLOATING GUEST MENU COMPONENT
@@ -13,25 +21,23 @@ import { Phone, FileSpreadsheet, Ticket, Menu, X, Search, QrCode } from 'lucide-
  * Replaces simple currency switcher with a fully animated AssistiveTouch hub for guests.
  */
 
-interface FloatingGuestMenuProps {
-  activeCurrency: 'TRY' | 'USD' | 'EUR';
-  onCurrencyToggle: () => void;
-  whatsappNumber: string;
-  onCouponClick: () => void;
-  onExcelClick: () => void;
-  onSearchClick: () => void;
-  onQRClick: () => void;
-}
+import { useStore } from '../store/useStore';
 
-export default function FloatingGuestMenu({ 
-  activeCurrency,
-  onCurrencyToggle,
-  whatsappNumber,
+import { FloatingGuestMenuProps } from '../types';
+
+export default function FloatingGuestMenu({
   onCouponClick,
   onExcelClick,
   onSearchClick,
-  onQRClick
+  onQRClick,
 }: FloatingGuestMenuProps) {
+  const {
+    visitorCurrency: activeCurrency,
+    toggleVisitorCurrency: onCurrencyToggle,
+    settings,
+  } = useStore();
+
+  const whatsappNumber = settings?.whatsapp || '';
   const [isMenuExpanded, setIsMenuExpanded] = useState(false);
   const menuContainerRef = useRef<HTMLDivElement>(null);
   const autoCloseTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -47,7 +53,10 @@ export default function FloatingGuestMenu({
 
   useEffect(() => {
     const handlePointerDownOutside = (event: PointerEvent) => {
-      if (menuContainerRef.current && !menuContainerRef.current.contains(event.target as Node)) {
+      if (
+        menuContainerRef.current &&
+        !menuContainerRef.current.contains(event.target as Node)
+      ) {
         setIsMenuExpanded(false);
       }
     };
@@ -56,7 +65,10 @@ export default function FloatingGuestMenu({
       document.addEventListener('pointerdown', handlePointerDownOutside);
       clearAutoCloseTimer();
       // Auto-close after 5 seconds of inactivity
-      autoCloseTimerRef.current = setTimeout(() => setIsMenuExpanded(false), 5000);
+      autoCloseTimerRef.current = setTimeout(
+        () => setIsMenuExpanded(false),
+        5000,
+      );
     } else {
       document.removeEventListener('pointerdown', handlePointerDownOutside);
       clearAutoCloseTimer();
@@ -82,105 +94,139 @@ export default function FloatingGuestMenu({
 
   return (
     <div ref={menuContainerRef}>
-      <div className={`${menuTheme.container} overflow-hidden w-[46px] flex flex-col items-center justify-end shadow-2xl`}>
-        
+      <div
+        className={`${menuTheme.container} overflow-hidden w-[46px] flex flex-col items-center justify-end shadow-2xl`}
+      >
         {/* EXPANDABLE ACTION AREA */}
         <AnimatePresence>
           {isMenuExpanded && (
-            <motion.div 
+            <motion.div
               key="expanded-actions"
               initial="closed"
               animate="open"
               exit="closed"
               variants={{
                 open: {
-                  height: "auto",
+                  height: 'auto',
                   opacity: 1,
                   marginBottom: 8,
                   transition: {
-                    height: { type: "spring", stiffness: 300, damping: 30 },
+                    height: { type: 'spring', stiffness: 300, damping: 30 },
                     staggerChildren: 0.05,
-                    delayChildren: 0.1
-                  }
+                    delayChildren: 0.1,
+                  },
                 },
                 closed: {
                   height: 0,
                   opacity: 0,
                   marginBottom: 0,
                   transition: {
-                    height: { type: "spring", stiffness: 300, damping: 35 },
+                    height: { type: 'spring', stiffness: 300, damping: 35 },
                     staggerChildren: 0.03,
-                    staggerDirection: -1
-                  }
-                }
+                    staggerDirection: -1,
+                  },
+                },
               }}
               className="flex flex-col gap-2 items-center w-full"
               style={{ transformOrigin: 'bottom' }}
             >
               {(
                 [
-                  { 
-                    id: 'currency', 
+                  {
+                    id: 'currency',
                     icon: (
                       <div className="flex flex-col items-center justify-center leading-none">
                         <span className="text-[17px] font-black">
-                          {activeCurrency === 'TRY' ? '₺' : activeCurrency === 'USD' ? '$' : '€'}
+                          {activeCurrency === 'TRY'
+                            ? '₺'
+                            : activeCurrency === 'USD'
+                              ? '$'
+                              : '€'}
                         </span>
                         <span className="text-[7px] font-bold uppercase tracking-tighter opacity-50 -mt-0.5">
                           {activeCurrency}
                         </span>
                       </div>
-                    ), 
+                    ),
                     action: onCurrencyToggle,
-                    label: "Para Birimi",
-                    className: "border-2 border-stone-100 text-stone-900 bg-white" 
+                    label: 'Para Birimi',
+                    className:
+                      'border-2 border-stone-100 text-stone-900 bg-white',
                   },
-                  { 
-                    id: 'qr', 
-                    icon: <QrCode className="w-full h-full p-1" strokeWidth={2.5} />, 
+                  {
+                    id: 'qr',
+                    icon: (
+                      <QrCode className="w-full h-full p-1" strokeWidth={2.5} />
+                    ),
                     action: onQRClick,
-                    label: "Dükkan QR",
-                    className: "bg-white text-stone-900 border-2 border-stone-100 hover:bg-stone-50" 
+                    label: 'Dükkan QR',
+                    className:
+                      'bg-white text-stone-900 border-2 border-stone-100 hover:bg-stone-50',
                   },
-                  { 
-                    id: 'call', 
-                    icon: <Phone className="w-full h-full p-1" strokeWidth={2.5} />, 
+                  {
+                    id: 'call',
+                    icon: (
+                      <Phone className="w-full h-full p-1" strokeWidth={2.5} />
+                    ),
                     action: handleCall,
-                    label: "Bizi Arayın",
-                    className: "bg-white text-stone-900 border-2 border-stone-100 hover:bg-stone-50" 
+                    label: 'Bizi Arayın',
+                    className:
+                      'bg-white text-stone-900 border-2 border-stone-100 hover:bg-stone-50',
                   },
-                  { 
-                    id: 'excel', 
-                    icon: <FileSpreadsheet className="w-full h-full p-1" strokeWidth={2.5} />, 
+                  {
+                    id: 'excel',
+                    icon: (
+                      <FileSpreadsheet
+                        className="w-full h-full p-1"
+                        strokeWidth={2.5}
+                      />
+                    ),
                     action: onExcelClick,
-                    label: "Fiyat Listesi",
-                    className: "bg-white text-stone-900 border-2 border-stone-100 hover:bg-stone-50"
+                    label: 'Fiyat Listesi',
+                    className:
+                      'bg-white text-stone-900 border-2 border-stone-100 hover:bg-stone-50',
                   },
-                  { 
-                    id: 'coupon', 
-                    icon: <Ticket className="w-full h-full p-0.5" strokeWidth={2.5} />, 
+                  {
+                    id: 'coupon',
+                    icon: (
+                      <Ticket
+                        className="w-full h-full p-0.5"
+                        strokeWidth={2.5}
+                      />
+                    ),
                     action: onCouponClick,
-                    label: "Kupon Gir",
-                    className: "bg-white text-stone-900 border-2 border-stone-100 hover:bg-stone-50"
+                    label: 'Kupon Gir',
+                    className:
+                      'bg-white text-stone-900 border-2 border-stone-100 hover:bg-stone-50',
                   },
-                  { 
-                    id: 'search', 
-                    icon: <Search className="w-full h-full p-1" strokeWidth={2.5} />, 
+                  {
+                    id: 'search',
+                    icon: (
+                      <Search className="w-full h-full p-1" strokeWidth={2.5} />
+                    ),
                     action: onSearchClick,
-                    label: "Ürün Ara",
-                    className: "bg-white text-stone-900 border-2 border-stone-100 hover:bg-stone-50" 
-                  }
-                ].filter(Boolean) as { id: string; icon: React.ReactNode; action: () => void; label: string; primary?: boolean; className?: string }[]
+                    label: 'Ürün Ara',
+                    className:
+                      'bg-white text-stone-900 border-2 border-stone-100 hover:bg-stone-50',
+                  },
+                ].filter(Boolean) as {
+                  id: string;
+                  icon: React.ReactNode;
+                  action: () => void;
+                  label: string;
+                  primary?: boolean;
+                  className?: string;
+                }[]
               ).map((btn) => (
                 <motion.div
                   key={btn.id}
                   variants={{
                     open: { opacity: 1, y: 0, scale: 1 },
-                    closed: { opacity: 0, y: 15, scale: 0.5 }
+                    closed: { opacity: 0, y: 15, scale: 0.5 },
                   }}
                   className="w-full flex justify-center"
                 >
-                  <Button 
+                  <Button
                     onClick={() => handleAction(btn.action)}
                     icon={btn.icon}
                     variant="secondary"
@@ -197,14 +243,23 @@ export default function FloatingGuestMenu({
 
         {/* MAIN TOGGLE CONTROL */}
         <div className="flex items-center justify-center p-0.5">
-          <Button 
-            onClick={() => { clearAutoCloseTimer(); setIsMenuExpanded(previousState => !previousState); }}
-            icon={isMenuExpanded ? <X className="w-full h-full p-0.5" strokeWidth={2.5} /> : <Menu className="w-full h-full p-0.5" strokeWidth={2.5} />}
+          <Button
+            onClick={() => {
+              clearAutoCloseTimer();
+              setIsMenuExpanded((previousState) => !previousState);
+            }}
+            icon={
+              isMenuExpanded ? (
+                <X className="w-full h-full p-0.5" strokeWidth={2.5} />
+              ) : (
+                <Menu className="w-full h-full p-0.5" strokeWidth={2.5} />
+              )
+            }
             variant="primary"
             size="sm"
             mode="circle"
             className="!bg-stone-900 !text-white hover:scale-105 active:scale-95 transition-all w-10 h-10 shadow-lg"
-            aria-label={isMenuExpanded ? "Menüyü Kapat" : "Menüyü Aç"}
+            aria-label={isMenuExpanded ? 'Menüyü Kapat' : 'Menüyü Aç'}
           />
         </div>
       </div>

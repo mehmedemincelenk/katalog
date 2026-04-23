@@ -1,39 +1,10 @@
-import { useState, useCallback, useMemo } from 'react';
-import { THEME, LABELS } from '../data/config';
-import { ActiveDiscount } from '../hooks/useDiscount';
-import { CompanySettings } from '../hooks/useSettings';
+import { THEME } from '../data/config';
+import { useStore } from '../store/useStore';
+import { memo } from 'react';
 
-interface FooterProps {
-  onLogoClick: () => void;
-  onQRClick?: () => void;
-  isAdmin: boolean;
-  activeDiscount?: ActiveDiscount | null;
-  onApplyDiscount?: (code: string) => void;
-  discountError?: string | null;
-  onDeleteAll?: () => void;
-  settings: CompanySettings;
-}
-
-export default function Footer({ isAdmin, activeDiscount, onApplyDiscount, discountError, settings }: FooterProps) {
-  const [couponCodeInput, setCouponCodeInput] = useState('');
-
+const Footer = memo(function Footer() {
+  const { settings } = useStore();
   const footerTheme = THEME.footer;
-
-  const handlePromotionApply = useCallback(() => {
-    if (onApplyDiscount && couponCodeInput.trim()) {
-      onApplyDiscount(couponCodeInput.trim().toUpperCase());
-    }
-  }, [onApplyDiscount, couponCodeInput]);
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handlePromotionApply();
-  };
-
-  const couponStatus = useMemo(() => {
-    if (activeDiscount) return 'success';
-    if (discountError) return 'error';
-    return 'default';
-  }, [activeDiscount, discountError]);
 
   return (
     <footer className={footerTheme.layout}>
@@ -55,4 +26,6 @@ export default function Footer({ isAdmin, activeDiscount, onApplyDiscount, disco
       </div>
     </footer>
   );
-}
+});
+
+export default Footer;

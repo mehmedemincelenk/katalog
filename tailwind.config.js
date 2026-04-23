@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   future: {
     hoverOnlyWhenSupported: true,
   },
@@ -35,9 +32,9 @@ export default {
       },
       animation: {
         // Apple-style pürüzsüz giriş animasyonları
-        'in': 'fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+        in: 'fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
         'slide-up': 'slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+        shake: 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
       },
       keyframes: {
         'fade-in': {
@@ -48,7 +45,7 @@ export default {
           '0%': { transform: 'translateY(10px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
-        'shake': {
+        shake: {
           '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
           '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
           '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
@@ -57,7 +54,5 @@ export default {
       },
     },
   },
-  plugins: [
-    require('tailwindcss-animate'),
-  ],
-}
+  plugins: [require('tailwindcss-animate')],
+};

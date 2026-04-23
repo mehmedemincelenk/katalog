@@ -10,20 +10,20 @@
 
 :root {
   /* THE DIAMOND PALETTE */
-  --primary: #1c1917;    /* stone-900 */
+  --primary: #1c1917; /* stone-900 */
   --primary-hover: #292524;
-  --secondary: #f5f5f4;  /* stone-100 */
-  --accent: #10b981;   /* emerald-500 */
-  --bg-main: #fafaf9;   /* stone-50 */
+  --secondary: #f5f5f4; /* stone-100 */
+  --accent: #10b981; /* emerald-500 */
+  --bg-main: #fafaf9; /* stone-50 */
   --text-main: #1c1917;
   --text-muted: #78716c; /* stone-500 */
-  
+
   /* BORDER & RADIUS */
   --border-light: #f5f5f4;
   --radius-card: 1rem;
   --radius-button: 0.5rem;
   --radius-badge: 9999px;
-  
+
   /* ANIMATION SPEEDS */
   --transition-fast: 0.2s ease-in-out;
   --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -33,10 +33,10 @@
 @layer base {
   html {
     /* RASYONEL FLUID ROOT: Katsayıyı 1.0vw yaparak dükkanın "büyüme hızını" laptop ekranları için rasyonelleştiriyorum. */
-    font-size: clamp(15px, 1.0vw, 26px);
+    font-size: clamp(14px, 0.9vw, 24px);
     scroll-behavior: smooth;
   }
-  
+
   body {
     /* Sitenin genel zemin rengi ve ana yazı tipi */
     background-color: var(--bg-main);
@@ -71,18 +71,32 @@
 
   /* HATA TİTREŞİMİ: Apple tarzı PIN hata efekti */
   @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-8px); }
-    40%, 80% { transform: translateX(8px); }
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20%,
+    60% {
+      transform: translateX(-8px);
+    }
+    40%,
+    80% {
+      transform: translateX(8px);
+    }
   }
   .animate-shake {
-    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
   }
 
   /* ADMİN BUTONU NEFES ALMA: Sağ alttaki admin butonunun dikkat çekmesini sağlar. */
   @keyframes admin-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(180, 140, 80, 0.5); }
-    50% { box-shadow: 0 0 0 8px rgba(180, 140, 80, 0); }
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(180, 140, 80, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(180, 140, 80, 0);
+    }
   }
   .admin-fab {
     animation: admin-pulse 2s ease-in-out infinite;
@@ -93,8 +107,12 @@
    * Ürün ismi çok uzunsa kartı bozmaz, yana doğru akar.
    */
   @keyframes marquee-scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
   }
   .marquee-track {
     animation: marquee-scroll 10s linear infinite;
@@ -104,21 +122,41 @@
   }
 
   /* ÖZEL SCROLLBAR: Modern ve zarif kaydırma çubukları. */
-  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-  .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 10px;
+  }
 
   /* HAFİF GEÇİŞLER: Sistemin "yaşadığını" hissettiren premium efektler */
   .fade-in {
     animation: fadeIn 0.3s ease-out forwards;
   }
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   /* Tüm hover geçişlerini standartlaştırır */
   .transition-standard {
     transition: all 0.2s ease-in-out;
+  }
+
+  /* GİZLİ SCROLLBAR: Kaydırma işlevini bozmadan görsel kalabalığı engeller. */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

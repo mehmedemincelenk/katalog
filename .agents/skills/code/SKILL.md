@@ -1,44 +1,50 @@
 ---
 name: code
-description: Senior seviye mühendislik standartları; temiz kod, modüler mimari, A-seviye İngilizce isimlendirme ve Design Token senkronizasyonunu yönetir.
+description: 'Üst düzey React mimarisi, temiz kod ve modüler SaaS standartlarını yöneten teknik direktifler.'
 ---
 
-# Code & Architecture Excellence (Teknik Mükemmellik Rehberi)
+# 🤖 ARCHITECTURE & ENGINEERING PROTOCOL
 
-Bu rehber, projenin yapısal bütünlüğünü, profesyonel netliğini ve SaaS (Çoklu Mağaza) uyumluluğunu garanti altına alan en üst düzey teknik direktifleri içerir.
+Bu protokol, projenin yapısal bütünlüğünü, profesyonel netliğini ve SaaS (Çoklu Mağaza) uyumluluğunu garanti altına alan teknik emirleri içerir.
 
-## 1. Mimari Bütünlük & SaaS Hazırlığı
-**Felsefe:** Kod "kör" olmalı, tüm görsel ve metinsel irade `config.ts` üzerinden yönetilmelidir.
-- **100% Aktif Design Tokens:** `.tsx` dosyaları içinde Tailwind sınıfları veya ham değerler (renk, boşluk) doğrudan yazılmamalıdır. Her zaman `src/data/config.ts` içindeki `THEME` objesi referans alınmalıdır.
-- **Konfigürasyon Odaklılık:** Mağazanın tüm görünümü ve davranışı sadece `config.ts` değiştirilerek güncellenebilmelidir.
-- **Mantık İzolesi (Hook Pattern):** Bileşenler sadece **GÖRSEL** (stateless/dumb) olmalıdır. Veri manipülasyonu, API çağrıları ve karmaşık mantık `src/hooks` içindeki özel hook'lara taşınmalıdır.
+## 1. MİMARİ İZOLASYON & SAAS STANDARTLARI
 
-## 2. Mühendislik Standartları (Clean Code)
-**Felsefe:** Sürdürülebilir, okunabilir ve test edilebilir bir kod tabanı.
-- **Tek Sorumluluk Prensibi (SRP):** Her dosya sadece bir işi mükemmel yapmalıdır. Bir bileşen/dosya **150 satırı** aşıyorsa mantıksal alt parçalara bölünmelidir.
-- **Strict Typing (TypeScript):** Tüm proplar ve fonksiyonlar için net `interface` tanımlanmalıdır. `any` kullanımı kesinlikle yasaktır.
-- **Bileşen Hiyerarşisi:**
-  - `src/components/ui`: Her yerde kullanılabilen atomik öğeler (Buton, Modal).
-  - `src/components/[feature]`: Özelliğe özel modüller (Product, Admin).
+- **Technical Blindness:** Kod tabanı görsel ve metinsel içerikten bağımsız olmalıdır. Tüm değişkenler `src/data/config` üzerinden enjekte edilmelidir.
+- **Strict Design Tokens:** `.tsx` dosyaları içinde Tailwind sınıfları veya ham değerler (renk, boşluk) doğrudan yazılmamalıdır. Her zaman `THEME` objesi referans alınmalıdır.
+- **Context Verification:** Her kod değişikliği öncesi `src/data/config` içindeki ilgili değişkenler (THEME/LABELS) kontrol edilmelidir.
+- **Logic Segregation (Hook Pattern):** Bileşenler sadece GÖRSEL (stateless/dumb) katmanlardır. Veri manipülasyonu ve API çağrıları `src/hooks` altına izole edilmelidir.
+- **State Machine Architecture:** UI durumları (Loading, Success, Error) için "Boolean Hell" yerine Enum veya Union tabanlı durum makineleri zorunludur.
 
-## 3. İsimlendirme Mükemmelliği (A-Level English)
-**Felsefe:** Kod kendi kendini belgelemelidir (Self-documenting).
-- **Netlik > Kısalık:** Profesyonel İngilizce kullanılmalı, kısaltmalardan kaçınılmalıdır (`prod` -> `product`, `cat` -> `category`).
-- **Standart Kalıplar:**
-  - Bileşenler: `PascalCase` (Örn: `ProductGrid`)
-  - Değişkenler/Fonksiyonlar: `camelCase` (Örn: `isUserAuthenticated`)
-  - Hook'lar: `use` ile başlamalı (Örn: `useDiscount`)
+## 2. MÜHENDİSLİK STANDARTLARI (ZERO-DEFECT)
 
-## 4. Performans & Optimizasyon
-- **Render Kontrolü:** Ağır bileşenlerde `React.memo`, gereksiz render'ları önlemek için `useCallback` ve `useMemo` stratejik olarak kullanılmalıdır.
-- **Asset Yönetimi:** Resimlerde her zaman `loading="lazy"`, `aspect-ratio` ve LQIP (Low-Quality Image Placeholder) stratejisi izlenmelidir.
-- **Smart Refactoring:** Fonksiyonelliği bozmadan kodu sürekli daha modern ve performanslı hale getir.
+- **Context Balance (Vibe vs. Fragment):** Bileşenler gereksiz yere mikro-parçalara bölünmemelidir; "Vibe" ve görsel bütünlük tek bir dosyada korunabilir. Ancak dosya **300 satırı** aşarsa veya teknik altyapı (API/Logic) görsel kodun okunabilirliğini engellerse, altyapı kodları `hooks` katmanına izole edilmelidir.
+- **SRP (Single Responsibility Principle):** Görsel katman (UI) ve Veri katmanı (Logic) ayrımı esastır. UI dosyası "nasıl göründüğüne", Hook dosyası "ne yaptığına" odaklanır. Dosyalar genel olarak **150-200 satır** bandında tutulmalıdır; bu sınırı aşan kompleks mantıklar mutlaka dekompoze edilmelidir.
+- **Strict Typing (TypeScript):** Tüm veri yapıları için net `interface` tanımlanmalıdır. `any` kullanımı protokol dışıdır.
+- **Hiyerarşik Düzen:**
+  - `src/components/ui`: Atomik elementler.
+  - `src/components/[feature]`: Özelleştirilmiş modüller.
 
-## 5. Doğrulama İş Akışı (Checklist)
-1. **İsimlendirme:** Değişken ve fonksiyon isimleri profesyonel İngilizce mi?
-2. **Design Tokens:** Tüm UI değerleri `THEME` objesinden mi geliyor?
-3. **Modülerlik:** Dosya 150 satırı geçiyor mu? Mantık hook'a taşındı mı?
-4. **Tip Güvenliği:** TypeScript tanımları eksiksiz ve `any` içermiyor mu?
+## 3. İSİMLENDİRME PROTOKOLÜ (A-LEVEL)
+
+- **Self-Documenting Code:** Kod, ek belgelendirmeye ihtiyaç duymadan kendini açıklamalıdır. Profesyonel İngilizce zorunludur.
+- **Nizam:**
+  - Bileşenler: `PascalCase`.
+  - Değişkenler: `camelCase`.
+  - Hook'lar: `use` prefix'i ile başlar.
+
+## 4. PERFORMANS & OPTİMİZASYON DİREKTİFLERİ
+
+- **Memoization:** Gereksiz render döngüleri `React.memo`, `useCallback` ve `useMemo` ile engellenmelidir.
+- **Asset Optimization:** Görsellerde `loading="lazy"`, `aspect-ratio` ve LQIP (Low-Quality Image Placeholder) kullanımı kritiktir.
+- **Continuous Refactoring:** Fonksiyonellik korunarak kod sürekli modernize edilmelidir.
+
+## 5. DOĞRULAMA KONTROL LİSTESİ
+
+1. İsimlendirmeler teknik İngilizce standartlarına uygun mu?
+2. Tüm UI değerleri `THEME` üzerinden mi besleniyor?
+3. Dosya satır limiti ve hook izolasyonu sağlanmış mı?
+4. TypeScript tanımları %100 kapsama sahip mi?
 
 ---
-*Kod bir araçtır, mimari ise vizyonun kalıcılığını sağlar.*
+
+_Status: OPERATIONAL. Error Limit: 0. Component Machine engaged._ 🦾

@@ -24,6 +24,4 @@
 .menu
 .flowers
 
-
-
 namecheap

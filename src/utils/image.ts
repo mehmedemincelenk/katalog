@@ -6,13 +6,22 @@ import { TECH, LABELS, THEME } from '../data/config';
 /**
  * resolveVisualAssetUrl: Harmonizes raw storage paths into valid public URLs.
  */
-export const resolveVisualAssetUrl = (assetPath: string | null | undefined): string | null => {
+export const resolveVisualAssetUrl = (
+  assetPath: string | null | undefined,
+): string | null => {
   if (!assetPath) return null;
-  // Early exit if the path is already an absolute URL or data URI
-  if (assetPath.startsWith('http') || assetPath.startsWith('data:')) return assetPath;
-  
+  // Early exit if the path is already an absolute URL, data URI, or blob URL
+  if (
+    assetPath.startsWith('http') ||
+    assetPath.startsWith('data:') ||
+    assetPath.startsWith('blob:')
+  )
+    return assetPath;
+
   const applicationBaseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
-  const standardizedPath = assetPath.startsWith('/') ? assetPath : `/${assetPath}`;
+  const standardizedPath = assetPath.startsWith('/')
+    ? assetPath
+    : `/${assetPath}`;
   return `${applicationBaseUrl}${standardizedPath}`;
 };
 
@@ -22,7 +31,9 @@ export const PLACEHOLDER_VISUAL_SYMBOL = TECH.storage.placeholderEmoji;
 /**
  * transformFileToVisualElement: Asynchronously converts a raw File object to an HTML Image.
  */
-const transformFileToVisualElement = (visualFile: File): Promise<HTMLImageElement> => {
+const transformFileToVisualElement = (
+  visualFile: File,
+): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader();
     fileReader.onload = (event) => {
@@ -39,47 +50,73 @@ const transformFileToVisualElement = (visualFile: File): Promise<HTMLImageElemen
 /**
  * processDualQualityVisuals: Generates high-definition and preview-optimized copies from a single file.
  */
-export async function processDualQualityVisuals(visualFile: File, hqMaxWidth?: number): Promise<{ hq: Blob, lq: Blob }> {
+export async function processDualQualityVisuals(
+  visualFile: File,
+  hqMaxWidth?: number,
+): Promise<{ hq: Blob; lq: Blob }> {
   const visualElement = await transformFileToVisualElement(visualFile);
-  
+
   /**
    * generateOptimizedBlob: Resizes and compresses the image into a specific Blob tier.
    */
-  const generateOptimizedBlob = (maximumDimension: number, compressionQuality: number): Promise<Blob> => {
+  const generateOptimizedBlob = (
+    maximumDimension: number,
+    compressionQuality: number,
+  ): Promise<Blob> => {
     return new Promise((resolve) => {
       const drawingCanvas = document.createElement('canvas');
       let { width: originalWidth, height: originalHeight } = visualElement;
 
       // Aspect-Ratio Preserving Downscaling Logic
       if (originalWidth > originalHeight && originalWidth > maximumDimension) {
-        originalHeight = Math.round((originalHeight * maximumDimension) / originalWidth);
+        originalHeight = Math.round(
+          (originalHeight * maximumDimension) / originalWidth,
+        );
         originalWidth = maximumDimension;
       } else if (originalHeight > maximumDimension) {
-        originalWidth = Math.round((originalWidth * maximumDimension) / originalHeight);
+        originalWidth = Math.round(
+          (originalWidth * maximumDimension) / originalHeight,
+        );
         originalHeight = maximumDimension;
       }
 
       drawingCanvas.width = originalWidth;
       drawingCanvas.height = originalHeight;
       const drawingContext = drawingCanvas.getContext('2d');
-      
+
       if (drawingContext) {
         // Fallback Background: Prevents transparency issues in JPEGs
         drawingContext.fillStyle = THEME.colors.visualFallback;
         drawingContext.fillRect(0, 0, originalWidth, originalHeight);
-        drawingContext.drawImage(visualElement, 0, 0, originalWidth, originalHeight);
+        drawingContext.drawImage(
+          visualElement,
+          0,
+          0,
+          originalWidth,
+          originalHeight,
+        );
       }
-      
-      drawingCanvas.toBlob((optimizedBlob) => resolve(optimizedBlob!), 'image/jpeg', compressionQuality);
+
+      drawingCanvas.toBlob(
+        (optimizedBlob) => resolve(optimizedBlob!),
+        'image/jpeg',
+        compressionQuality,
+      );
     });
   };
 
   // Tier 1: High-Definition Asset for Zoom/Detail views
   const hqLimit = hqMaxWidth || TECH.storage.productHqWidth;
-  const highDefinitionAsset = await generateOptimizedBlob(hqLimit, TECH.storage.hqQuality);
-  
+  const highDefinitionAsset = await generateOptimizedBlob(
+    hqLimit,
+    TECH.storage.hqQuality,
+  );
+
   // Tier 2: Lightweight Preview Asset for Catalog/Grid views
-  const previewLightweightAsset = await generateOptimizedBlob(TECH.storage.productLqWidth, TECH.storage.lqQuality);
+  const previewLightweightAsset = await generateOptimizedBlob(
+    TECH.storage.productLqWidth,
+    TECH.storage.lqQuality,
+  );
 
   return { hq: highDefinitionAsset, lq: previewLightweightAsset };
 }
@@ -87,31 +124,46 @@ export async function processDualQualityVisuals(visualFile: File, hqMaxWidth?: n
 /**
  * compressVisualToDataUri: Legacy-compatible compression for immediate Base64 feedback.
  */
-export async function compressVisualToDataUri(visualFile: File, maximumDimension: number, compressionQuality: number): Promise<string> {
+export async function compressVisualToDataUri(
+  visualFile: File,
+  maximumDimension: number,
+  compressionQuality: number,
+): Promise<string> {
   const visualElement = await transformFileToVisualElement(visualFile);
   const drawingCanvas = document.createElement('canvas');
   let { width: originalWidth, height: originalHeight } = visualElement;
 
   if (originalWidth > originalHeight && originalWidth > maximumDimension) {
-    originalHeight = Math.round((originalHeight * maximumDimension) / originalWidth);
+    originalHeight = Math.round(
+      (originalHeight * maximumDimension) / originalWidth,
+    );
     originalWidth = maximumDimension;
   } else if (originalHeight > maximumDimension) {
-    originalWidth = Math.round((originalWidth * maximumDimension) / originalHeight);
+    originalWidth = Math.round(
+      (originalWidth * maximumDimension) / originalHeight,
+    );
     originalHeight = maximumDimension;
   }
 
   drawingCanvas.width = originalWidth;
   drawingCanvas.height = originalHeight;
   const drawingContext = drawingCanvas.getContext('2d');
-  
+
   if (drawingContext) {
     drawingContext.fillStyle = THEME.colors.visualFallback;
     drawingContext.fillRect(0, 0, originalWidth, originalHeight);
-    drawingContext.drawImage(visualElement, 0, 0, originalWidth, originalHeight);
+    drawingContext.drawImage(
+      visualElement,
+      0,
+      0,
+      originalWidth,
+      originalHeight,
+    );
   }
-  
+
   return drawingCanvas.toDataURL('image/jpeg', compressionQuality);
 }
+
 /**
  * resizeImageForAI: Downscales image to AI-friendly dimensions to prevent 413 errors.
  */
@@ -142,15 +194,51 @@ export async function resizeImageForAI(imageFile: File | Blob): Promise<Blob> {
       const ctx = canvas.getContext('2d');
       ctx?.drawImage(img, 0, 0, width, height);
 
-      canvas.toBlob((blob) => {
-        if (blob) resolve(blob);
-        else reject(new Error('Resize failed'));
-        URL.revokeObjectURL(img.src);
-      }, 'image/jpeg', 0.82);
+      canvas.toBlob(
+        (blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Resize failed'));
+          URL.revokeObjectURL(img.src);
+        },
+        'image/jpeg',
+        0.82,
+      );
     };
     img.onerror = (err) => {
       URL.revokeObjectURL(img.src);
       reject(err);
     };
   });
+}
+
+/**
+ * downloadImage: Forces a client-side download of a visual asset with custom naming.
+ * Uses Canvas for cross-origin compliance when possible.
+ */
+export async function downloadImage(url: string, fileName: string) {
+  try {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = url;
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0);
+      const dataUrl = canvas.toDataURL('image/png');
+      const downloadLink = document.createElement('a');
+      downloadLink.href = dataUrl;
+      downloadLink.download = fileName;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    };
+    img.onerror = () => window.open(url, '_blank');
+  } catch (err) {
+    console.error('Download error:', err);
+    window.open(url, '_blank');
+  }
 }

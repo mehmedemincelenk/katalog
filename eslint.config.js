@@ -26,7 +26,7 @@ export default tseslint.config(
     rules: {
       // React Hooks kurallarını (useEffect, useState vb.) zorunlu kılıyoruz.
       ...reactHooks.configs.recommended.rules,
-      
+
       // Hızlı yenileme (HMR) sırasında bileşenlerin doğru dışa aktarıldığından emin oluyoruz.
       'react-refresh/only-export-components': [
         'warn',
@@ -35,7 +35,7 @@ export default tseslint.config(
 
       // PROJE ÖZELİ: 'any' tip kullanımını yasaklıyoruz (Kural 2).
       '@typescript-eslint/no-explicit-any': 'error',
-      
+
       // Kullanılmayan değişkenler varsa bizi uyarır.
       '@typescript-eslint/no-unused-vars': 'warn',
     },

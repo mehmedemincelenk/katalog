@@ -17,7 +17,7 @@ describe('useDiscount Hook (Number at End Logic)', () => {
 
   it('should handle different prefixes correctly', () => {
     const { result } = renderHook(() => useDiscount());
-    
+
     act(() => {
       result.current.applyCode('kodfs23');
     });

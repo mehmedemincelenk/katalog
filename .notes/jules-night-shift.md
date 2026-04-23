@@ -1,11 +1,13 @@
 # JULES NIGHT SHIFT - AUTONOMOUS MEGA TASK
 
 ## ROLE
+
 You are an elite, autonomous senior engineer executing an overnight "Night Shift" operation. You have 3 distinct phases to complete sequentially. You must finish Phase 1 before starting Phase 2, and Phase 2 before Phase 3. Take your time, verify your work, and do NOT alter the UI or behavior of the app.
 
 ---
 
 ## 🛑 ABSOLUTE RULES
+
 1. **NO UI CHANGES:** You are not allowed to change any styling (Tailwind classes), visual logic, or layout.
 2. **NO APP BREAKING:** The application must compile perfectly via TypeScript (`npm run build`) without a single error after your shift.
 3. **ONLY ENGLISH COMMENTS:** All written comments, architectural mapping, and annotations MUST be in professional English.
@@ -13,6 +15,7 @@ You are an elite, autonomous senior engineer executing an overnight "Night Shift
 ---
 
 ## 🛠️ PHASE 1: DEEP CLEAN & TYPE SAFETY (Sanitation)
+
 **Objective:** Purge the codebase of unused junk and ensure strict TypeScript safety.
 **Scope:** `src/**/*.ts` and `src/**/*.tsx`
 
@@ -23,6 +26,7 @@ You are an elite, autonomous senior engineer executing an overnight "Night Shift
 ---
 
 ## 🗺️ PHASE 2: AI-MAP ANNOTATIONS (Vibe Coding Accelerator)
+
 **Objective:** Add architectural metadata comments to make the codebase extremely easy for future AI models to read.
 **Scope:** Main functional files inside `src/hooks`, `src/utils`, `src/data`, and key components like `src/App.tsx`.
 
@@ -38,11 +42,12 @@ You are an elite, autonomous senior engineer executing an overnight "Night Shift
    // PURPOSE: [What problem this solves]
    // AI_NOTE: [Any tricky edge cases or specific states a future AI should know about before editing this]
    ```
-*(Do NOT change any existing code here. Just inject these comments above the functions).*
+   _(Do NOT change any existing code here. Just inject these comments above the functions)._
 
 ---
 
 ## 🧠 PHASE 3: THE SMART SEARCH ALGORITHM (Preparation)
+
 **Objective:** Build the logical engine for a "Tolerant Smart Search" (Fuzzy Search) without hooking it into the UI.
 **Action:** Create a completely new file: `src/utils/smartSearch.ts`
 
@@ -56,10 +61,12 @@ You are an elite, autonomous senior engineer executing an overnight "Night Shift
 ---
 
 ## 🏁 FINAL COMPLETION CHECKLIST
+
 Before ending your task, ensure:
+
 - [ ] No visual components were damaged.
 - [ ] TypeScript is entirely intact.
 - [ ] `src/utils/smartSearch.ts` has been written and documented perfectly.
 - [ ] Architectural headers exist in critical locations.
 
-*Start with Phase 1. Once verified, move to Phase 2. Finish with Phase 3.*
+_Start with Phase 1. Once verified, move to Phase 2. Finish with Phase 3._

@@ -37,4 +37,5 @@ The following "sins" and errors cannot be included in the project:
 - **Meaningless Naming:** Do not use vague abbreviations like `item`, `data`, `prod`; always be full and descriptive.
 
 ---
-*No line of code or design element that violates the constitution can be included in the system.*
+
+_No line of code or design element that violates the constitution can be included in the system._

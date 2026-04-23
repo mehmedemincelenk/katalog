@@ -1,40 +1,38 @@
 ---
 name: constitution
-description: Projenin vizyonunu, ticari hedeflerini ve asla ödün verilmeyecek temel kurallarını "Benimse/Kaçın" odağında belirleyen en üst düzey rehber.
+description: 'Projenin teknik vizyonunu ve sarsılmaz tasarım geometrisini belirleyen ana protokol.'
 ---
 
-# Project Constitution (Proje Anayasası)
+# 📜 THE DIAMOND CONSTITUTION (PROTOCOL v1.0)
 
-Bu belge, "Toptan Ambalajcım" projesinin varlık sebebini ve teknik-tasarım süreçlerindeki en üst hiyerarşik kuralları iki ana sütunda tanımlar.
+**Vision:** High-End Boutique e-Catalog for Premium Merchants. Apple-Level Aesthetic Consistency.
 
-## 1. Bunları Benimse (Adopt These)
+## 🎨 TASARIM GEOMETRİSİ (MATEMATİKSEL NİZAM)
 
-Bu prensipler, her satır kodda ve her tasarım öğesinde var olmalıdır:
+- **Visual Vibe:** Minimalist, Editorial, Gallery-Style. Maksimum "White Space" kullanımı.
+- **Fixed Aspect Ratios:**
+  - **Slides/Cards:** Daima **16:9** (Masterpiece Ratio).
+  - **Hero Container:** Daima **32:9** (Panoramic Guard).
+- **Radius Standard:** Daima **rounded-lg**. Profesyonel balans için keskin köşelerden ve aşırı yuvarlaklıktan (pill-shape) kaçınılır.
+- **Micro-Interactions:** 700ms `ease-in-out` geçişler. Odak dışı öğeler için `blur-[1px]` ve `opacity-30`.
 
-- **Hız ve Basitlik:** Toptan ambalaj ticaretini en hızlı ve en şık şekilde dijitalleştir. Başarı kriteri "hızlı satış kapatma"dır.
-- **Admin Sadeliği:** Paneli 40-50+ yaş grubundaki bir dükkan sahibinin hata yapamayacağı kadar basit tut.
-- **Apple Minimalizmi:** "Premium Minimalist" estetiği koru. Sadece gerekli olanı göster (Signal-to-Noise).
-- **Beyaz Boşluk (Whitespace):** Boşluğu bir lüks olarak kullan; içeriğin nefes almasını sağla.
-- **Sıfır Hardcoding:** Tüm görsel kararları `src/data/config.ts` (`THEME`) üzerinden yönet. Kod "kör" olmalı, irade konfigürasyonda olmalıdır.
-- **Mantık İzolasyonu:** UI her zaman "aptal" (stateless), mantık her zaman "akıllı" (hook/context) olmalıdır.
-- **A-Level English:** Tüm isimlendirmeleri küresel standartlarda, profesyonel ve net İngilizce ile yap.
-- **Mobil Öncelik (Mobile-First):** Her özelliği önce mobilde (başparmak dostu) mükemmel çalıştır, sonra masaüstüne uyarla.
-- **8px Izgara Sistemi:** Tüm boşlukları ve boyutları 8'in katı olacak şekilde matematiksel bir düzende tut.
-- **Güvenlik (Sec-by-Design):** "Sıfır Güven" (Zero Trust) ilkesini benimse; her yeni özelliği önce "Nasıl suistimal edilebilir?" süzgecinden geçir.
+## 🏗️ MİMARİ EMİRLER
 
-## 2. Bunlardan Kaçın (Avoid These)
+- **Inline Administration:** Harici dashboard'lar reddedilir. Yönetimsel aksiyonlar ("+") arayüze doğrudan (Inline) gömülür.
+- **Navigational Continuity:** Tüm navigasyon öğeleri (Carousel, Grids) **Seamless Infinite Loop** desteklemelidir.
+- **Adaptive Priority:** Her özellik önce mobil için optimize edilir, ardından PC için ölçeklenir.
 
-Aşağıdaki "günahlar" ve hatalar projeye dahil edilemez:
+## 🤖 İÇERİK STRATEJİSİ (AI-DRIVEN)
 
-- **Yasaklı Günahlar:** Complexity (Karmaşıklık), Inconsistency (Tutarsızlık), Hardcoding (Sabit değerler), Fragility (Kırılganlık), Laziness (Üşengeçlik), Clutter (Kirlilik), Ambiguity (Belirsizlik), Bloat (Şişkinlik), Silence (Sessiz hata), Assumption (Varsayım).
-- **Gereksiz Karmaşıklık (Over-engineering):** "Belki ilerde lazım olur" diyerek eklenen her soyutlama katmanından kaçın.
-- **Bağlam Kaybı (Context Loss):** Mevcut yardımcı fonksiyonları (`utils`, `hooks`) görmezden gelip benzerini sıfırdan yazma.
-- **Kütüphane Varsayımı (Hallucination):** `package.json` içinde olmayan bir kütüphaneyi varmış gibi import etme.
-- **Vibe Körlüğü:** Teknik olarak çalışan ama projenin Apple estetiğine uymayan "çirkin" veya "kaba" UI üretme.
-- **Yıkıcı Onarımlar (Regressive Fixes):** Bir bug'ı düzeltirken mobil görünümü veya Design Token yapısını bozma.
-- **Açıklama Kalabalığı (Verbose Output):** Basit bir mantık için yüzlerce satır kod yazma; her zaman en sade yolu bul.
-- **Mobil İhmali:** Sadece masaüstünde güzel görünen, mobilde tıklanması imkansız küçük öğelerden kaçın.
-- **Anlamsız İsimlendirme:** `item`, `data`, `prod` gibi belirsiz kısaltmalar kullanma; her zaman tam ve açıklayıcı ol.
+- **AI Automation:** Ürün görselleri ve açıklamaları varsayılan olarak AI desteklidir.
+- **Atomization:** Açıklama metinleri her zaman teknik madde işaretlerine (Bullet Points) dönüştürülür.
+- **Visual Center:** AI Studio, yüksek etkili pazarlama varlıkları üretmek için çekirdek merkezdir.
+
+## ⚖️ TEKNİK RASYONALİTE
+
+- **Complexity Filter:** "Boutique Sales Experience" hedefine doğrudan hizmet etmeyen özellikler v2'ye ertelenir.
+- **Quality Dominance:** Belirli bir tasarım kararı kuralı bozarak daha iyi sonuç veriyorsa, görsel bütünlük önceliklendirilir. Anayasa bir rehberdir, teknik kelepçe değil; ancak sapmalar rasyonalize edilmelidir.
 
 ---
-*Anayasaya aykırı hiçbir kod satırı veya tasarım öğesi sisteme dahil edilemez.*
+
+_Mühürlenmiştir. Tüm sistem bu geometrik kurallara hizmet eder._ 💎🦾

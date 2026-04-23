@@ -19,16 +19,18 @@ describe('Visual Processing Tier (A-Level English Refactor)', () => {
    * TEST: Asynchronous Compression Workflow
    */
   it('compressVisualToDataUri should return a valid promise resolution', () => {
-    const mockVisualFile = new File([''], 'test_asset.png', { type: 'image/png' });
+    const mockVisualFile = new File([''], 'test_asset.png', {
+      type: 'image/png',
+    });
     const compressionResult = compressVisualToDataUri(mockVisualFile, 200, 0.8);
-    
+
     // Validate that the operation returns a Promise (indicating async processing)
     expect(compressionResult).toBeInstanceOf(Promise);
   });
 
   /**
-   * ARCHITECTURAL NOTE: 
-   * Further deep integration tests (actual dimension checking) require a real 
+   * ARCHITECTURAL NOTE:
+   * Further deep integration tests (actual dimension checking) require a real
    * hardware-accelerated GPU context or a more complex canvas mock.
    */
 });

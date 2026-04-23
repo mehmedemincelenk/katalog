@@ -1,102 +1,109 @@
 /**
  * AI STUDIO COMPARE MODAL (STUDIO LAB)
  * -----------------------------------------
- * Professional A/B selection interface for AI-enhanced visuals.
- * Allows catalog owners to see the "Diamond Studio" difference before applying.
+ * Professional A/B selection interface for enhanced visuals.
+ * Allows catalog owners to see the "Diamond Standard" difference before applying.
  */
 
-import { motion } from 'framer-motion';
-import { Product } from '../types';
-import { THEME, LABELS } from '../data/config';
 import BaseModal from './BaseModal';
 import Button from './Button';
 import { resolveVisualAssetUrl } from '../utils/image';
+import { Sparkles } from 'lucide-react';
 
-interface AIStudioCompareModalProps {
-  product: Product | null;
-  isOpen: boolean;
-  onClose: () => void;
-  onApply: (productId: string, polishedUrl: string) => void;
-  onDismiss: (productId: string) => void;
-}
+import { AIStudioCompareModalProps } from '../types';
+
+import { useState } from 'react';
 
 const AIStudioCompareModal = ({
   product,
   isOpen,
   onClose,
   onApply,
-  onDismiss
+  onDismiss,
 }: AIStudioCompareModalProps) => {
-  if (!product || !product.polishedImage) return null;
+  const [v] = useState(() => Date.now());
 
-  const v = Date.now();
-  const originalUrl = `${resolveVisualAssetUrl(product.originalImage || product.image)}?v=${v}`;
-  const polishedUrl = `${resolveVisualAssetUrl(product.polishedImage)}?v=${v}`;
+  if (!product || !product.polished_image_url) return null;
+
+  const originalUrl = `${resolveVisualAssetUrl(product.original_image_url || product.image_url)}?v=${v}`;
+  const polishedUrl = `${resolveVisualAssetUrl(product.polished_image_url)}?v=${v}`;
 
   return (
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Diamonds Studio İncelemesi"
+      title="GÖRÜNÜM TAVSİYESİ"
       maxWidth="max-w-4xl"
     >
-      <div className="flex flex-col gap-8 py-4">
+      <div className="flex flex-col gap-5 py-4">
         {/* EXPLANATION */}
-        <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl flex items-start gap-3">
-          <div className="w-6 h-6 text-blue-600 mt-0.5 shrink-0">
-            {THEME.icons.diamond}
-          </div>
-          <div>
-            <h4 className="text-blue-900 font-bold text-sm">Görseliniz Parlatıldı!</h4>
-            <p className="text-blue-700/80 text-[11px] sm:text-xs leading-relaxed font-medium">
-              Yapay zeka, ürününüzün arkaplanını temizledi, profesyonel stüdyo ışığı ekledi ve tam merkeze hizaladı. 
-              Kataloğunuzda daha elit bir görünüm için yeni görseli kullanmanızı öneririz.
-            </p>
-          </div>
+        <div className="bg-stone-50 border border-stone-100 p-5 rounded-2xl">
+          <p className="text-stone-500 text-xs sm:text-sm leading-relaxed font-medium">
+            Ürününüzün arkaplanı temizlendi, profesyonel bir ışık derinliği
+            eklendi ve tam merkeze hizalandı. Daha elit bir duruş için bu yeni
+            görünümü kullanmanızı öneririz.
+          </p>
         </div>
 
         {/* COMPARISON GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-4 sm:gap-10">
           {/* ORIGINAL */}
           <div className="space-y-3">
             <div className="flex items-center justify-between px-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-stone-400">Orijinal Fotoğraf</span>
+              <span className="text-[9px] font-black uppercase tracking-widest text-stone-400">
+                MEVCUT DURUM
+              </span>
             </div>
-            <div className="aspect-square bg-stone-100 rounded-2xl overflow-hidden border border-stone-200">
-              <img src={originalUrl!} alt="Original" className="w-full h-full object-cover" />
+            <div className="aspect-square bg-stone-100 rounded-2xl overflow-hidden border border-stone-100 transition-all">
+              <img
+                src={originalUrl!}
+                alt="Original"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
 
           {/* POLISHED */}
-          <div className="space-y-3">
+          <div className="space-y-3 relative">
             <div className="flex items-center justify-between px-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-blue-500 flex items-center gap-1.5">
-                <span className="w-3 h-3">{THEME.icons.diamond}</span>
-                Diamonds Studio Kalitesi
+              <span className="text-[9px] font-black uppercase tracking-widest text-amber-500">
+                YENİ TAVSİYE
               </span>
             </div>
-            <div className="aspect-square bg-white rounded-2xl overflow-hidden border-2 border-blue-200 shadow-2xl shadow-blue-500/10">
-              <img src={polishedUrl!} alt="Polished" className="w-full h-full object-cover" />
+            <div className="aspect-square bg-white rounded-2xl overflow-hidden border-2 border-amber-400 shadow-2xl shadow-amber-500/10">
+              <img
+                src={polishedUrl!}
+                alt="Polished"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
         </div>
 
-        {/* ACTIONS */}
-        <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-stone-100">
-          <button 
+        {/* ACTIONS - USING CORE COMPONENTS */}
+        <div className="flex items-center justify-center gap-4 pt-2">
+          <Button
             onClick={() => onDismiss(product.id)}
-            className="text-stone-400 hover:text-stone-600 text-xs font-bold px-4 py-2 transition-colors order-2 sm:order-1"
+            variant="secondary"
+            mode="rectangle"
+            className="flex-1 h-[48px] !py-0 text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap flex items-center justify-center"
           >
-            Kalsın, Benimki Daha İyi
-          </button>
-          
-          <Button 
-            variant="primary" 
-            className="w-full sm:w-auto bg-stone-900 !rounded-full px-8 order-1 sm:order-2 flex items-center justify-center gap-2"
-            onClick={() => onApply(product.id, product.polishedImage!)}
+            ESKİSİ KALSIN
+          </Button>
+
+          <Button
+            onClick={() => onApply(product.id, product.polished_image_url!)}
+            variant="primary"
+            mode="rectangle"
+            className="flex-[1.5] h-[48px] !py-0 bg-stone-900 flex items-center justify-center gap-2 group shadow-2xl whitespace-nowrap"
           >
-            <span className="w-4 h-4">{THEME.icons.diamond}</span>
-            Yeni Görseli Kullan
+            <Sparkles
+              size={16}
+              className="text-amber-400 group-hover:rotate-12 transition-transform"
+            />
+            <span className="font-black uppercase tracking-tight">
+              UYGULAYALIM
+            </span>
           </Button>
         </div>
       </div>

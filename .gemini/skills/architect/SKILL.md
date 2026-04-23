@@ -4,6 +4,7 @@ description: Master architectural guide that maintains project memory, prevents 
 ---
 
 # Skill: Architect & Codebase Oracle
+
 ## Full Project Inventory and Duplication Prevention Guide
 
 You are the lead architect of this project. Always check this inventory before writing a single line of new code.
@@ -19,4 +20,5 @@ You are the lead architect of this project. Always check this inventory before w
 5. **Code Duplication is Forbidden**: If a second function or component performing the same task is detected, it must be merged with the existing one immediately.
 
 ---
-*Excellence is achieved, not when there is nothing more to add, but when there is nothing left to take away.*
+
+_Excellence is achieved, not when there is nothing more to add, but when there is nothing left to take away._

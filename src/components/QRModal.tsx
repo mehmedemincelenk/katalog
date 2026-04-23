@@ -4,10 +4,7 @@ import { DEFAULT_COMPANY } from '../data/config';
 import Button from './Button';
 import BaseModal from './BaseModal';
 
-interface QRModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+import { QRModalProps } from '../types';
 
 const QRModal: React.FC<QRModalProps> = ({ isOpen, onClose }) => {
   const shopUrl = window.location.href;
@@ -21,7 +18,8 @@ const QRModal: React.FC<QRModalProps> = ({ isOpen, onClose }) => {
           url: shopUrl,
         });
       } catch (err) {
-        if ((err as Error).name !== 'AbortError') console.error('Sharing failed', err);
+        if ((err as Error).name !== 'AbortError')
+          console.error('Sharing failed', err);
       }
     } else {
       handleCopy();
@@ -43,21 +41,25 @@ const QRModal: React.FC<QRModalProps> = ({ isOpen, onClose }) => {
   const footer = (
     <div className="flex flex-col gap-3">
       <div className="grid grid-cols-2 gap-3">
-        <Button 
+        <Button
           onClick={handleCopy}
           variant="secondary"
           className="!py-3"
           mode="rectangle"
         >
-          <span className="text-[10px] font-black uppercase tracking-widest">{copied ? 'KOPYALANDI' : 'KOPYALA'}</span>
+          <span className="text-[10px] font-black uppercase tracking-widest">
+            {copied ? 'KOPYALANDI' : 'KOPYALA'}
+          </span>
         </Button>
-        <Button 
+        <Button
           onClick={handleShare}
           variant="primary"
           className="!py-3"
           mode="rectangle"
         >
-          <span className="text-[10px] font-black uppercase tracking-widest text-white">PAYLAŞ</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-white">
+            PAYLAŞ
+          </span>
         </Button>
       </div>
     </div>
@@ -67,7 +69,7 @@ const QRModal: React.FC<QRModalProps> = ({ isOpen, onClose }) => {
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      maxWidth="max-w-[320px]"
+      maxWidth="max-w-sm"
       title="DÜKKAN QR KODU"
       subtitle={displayUrl}
       footer={footer}
@@ -75,7 +77,7 @@ const QRModal: React.FC<QRModalProps> = ({ isOpen, onClose }) => {
     >
       <div className="flex justify-center my-2">
         <div className="p-4 bg-white border border-stone-100 rounded-2xl shadow-sm">
-          <QRCodeSVG 
+          <QRCodeSVG
             value={shopUrl}
             size={180}
             level="H"

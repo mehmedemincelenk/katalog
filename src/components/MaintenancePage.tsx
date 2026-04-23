@@ -1,17 +1,14 @@
 import { motion } from 'framer-motion';
-import { Settings, MessageCircle } from 'lucide-react';
-import { CompanySettings } from '../hooks/useSettings';
+import { Settings } from 'lucide-react';
 import Button from './Button';
-import { THEME } from '../data/config';
 import { resolveVisualAssetUrl } from '../utils/image';
+import { MaintenancePageProps } from '../types';
 
-interface MaintenancePageProps {
-  settings: CompanySettings;
-  onLogoPointerDown: () => void;
-  onLogoPointerUp: () => void;
-}
-
-export default function MaintenancePage({ settings, onLogoPointerDown, onLogoPointerUp }: MaintenancePageProps) {
+export default function MaintenancePage({
+  settings,
+  onLogoPointerDown,
+  onLogoPointerUp,
+}: MaintenancePageProps) {
   const handleWhatsAppClick = () => {
     window.open(`https://wa.me/${settings.whatsapp}`, '_blank');
   };
@@ -19,14 +16,14 @@ export default function MaintenancePage({ settings, onLogoPointerDown, onLogoPoi
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
       {/* Animated Background Element */}
-      <motion.div 
-        animate={{ 
+      <motion.div
+        animate={{
           rotate: 360,
-          scale: [1, 1.1, 1] 
+          scale: [1, 1.1, 1],
         }}
-        transition={{ 
-          rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-          scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+        transition={{
+          rotate: { duration: 20, repeat: Infinity, ease: 'linear' },
+          scale: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
         }}
         className="absolute w-[500px] h-[500px] bg-stone-50 rounded-full blur-3xl -z-10"
       />
@@ -35,16 +32,16 @@ export default function MaintenancePage({ settings, onLogoPointerDown, onLogoPoi
         {/* LOGO */}
         {settings.logoUrl && (
           <div className="relative mb-12">
-            <motion.img 
+            <motion.img
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              src={resolveVisualAssetUrl(settings.logoUrl ?? '')} 
+              src={resolveVisualAssetUrl(settings.logoUrl) || ''}
               alt={settings.name}
               className="h-16 sm:h-20 object-contain"
             />
             {/* INVISIBLE SHIELD: This layer catches the gestures */}
-            <div 
-              className="absolute inset-0 z-20 cursor-pointer" 
+            <div
+              className="absolute inset-0 z-20 cursor-pointer"
               onPointerDown={onLogoPointerDown}
               onPointerUp={onLogoPointerUp}
               onContextMenu={(e) => e.preventDefault()}
@@ -53,82 +50,42 @@ export default function MaintenancePage({ settings, onLogoPointerDown, onLogoPoi
           </div>
         )}
 
-        {/* ICON */}
-        <div className="relative mb-8">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            onPointerDown={onLogoPointerDown}
-            onPointerUp={onLogoPointerUp}
-            className="w-24 h-24 bg-stone-900 rounded-[32px] flex items-center justify-center text-white shadow-2xl cursor-pointer active:scale-95 transition-transform"
-          >
-            <Settings size={48} className="animate-spin-slow" />
-          </motion.div>
-          {/* INVISIBLE SHIELD */}
-          <div 
-            className="absolute inset-0 z-10" 
-            onContextMenu={(e) => e.preventDefault()}
-            style={{ touchAction: 'none' }}
-          />
-        </div>
-
-        {/* CONTENT */}
-        <motion.h1 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tighter mb-4"
-        >
-          BAKIM MODU
-        </motion.h1>
-
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-stone-500 font-medium leading-relaxed mb-12 px-4"
-        >
-          {settings.maintenanceMode.message}
-        </motion.p>
-
-        {/* ACTION */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="w-full space-y-4"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+          className="bg-stone-900 text-white p-2 px-4 rounded-full text-[10px] font-black tracking-[0.2em] uppercase mb-6"
         >
+          Sistem Bakımda
+        </motion.div>
+
+        <h1 className="text-3xl sm:text-4xl font-black text-stone-900 leading-tight mb-4 tracking-tighter uppercase">
+          Size Daha İyi Bir <br /> Deneyim Hazırlıyoruz
+        </h1>
+
+        <p className="text-stone-400 text-sm sm:text-base font-medium max-w-sm mb-10 leading-relaxed">
+          Katalog güncellemeleri ve sistem iyileştirmeleri nedeniyle kısa bir
+          ara verdik. Çok yakında buradayız.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-3 w-full">
           <Button
             onClick={handleWhatsAppClick}
-            variant="secondary"
-            size="md"
-            className="w-full !rounded-2xl !py-5 flex items-center justify-center gap-3 bg-emerald-500 hover:bg-emerald-600 text-white border-none shadow-[0_10px_20px_rgba(16,185,129,0.2)]"
+            variant="primary"
+            mode="rectangle"
+            className="flex-1 !py-4 font-black tracking-widest uppercase text-xs"
+            icon={<Settings className="w-4 h-4 animate-spin-slow" />}
           >
-            <div className="w-5 h-5">{THEME.icons.whatsapp}</div>
-            <span className="font-bold uppercase tracking-tight text-sm">WhatsApp ile İletişim</span>
+            BİZE ULAŞIN
           </Button>
-          
-          <p className="text-[10px] font-bold text-stone-300 uppercase tracking-[0.2em]">
-            Bizi Anlayışla Karşıladığınız İçin Teşekkürler
+        </div>
+
+        <div className="mt-12 pt-8 border-t border-stone-100 w-full">
+          <p className="text-[10px] font-black text-stone-300 uppercase tracking-widest">
+            {settings.name} &copy; {new Date().getFullYear()}
           </p>
-        </motion.div>
+        </div>
       </div>
-
-      {/* FOOTER */}
-      <footer className="absolute bottom-8 text-stone-400 text-[10px] font-bold uppercase tracking-widest">
-        {settings.name} &copy; {new Date().getFullYear()}
-      </footer>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 8s linear infinite;
-        }
-      `}} />
     </div>
   );
 }

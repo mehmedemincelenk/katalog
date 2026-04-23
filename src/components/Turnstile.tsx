@@ -1,12 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-interface TurnstileProps {
-  onVerify: (token: string) => void;
-  options?: {
-    theme?: 'light' | 'dark' | 'auto';
-    size?: 'normal' | 'compact' | 'invisible';
-  };
-}
+import { TurnstileProps, TurnstileOptions } from '../types';
 
 /**
  * TURNSTILE COMPONENT (Cloudflare Security Widget)
@@ -30,8 +24,10 @@ const Turnstile = ({ onVerify, options = {} }: TurnstileProps) => {
     }
 
     // Yerel geliştirme ortamında test anahtarını, canlıda gerçek anahtarı kullanıyoruz.
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const activeSiteKey = isLocal 
+    const isLocal =
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1';
+    const activeSiteKey = isLocal
       ? '1x00000000000000000000AA' // Local Test Key
       : '0x4AAAAAADAJkSXkZ8wkzSTM'; // Your Production Key
 
@@ -54,17 +50,13 @@ const Turnstile = ({ onVerify, options = {} }: TurnstileProps) => {
 
 export default Turnstile;
 
-interface TurnstileOptions {
-  sitekey: string;
-  callback: (token: string) => void;
-  theme?: 'light' | 'dark' | 'auto';
-  size?: 'normal' | 'compact' | 'invisible';
-}
-
 declare global {
   interface Window {
     turnstile: {
-      render: (container: string | HTMLElement, options: TurnstileOptions) => string;
+      render: (
+        container: string | HTMLElement,
+        options: TurnstileOptions,
+      ) => string;
       remove: (widgetId: string) => void;
     };
   }

@@ -2,17 +2,14 @@
 // DEPENDS ON: THEME tokens, framer-motion
 // CONSUMED BY: ProductGrid.tsx
 import { motion } from 'framer-motion';
-import { THEME } from '../data/config';
 
-interface SocialProofCardProps {
-  message: string;
-  isAdmin?: boolean;
-  onEdit?: (val: string) => void;
-}
+import { SocialProofCardProps } from '../types';
 
-export default function SocialProofCard({ message, isAdmin, onEdit }: SocialProofCardProps) {
-  const cardTheme = THEME.productCard;
-  
+export default function SocialProofCard({
+  message,
+  isAdmin,
+  onEdit,
+}: SocialProofCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -33,10 +30,10 @@ export default function SocialProofCard({ message, isAdmin, onEdit }: SocialProo
       <div className="relative z-10 space-y-4">
         {/* Placeholder Emoji/Icon from message */}
         <div className="text-4xl sm:text-5xl transform group-hover:scale-110 transition-transform duration-500">
-           {message.split(' ')[0]}
+          {message.split(' ')[0]}
         </div>
-        
-        <p 
+
+        <p
           className="text-stone-900 font-black text-sm sm:text-base uppercase tracking-tight leading-snug"
           contentEditable={isAdmin}
           suppressContentEditableWarning

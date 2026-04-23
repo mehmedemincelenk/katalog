@@ -3,12 +3,12 @@
 // ============================================================
 /**
  * KURUCU NOTU:
- * Bu dosya senin mağazanın "Sigortası"dır. 
- * 
+ * Bu dosya senin mağazanın "Sigortası"dır.
+ *
  * TEORİK MANTIK:
- * Eğer veritabanı bağlantısında bir sorun olursa veya internet kesilirse, 
- * sitenin tamamen boş görünmemesi için bu listedeki ürünler devreye girer. 
- * 
+ * Eğer veritabanı bağlantısında bir sorun olursa veya internet kesilirse,
+ * sitenin tamamen boş görünmemesi için bu listedeki ürünler devreye girer.
+ *
  * TEKNİK MANTIK:
  * 'DEFAULT_PRODUCTS' bir dizidir (Array). İçindeki her obje bir ürünü temsil eder.
  */

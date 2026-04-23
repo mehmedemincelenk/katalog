@@ -49,4 +49,5 @@ These principles drive the collaborative creative process between the Agent and 
 - **Context is King:** Never lose sight of the project's overall aesthetic and architectural history. Every addition must feel like it was there from the start.
 
 ---
-*No line of code or design element that violates the constitution can be included in the system.*
+
+_No line of code or design element that violates the constitution can be included in the system._

@@ -6,8 +6,8 @@ export default {
   plugins: {
     // Tailwind motorunu çalıştırır.
     tailwindcss: {},
-    
+
     // CSS kodunu tarayıcı uyumluluğu için optimize eder.
     autoprefixer: {},
   },
-}
+};

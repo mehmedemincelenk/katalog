@@ -5,6 +5,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { TECH, STORAGE } from '../data/config';
 import { supabase } from '../lib/supabase';
 import { getActiveStoreSlug } from '../utils/store';
+import { useStore } from '../store/useStore';
 
 const STORE_SLUG = getActiveStoreSlug();
 
@@ -17,13 +18,22 @@ const STORE_SLUG = getActiveStoreSlug();
  * - Sunucu taraflı PIN doğrulama (RPC).
  */
 export function useAdminMode() {
+  const setIsAdminStore = useStore((state) => state.setIsAdmin);
   const [isAdmin, setIsAdmin] = useState(() => {
-    return sessionStorage.getItem(STORAGE.adminSession) === TECH.auth.sessionActiveValue;
+    return (
+      sessionStorage.getItem(STORAGE.adminSession) ===
+      TECH.auth.sessionActiveValue
+    );
   });
+
+  // Sync with global store for vibe coding efficiency
+  useEffect(() => {
+    setIsAdminStore(isAdmin);
+  }, [isAdmin, setIsAdminStore]);
 
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
-  
+
   // UX PREFERENCE: Local state for editing mode
   const [isInlineEnabled, setIsInlineEnabled] = useState(() => {
     const saved = localStorage.getItem('ekatalog_inline_edit_v1');
@@ -31,13 +41,13 @@ export function useAdminMode() {
   });
 
   const toggleInlineEdit = useCallback(() => {
-    setIsInlineEnabled(prev => {
+    setIsInlineEnabled((prev) => {
       const newVal = !prev;
       localStorage.setItem('ekatalog_inline_edit_v1', String(newVal));
       return newVal;
     });
   }, []);
-  
+
   const [lockoutUntil, setLockoutUntil] = useState<number | null>(() => {
     const saved = sessionStorage.getItem('admin_lockout_until');
     return saved ? parseInt(saved, 10) : null;
@@ -66,39 +76,44 @@ export function useAdminMode() {
     return () => clearInterval(check);
   }, [lockoutUntil]);
 
-  const verifyPinWithServer = useCallback(async (pin: string) => {
-    if (STORE_SLUG === 'main-site') return false;
-    
-    if (isLockedOut) return false;
-    
-    const { data: isSuccess, error } = await supabase
-      .rpc('verify_admin_access', { 
-        target_slug: STORE_SLUG, 
-        input_pin: pin 
-      });
-    
-    if (error) {
-      console.error('❌ PIN doğrulama hatası:', error);
-      return false;
-    }
+  const verifyPinWithServer = useCallback(
+    async (pin: string) => {
+      if (STORE_SLUG === 'main-site') return false;
 
-    if (!isSuccess) {
-      const newAttempts = failedAttempts + 1;
-      setFailedAttempts(newAttempts);
-      
-      if (newAttempts >= 3) {
-        const until = Date.now() + 60000;
-        setLockoutUntil(until);
-        sessionStorage.setItem('admin_lockout_until', String(until));
-        setIsLockedOut(true);
+      if (isLockedOut) return false;
+
+      const { data: isSuccess, error } = await supabase.rpc(
+        'verify_admin_access',
+        {
+          target_slug: STORE_SLUG,
+          input_pin: pin,
+        },
+      );
+
+      if (error) {
+        console.error('❌ PIN doğrulama hatası:', error);
+        return false;
       }
-    } else {
-      setFailedAttempts(0);
-      setIsLockedOut(false);
-    }
-    
-    return isSuccess;
-  }, [failedAttempts, isLockedOut, STORE_SLUG]);
+
+      if (!isSuccess) {
+        const newAttempts = failedAttempts + 1;
+        setFailedAttempts(newAttempts);
+
+        if (newAttempts >= 3) {
+          const until = Date.now() + 60000;
+          setLockoutUntil(until);
+          sessionStorage.setItem('admin_lockout_until', String(until));
+          setIsLockedOut(true);
+        }
+      } else {
+        setFailedAttempts(0);
+        setIsLockedOut(false);
+      }
+
+      return isSuccess;
+    },
+    [failedAttempts, isLockedOut],
+  );
 
   // GESTURE ENGINE REFS
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
@@ -123,34 +138,45 @@ export function useAdminMode() {
 
   useEffect(() => {
     if (!isAdmin) return;
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    const events = [
+      'mousedown',
+      'mousemove',
+      'keypress',
+      'scroll',
+      'touchstart',
+    ];
     const handleActivity = () => resetTimeout();
-    events.forEach(name => document.addEventListener(name, handleActivity));
+    events.forEach((name) => document.addEventListener(name, handleActivity));
     resetTimeout();
     return () => {
-      events.forEach(name => document.removeEventListener(name, handleActivity));
+      events.forEach((name) =>
+        document.removeEventListener(name, handleActivity),
+      );
       if (timeoutTimer.current) clearTimeout(timeoutTimer.current);
     };
   }, [isAdmin, resetTimeout]);
 
-  // SMART TRIGGER LOGIC: 
+  // SMART TRIGGER LOGIC:
   // 1. Long Press (1.5s) -> Admin PIN / Logout
   // 2. Click then within 1s Long Press (0.8s) -> QR Modal
   const handleLogoPointerDown = useCallback(() => {
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
     pointerDownTime.current = Date.now();
-    
+
     const isComboAttempt = clickCount.current === 1;
 
-    longPressTimer.current = setTimeout(() => {
-      if (isComboAttempt) {
-        setIsQRModalOpen(true);
-        clickCount.current = 0; // Combo consumed
-      } else {
-        if (isAdmin) logout();
-        else setIsPinModalOpen(true);
-      }
-    }, isComboAttempt ? 800 : 1500); 
+    longPressTimer.current = setTimeout(
+      () => {
+        if (isComboAttempt) {
+          setIsQRModalOpen(true);
+          clickCount.current = 0; // Combo consumed
+        } else {
+          if (isAdmin) logout();
+          else setIsPinModalOpen(true);
+        }
+      },
+      isComboAttempt ? 800 : 1500,
+    );
   }, [isAdmin, logout]);
 
   const handleLogoPointerUp = useCallback(() => {
@@ -166,7 +192,7 @@ export function useAdminMode() {
     if (holdDuration < 300) {
       clickCount.current += 1;
       if (clickCountTimer.current) clearTimeout(clickCountTimer.current);
-      
+
       clickCountTimer.current = setTimeout(() => {
         clickCount.current = 0;
       }, 1000); // 1 second window for the combo
@@ -185,20 +211,20 @@ export function useAdminMode() {
     clickCount.current = 0;
   }, []);
 
-  return { 
-    isAdmin, 
-    handleLogoPointerDown, 
+  return {
+    isAdmin,
+    handleLogoPointerDown,
     handleLogoPointerUp,
-    logout, 
-    isPinModalOpen, 
-    setIsPinModalOpen, 
+    logout,
+    isPinModalOpen,
+    setIsPinModalOpen,
     isQRModalOpen,
     setIsQRModalOpen,
-    verifyPinWithServer, 
+    verifyPinWithServer,
     onPinSuccess,
     isInlineEnabled,
     toggleInlineEdit,
     isLockedOut,
-    failedAttempts
+    failedAttempts,
   };
 }

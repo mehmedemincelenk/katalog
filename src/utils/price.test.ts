@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { transformCurrencyStringToNumber, formatNumberToCurrency, calculatePromotionalPrice } from './price';
+import {
+  transformCurrencyStringToNumber,
+  formatNumberToCurrency,
+  calculatePromotionalPrice,
+} from './price';
 
 describe('Price Utils (A-Level English Refactor)', () => {
   describe('transformCurrencyStringToNumber', () => {

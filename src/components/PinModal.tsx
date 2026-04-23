@@ -1,27 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { THEME } from '../data/config';
 import Turnstile from './Turnstile';
 import { Check } from 'lucide-react';
+import Button from './Button';
 
-interface PinModalProps {
-  isModalOpen: boolean;
-  onVerify: (pin: string) => Promise<boolean>;
-  onAuthenticationSuccess: () => void;
-  onModalClose: () => void;
-  isLockedOut?: boolean;
-  failedAttempts?: number;
-}
+import { PinModalProps } from '../types';
 
 const PIN_LENGTH = 4;
 
-export default function PinModal({ 
-  isModalOpen, 
-  onVerify, 
-  onAuthenticationSuccess, 
+export default function PinModal({
+  isModalOpen,
+  onVerify,
+  onAuthenticationSuccess,
   onModalClose,
   isLockedOut,
-  failedAttempts = 0
+  failedAttempts = 0,
 }: PinModalProps) {
   const [currentPinAttempt, setCurrentPinAttempt] = useState('');
   const [hasAuthError, setHasAuthError] = useState(false);
@@ -29,22 +23,24 @@ export default function PinModal({
   const [isRobotVerified, setIsRobotVerified] = useState(false);
 
   const requiresCaptcha = failedAttempts >= 2;
-  const isInputDisabled = isLockedOut || isVerifying || (requiresCaptcha && !isRobotVerified);
+  const isInputDisabled =
+    isLockedOut || isVerifying || (requiresCaptcha && !isRobotVerified);
 
   const theme = THEME.pinModal;
   const globalIcons = THEME.icons;
 
-  // Cleanup on close
-  useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = useState(isModalOpen);
+  if (isModalOpen !== prevIsOpen) {
+    setPrevIsOpen(isModalOpen);
     if (!isModalOpen) {
       setCurrentPinAttempt('');
       setHasAuthError(false);
     }
-  }, [isModalOpen]);
+  }
 
   const handleDigitEntry = async (digit: string) => {
     if (isInputDisabled || currentPinAttempt.length >= PIN_LENGTH) return;
-    
+
     const newAttempt = currentPinAttempt + digit;
     setCurrentPinAttempt(newAttempt);
     setHasAuthError(false);
@@ -52,7 +48,7 @@ export default function PinModal({
     if (newAttempt.length === PIN_LENGTH) {
       setIsVerifying(true);
       const isValid = await onVerify(newAttempt);
-      
+
       if (isValid) {
         onAuthenticationSuccess();
       } else {
@@ -68,58 +64,63 @@ export default function PinModal({
 
   const handleDeleteDigit = () => {
     if (isInputDisabled) return;
-    setCurrentPinAttempt(prev => prev.slice(0, -1));
+    setCurrentPinAttempt((prev) => prev.slice(0, -1));
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className={theme.overlay}
     >
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95, filter: 'blur(15px)' }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
         className={`${theme.container} ${hasAuthError ? theme.animations.shake : ''}`}
       >
-        
         {/* HEADER SECTION */}
         <div className={theme.headerWrapper}>
           <div className={theme.headerIconWrapper}>
             <div className={theme.headerIconSize}>
               {isVerifying ? (
-                <div className={THEME.loading.spinner + " w-5 h-5"} />
+                <div className={THEME.loading.spinner + ' w-5 h-5'} />
+              ) : isLockedOut ? (
+                '⏳'
               ) : (
-                isLockedOut ? '⏳' : globalIcons.lock
+                globalIcons.lock
               )}
             </div>
           </div>
-          <h2 className={theme.typography.title}>{isLockedOut ? 'GÜVENLİK KİLİDİ' : 'ADMİN PANELİ'}</h2>
+          <h2 className={theme.typography.title}>
+            {isLockedOut ? 'GÜVENLİK KİLİDİ' : 'ADMİN PANELİ'}
+          </h2>
           <p className={theme.typography.subtitle}>
-            {isLockedOut 
-              ? 'Çok fazla yanlış deneme. Lütfen 1 dakika bekleyin.' 
+            {isLockedOut
+              ? 'Çok fazla yanlış deneme. Lütfen 1 dakika bekleyin.'
               : 'Giriş yapmak için 4 haneli PIN kodunuzu girin.'}
           </p>
         </div>
 
         {/* DOTS INDICATOR */}
-        <div className={`${theme.dotsWrapper} ${isInputDisabled ? 'opacity-20' : ''} mb-4`}>
+        <div
+          className={`${theme.dotsWrapper} ${isInputDisabled ? 'opacity-20' : ''} mb-4`}
+        >
           {[...Array(PIN_LENGTH)].map((_, i) => (
-            <div 
-              key={i} 
+            <div
+              key={i}
               className={`
                 ${theme.dotBase} 
                 ${i < currentPinAttempt.length ? theme.dotActive : theme.dotInactive}
                 ${hasAuthError ? theme.dotError : ''}
-              `} 
+              `}
             />
           ))}
         </div>
 
-        {/* CAPTCHA & FEEDBACK AREA (Diamond UX) */}
+        {/* CAPTCHA & FEEDBACK AREA */}
         {requiresCaptcha && (
           <div className="flex flex-col items-center justify-center min-h-[80px] mb-2 px-6">
             {!isRobotVerified ? (
@@ -127,7 +128,10 @@ export default function PinModal({
                 <span className="text-[9px] font-black tracking-[0.2em] text-stone-400 uppercase mb-3 animate-pulse">
                   GÜVENLİK DOĞRULAMASI YAPILIYOR...
                 </span>
-                <Turnstile onVerify={() => setIsRobotVerified(true)} options={{ theme: 'light', size: 'normal' }} />
+                <Turnstile
+                  onVerify={() => setIsRobotVerified(true)}
+                  options={{ theme: 'light', size: 'normal' }}
+                />
               </div>
             ) : (
               <div className="flex flex-col items-center gap-3 animate-in fade-in zoom-in duration-500 pt-1 pb-4">
@@ -143,32 +147,53 @@ export default function PinModal({
         )}
 
         {/* KEYBOARD GRID */}
-        <div className={`${theme.keyboardGrid} ${isInputDisabled ? 'opacity-30 pointer-events-none grayscale scale-[0.98]' : 'transition-all duration-500'}`}>
+        <div
+          className={`${theme.keyboardGrid} ${isInputDisabled ? 'opacity-30 pointer-events-none grayscale scale-[0.98]' : 'transition-all duration-500'}`}
+        >
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-            <button 
-              key={num} 
+            <Button
+              key={num}
               disabled={isInputDisabled}
-              onClick={() => handleDigitEntry(String(num))} 
+              onClick={() => handleDigitEntry(String(num))}
               className={theme.keyButton}
+              variant="secondary"
+              mode="circle"
             >
               <span className={theme.typography.keyText}>{num}</span>
-            </button>
+            </Button>
           ))}
-          
+
           {/* BOTTOM ROW */}
-          <button onClick={onModalClose} className={theme.cancelButton}>İPTAL</button>
-          <button 
+          <Button
+            onClick={onModalClose}
+            variant="ghost"
+            mode="rectangle"
+            className={theme.cancelButton}
+          >
+            İPTAL
+          </Button>
+          <Button
             disabled={isInputDisabled}
-            onClick={() => handleDigitEntry('0')} 
+            onClick={() => handleDigitEntry('0')}
             className={theme.keyButton}
+            variant="secondary"
+            mode="circle"
           >
             <span className={theme.typography.keyText}>0</span>
-          </button>
-          <button disabled={isInputDisabled} onClick={handleDeleteDigit} className={theme.deleteButton}>
-             <div className={theme.deleteIconSize}>{globalIcons.backspace}</div>
-          </button>
+          </Button>
+          <Button
+            disabled={isInputDisabled}
+            onClick={handleDeleteDigit}
+            variant="ghost"
+            mode="circle"
+            className={theme.deleteButton}
+            icon={
+              <div className={theme.deleteIconSize}>
+                {globalIcons.backspace}
+              </div>
+            }
+          />
         </div>
-
       </motion.div>
     </motion.div>
   );

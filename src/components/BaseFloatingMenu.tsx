@@ -83,7 +83,7 @@ export default function BaseFloatingMenu({
     <div ref={containerRef} className="z-[100]">
       <motion.div 
         layout
-        className={`${menuTheme.container} w-[104px] flex flex-col-reverse items-center shadow-[0_10px_40px_rgba(0,0,0,0.15)] bg-white/50 backdrop-blur-2xl border border-white/50 p-1 sm:p-1 rounded-2xl sm:rounded-lg overflow-hidden`}
+        className={menuTheme.container}
         transition={{ layout: { type: 'spring', stiffness: 500, damping: 40 } }}
       >
         {/* MASTER TOGGLE (Pinned at bottom of container) */}

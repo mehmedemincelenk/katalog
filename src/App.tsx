@@ -123,113 +123,118 @@ function CatalogView() {
   }
 
   return (
-    <div
-      className={`min-h-screen ${UI.layout.bodyBg} ${UI.layout.selection} font-sans fade-in`}
-    >
-      <div className="print:hidden">
-        <Navbar
-          onLogoPointerDown={handleLogoPointerDown}
-          onLogoPointerUp={handleLogoPointerUp}
-          isInlineEnabled={isInlineEnabled}
-        />
-        <main>
-          <HeroCarousel isAdminModeActive={isAdmin} />
-          <SearchFilter
-            sortedList={sortedList}
-            stats={stats}
-            onCategoryOrderChange={updateCategoryOrder}
-            renameCategory={(oldName, newName) =>
-              renameCategory({ oldName, newName })
-            }
-            onAddCategory={addCategory}
-          />
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <ProductGrid
-              products={products}
-              categoryOrder={categoryOrder}
+    <div className="min-h-screen bg-stone-100 flex items-center justify-center sm:py-8 sm:px-4 overflow-hidden">
+      {/* MOBILE FRAME FOR DESKTOP */}
+      <div 
+        className="w-full max-w-[480px] min-h-screen sm:min-h-[88vh] sm:h-[88vh] bg-stone-50 sm:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden sm:rounded-[3rem] border-0 sm:border-[10px] sm:border-stone-900 flex flex-col"
+        id="app-mobile-frame"
+      >
+        <div
+          className={`flex-1 overflow-y-auto overflow-x-hidden ${UI.layout.bodyBg} ${UI.layout.selection} font-sans fade-in scrollbar-hide`}
+          style={{ scrollBehavior: 'smooth' }}
+        >
+          <div className="print:hidden">
+            <Navbar
+              onLogoPointerDown={handleLogoPointerDown}
+              onLogoPointerUp={handleLogoPointerUp}
               isInlineEnabled={isInlineEnabled}
-              onDelete={deleteProduct}
-              onUpdate={(id, changes) => updateProduct({ id, changes })}
-              onOrderUpdate={reorderProductsInCategory}
-              onImageUpload={(id, file) => uploadImage({ id, file })}
-              visibleCategoryLimit={visibleCategoryLimit}
-              onLoadMore={() => setVisibleCategoryLimit((prev) => prev + 3)}
-              onAddClick={(cat) => openModal('ADD_PRODUCT', { category: cat })}
-              activeAdminProductId={activeAdminProductId}
-              setActiveAdminProductId={setActiveAdminProductId}
-              visitorCurrency={visitorCurrency}
-              renameCategory={(oldName, newName) =>
-                renameCategory({ oldName, newName })
-              }
             />
-          </div>
-          {settings?.displayConfig?.showReferences && (
-            <References isInlineEnabled={isInlineEnabled} isAdmin={isAdmin} />
-          )}
-        </main>
-        <Footer />
-      </div>
-
-      {/* OFF-HOURS ENGAGEMENT: Disabled by user request */}
-      {/* {!isAdmin && settings && (
-        <div className="print:hidden">
-          <OffHoursNotice />
-        </div>
-      )} */}
-
-      {!isAdmin && (
-        <div className={`${THEME.floatingAdminMenu.wrapper} z-[90] print:hidden`}>
-          <FloatingGuestMenu
-            onCouponClick={() => openModal('COUPON')}
-            onExcelClick={() => openModal('PRICE_LIST')}
-            onSearchClick={() => {
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-              setTimeout(() => {
-                const searchInput = document.getElementById('mobile-search-input') as HTMLInputElement;
-                if (searchInput) {
-                  searchInput.focus({ preventScroll: true });
+            <main>
+              <HeroCarousel isAdminModeActive={isAdmin} />
+              <SearchFilter
+                sortedList={sortedList}
+                stats={stats}
+                onCategoryOrderChange={updateCategoryOrder}
+                renameCategory={(oldName, newName) =>
+                  renameCategory({ oldName, newName })
                 }
-              }, 400);
-            }}
-            onQRClick={() => openModal('QR')}
+                onAddCategory={addCategory}
+              />
+              <div className="px-4">
+                <ProductGrid
+                  products={products}
+                  categoryOrder={categoryOrder}
+                  isInlineEnabled={isInlineEnabled}
+                  onDelete={deleteProduct}
+                  onUpdate={(id, changes) => updateProduct({ id, changes })}
+                  onOrderUpdate={reorderProductsInCategory}
+                  onImageUpload={(id, file) => uploadImage({ id, file })}
+                  visibleCategoryLimit={visibleCategoryLimit}
+                  onLoadMore={() => setVisibleCategoryLimit((prev) => prev + 3)}
+                  onAddClick={(cat) => openModal('ADD_PRODUCT', { category: cat })}
+                  activeAdminProductId={activeAdminProductId}
+                  setActiveAdminProductId={setActiveAdminProductId}
+                  visitorCurrency={visitorCurrency}
+                  renameCategory={(oldName, newName) =>
+                    renameCategory({ oldName, newName })
+                  }
+                />
+              </div>
+              {settings?.displayConfig?.showReferences && (
+                <References isInlineEnabled={isInlineEnabled} isAdmin={isAdmin} />
+              )}
+            </main>
+            <Footer />
+          </div>
+
+          {!isAdmin && (
+            <div className="fixed sm:absolute bottom-4 right-4 z-[90] print:hidden">
+              <FloatingGuestMenu
+                onCouponClick={() => openModal('COUPON')}
+                onExcelClick={() => openModal('PRICE_LIST')}
+                onSearchClick={() => {
+                  const scrollContainer = document.getElementById('app-mobile-frame')?.firstElementChild;
+                  if (scrollContainer) {
+                    scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                  setTimeout(() => {
+                    const searchInput = document.getElementById('mobile-search-input') as HTMLInputElement;
+                    if (searchInput) {
+                      searchInput.focus({ preventScroll: true });
+                    }
+                  }, 400);
+                }}
+                onQRClick={() => openModal('QR')}
+              />
+            </div>
+          )}
+
+          <AnimatePresence mode="wait">
+            {isAdmin && (
+              <motion.div
+                key="floating-menu"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                className="fixed sm:absolute bottom-4 right-4 z-[150] print:hidden"
+              >
+                <FloatingAdminMenu
+                  onProductAddTrigger={() => openModal('GLOBAL_ADD_MENU')}
+                  onBulkUpdateTrigger={() => openModal('BULK_UPDATE')}
+                  onSettingsTrigger={() => openModal('DISPLAY_SETTINGS')}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <AppModals />
+        <ModalWorkspace />
+
+        {/* DEVELOPER WORKSPACE TRIGGER (Bottom Left) */}
+        <div className="fixed sm:absolute bottom-4 left-4 z-[9999] print:hidden">
+          <Button
+            onClick={toggleWorkspace}
+            variant="secondary"
+            mode="circle"
+            className="!w-12 !h-12 !bg-stone-900/10 hover:!bg-stone-900 !text-stone-900 hover:!text-white border-stone-900/20 shadow-lg backdrop-blur-md group"
+            icon={<Layout size={18} className="group-hover:rotate-12 transition-transform" />}
+            aria-label="Diamond Workspace"
           />
         </div>
-      )}
 
-      <AnimatePresence mode="wait">
-        {isAdmin && (
-          <motion.div
-            key="floating-menu"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className={`${THEME.floatingAdminMenu.wrapper} z-[150] print:hidden`}
-          >
-            <FloatingAdminMenu
-              onProductAddTrigger={() => openModal('GLOBAL_ADD_MENU')}
-              onBulkUpdateTrigger={() => openModal('BULK_UPDATE')}
-              onSettingsTrigger={() => openModal('DISPLAY_SETTINGS')}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AppModals />
-      <ModalWorkspace />
-
-      {/* DEVELOPER WORKSPACE TRIGGER (Bottom Left) */}
-      <div className="fixed bottom-4 left-4 z-[9999] print:hidden">
-        <Button
-          onClick={toggleWorkspace}
-          variant="secondary"
-          mode="circle"
-          className="!w-12 !h-12 !bg-stone-900/10 hover:!bg-stone-900 !text-stone-900 hover:!text-white border-stone-900/20 shadow-lg backdrop-blur-md group"
-          icon={<Layout size={18} className="group-hover:rotate-12 transition-transform" />}
-          aria-label="Diamond Workspace"
-        />
+        <GlobalFeedbackOverlay />
       </div>
-
-      <GlobalFeedbackOverlay />
     </div>
   );
 }

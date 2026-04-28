@@ -215,7 +215,7 @@ export const THEME = {
 
   floatingAdminMenu: {
     wrapper:
-      'fixed bottom-2 right-2 z-[150] sm:scale-[1.7] sm:origin-bottom-right',
+      'fixed bottom-4 right-4 z-[150]',
     container: `w-[104px] flex flex-col-reverse items-center shadow-[0_10px_40px_rgba(0,0,0,0.15)] bg-white/50 backdrop-blur-2xl border border-white/50 p-1 sm:p-1 rounded-2xl sm:rounded-lg overflow-hidden`,
     innerActions: 'flex flex-col gap-1.5 overflow-hidden',
     actionsActive: 'max-h-64 opacity-100 mt-1 mb-2',

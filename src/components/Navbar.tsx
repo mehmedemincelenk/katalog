@@ -156,8 +156,7 @@ const Navbar = memo(
       announcementConfig.enabled && announcementConfig.text && !isBarDismissed;
 
     const handleDismiss = () => {
-      setIsBarDismissed(true);
-      sessionStorage.setItem('ekatalog_banner_dismissed', 'true');
+      // Disabled by request: Guest cannot dismiss the banner
     };
 
     const handleAnnouncementBlur = (e: React.FocusEvent<HTMLSpanElement>) => {
@@ -184,17 +183,7 @@ const Navbar = memo(
               {announcementConfig.text ||
                 (isAdmin ? 'Duyuru metnini buraya yazın...' : '')}
             </span>
-            {!isAdmin && (
-              <Button
-                onClick={handleDismiss}
-                variant="ghost"
-                mode="circle"
-                size="sm"
-                className="!w-6 !h-6 !p-0 !bg-transparent text-white/80 hover:text-white"
-                icon={<X className="w-3 h-3" />}
-                aria-label="Duyuruyu kapat"
-              />
-            )}
+            {/* X Button Removed by request */}
           </div>
         )}
 

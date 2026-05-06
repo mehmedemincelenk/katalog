@@ -122,11 +122,13 @@ function CatalogView() {
   const mobileContent = (
     <>
       <div className="relative w-full h-full overflow-hidden flex flex-col">
+        <div className="print:hidden flex-shrink-0 z-[100]">
+          <Navbar onLogoPointerDown={handleLogoPointerDown} onLogoPointerUp={handleLogoPointerUp} isInlineEnabled={isInlineEnabled} />
+        </div>
+
         {/* SCROLLABLE LAYER */}
         <div id="mobile-viewport-scroll" className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar scroll-smooth relative z-10">
-          <div className="print:hidden pb-0">
-            <Navbar onLogoPointerDown={handleLogoPointerDown} onLogoPointerUp={handleLogoPointerUp} isInlineEnabled={isInlineEnabled} />
-            <main className="bg-stone-50">
+          <main className="bg-stone-50">
               <HeroCarousel isAdminModeActive={isAdmin} />
               <SearchFilter sortedList={sortedList} stats={stats} onCategoryOrderChange={updateCategoryOrder} renameCategory={(oldName, newName) => renameCategory({ oldName, newName })} onAddCategory={addCategory} />
               <div className="px-4">
@@ -213,18 +215,7 @@ function CatalogView() {
           )}
         </AnimatePresence>
 
-        <div className="fixed inset-0 pointer-events-none z-[9999] print:hidden">
-          <div className="absolute bottom-10 left-4 pointer-events-auto">
-            <Button 
-              onClick={toggleWorkspace} 
-              variant="secondary" 
-              mode="circle" 
-              className="!w-12 !h-12 !bg-stone-900/10 hover:!bg-stone-900 !text-stone-900 hover:!text-white border-stone-900/20 shadow-lg backdrop-blur-md group" 
-              icon={<Lucide.Layout size={18} className="group-hover:rotate-12 transition-transform" />} 
-              aria-label="Diamond Workspace" 
-            />
-          </div>
-        </div>
+        {/* Workspace button removed by request */}
       </div>
     </>
   );

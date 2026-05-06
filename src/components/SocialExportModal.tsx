@@ -105,7 +105,7 @@ export default function SocialExportModal({
   const CurrentDesign = MarketingGallery[designIndex];
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} title="Pazarlama Aracı" maxWidth="max-w-xl">
+    <BaseModal isOpen={isOpen} onClose={onClose} title="İNDİR-PAYLAŞ" maxWidth="max-w-md">
       <div className="flex flex-col items-center gap-8 py-4">
          
          {/* MAIN ACTIONS */}
@@ -127,34 +127,18 @@ export default function SocialExportModal({
             />
          </div>
 
-         {/* ASPECT RATIO TOGGLE */}
-         <div className="flex bg-stone-100 p-1.5 rounded-2xl w-[260px] shadow-inner">
-            <button 
-              onClick={() => setAspectRatio('STORY')}
-              className={`flex-1 py-2.5 rounded-xl text-[10px] font-black transition-all ${aspectRatio === 'STORY' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
-            >
-              HİKAYE (9:16)
-            </button>
-            <button 
-              onClick={() => setAspectRatio('POST')}
-              className={`flex-1 py-2.5 rounded-xl text-[10px] font-black transition-all ${aspectRatio === 'POST' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
-            >
-              YATAY (16:9)
-            </button>
-         </div>
-
-         {/* PREVIEW CONTAINER */}
-         <div className="relative transition-all duration-500">
+         {/* PREVIEW CONTAINER - OPTIMIZED SCALE */}
+         <div className="relative transition-all duration-500 scale-90 sm:scale-100">
             <div 
               className={`
-                ${aspectRatio === 'STORY' ? 'w-[260px] h-[462px] rounded-[3rem]' : 'w-[320px] h-[180px] rounded-[2rem]'} 
+                w-[260px] h-[462px] rounded-[3rem] 
                 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.4)] overflow-hidden border-[10px] border-stone-950 relative bg-stone-50 transition-all duration-500
               `}
             >
                <div 
                   ref={designRef} 
                   className={`
-                    ${aspectRatio === 'STORY' ? 'w-[360px] h-[640px] scale-[0.722]' : 'w-[640px] h-[360px] scale-[0.484]'} 
+                    w-[360px] h-[640px] scale-[0.722] 
                     absolute top-0 left-0 origin-top-left bg-white relative overflow-hidden transition-all duration-500
                   `}
                >

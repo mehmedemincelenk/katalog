@@ -106,41 +106,16 @@ export default function SocialExportModal({
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title="İNDİR-PAYLAŞ" maxWidth="max-w-md">
-      <div className="flex flex-col items-center gap-8 py-4">
+      <div className="flex flex-row items-center justify-center gap-4 sm:gap-8 py-6 px-4">
          
-         {/* MAIN ACTIONS */}
-         <div className="w-full px-10 flex gap-4">
-            <Button 
-               variant="primary" 
-               onClick={handleNextDesign} 
-               icon={<Lucide.RotateCw size={18} className={isExporting ? 'animate-spin' : ''} />}
-               className="flex-1 !rounded-2xl !h-14 !bg-stone-900 hover:!bg-black !text-white !font-black !tracking-widest uppercase shadow-xl"
-            >
-               YENİ TASARIM
-            </Button>
-            <Button 
-               variant="secondary" 
-               onClick={handleDownload} 
-               loading={isExporting} 
-               icon={<Lucide.Download size={20} />}
-               className="!w-24 !h-14 !rounded-2xl shadow-xl border-2 border-stone-200 !bg-white !text-stone-900 !font-black uppercase tracking-widest"
-            />
-         </div>
-
-         {/* PREVIEW CONTAINER - OPTIMIZED SCALE */}
-         <div className="relative transition-all duration-500 scale-90 sm:scale-100">
+         {/* LEFT: PHONE MOCKUP (SCALED DOWN TO FIT) */}
+         <div className="relative shrink-0">
             <div 
-              className={`
-                w-[260px] h-[462px] rounded-[3rem] 
-                shadow-[0_50px_100px_-20px_rgba(0,0,0,0.4)] overflow-hidden border-[10px] border-stone-950 relative bg-stone-50 transition-all duration-500
-              `}
+              className="w-[162px] h-[288px] rounded-[2rem] shadow-[0_20px_50px_-10px_rgba(0,0,0,0.3)] overflow-hidden border-[6px] border-stone-950 relative bg-stone-50"
             >
                <div 
                   ref={designRef} 
-                  className={`
-                    w-[360px] h-[640px] scale-[0.722] 
-                    absolute top-0 left-0 origin-top-left bg-white relative overflow-hidden transition-all duration-500
-                  `}
+                  className="w-[360px] h-[640px] scale-[0.45] absolute top-0 left-0 origin-top-left bg-white"
                >
                   {activeProduct && (
                     <CurrentDesign 
@@ -153,16 +128,40 @@ export default function SocialExportModal({
                   )}
                </div>
             </div>
+            
+            {/* HINT ICON */}
+            <div className="absolute -bottom-2 -right-2 bg-white shadow-lg rounded-full p-1.5 border border-stone-100 animate-bounce">
+              <Lucide.MousePointer2 size={12} className="text-stone-400" />
+            </div>
          </div>
 
-         {/* SMART GUIDANCE */}
-         <div className="flex flex-col items-center gap-4 pb-6 text-center">
-            <p className="text-[14px] font-black text-stone-900 tracking-tighter uppercase italic">HİKAYENDE PAYLAŞ</p>
-            <p className="text-[10px] text-stone-400 font-medium px-12 leading-tight">
-               Ürün fotoğrafına dokunarak ürünü, butona basarak tasarımı değiştirebilirsin.
-            </p>
-         </div>
+         {/* RIGHT: ACTION COLUMN */}
+         <div className="flex flex-col gap-3 shrink-0">
+            <div className="flex flex-col gap-1">
+              <span className="text-[9px] font-black text-stone-400 tracking-widest uppercase ml-1">TASARIM</span>
+              <Button 
+                variant="primary" 
+                onClick={handleNextDesign} 
+                icon={<Lucide.RotateCw size={18} className={isExporting ? 'animate-spin' : ''} />}
+                className="!w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-2xl !bg-stone-900 hover:!bg-black !text-white shadow-xl flex flex-col !gap-1"
+              >
+                <span className="text-[10px] font-black tracking-widest uppercase">YENİ</span>
+              </Button>
+            </div>
 
+            <div className="flex flex-col gap-1">
+              <span className="text-[9px] font-black text-stone-400 tracking-widest uppercase ml-1">DOSYA</span>
+              <Button 
+                variant="secondary" 
+                onClick={handleDownload} 
+                loading={isExporting} 
+                icon={<Lucide.Download size={20} />}
+                className="!w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-2xl shadow-lg border-2 border-stone-200 !bg-white !text-stone-900 flex flex-col !gap-1"
+              >
+                <span className="text-[10px] font-black tracking-widest uppercase">İNDİR</span>
+              </Button>
+            </div>
+         </div>
       </div>
     </BaseModal>
   );

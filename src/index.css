@@ -159,13 +159,21 @@
   }
 
   /* GİZLİ SCROLLBAR: Kaydırma işlevini bozmadan görsel kalabalığı engeller. */
-  @media (min-width: 1024px) {
+  @media (min-width: 768px) {
     .phone-frame-container {
       width: 360px !important;
       height: 720px !important;
       min-height: 0 !important;
-      border-radius: 0.75rem !important;
+      border-radius: 2rem !important;
+      overflow: visible !important; /* Don't clip hardware buttons */
+    }
+    
+    .phone-frame-content {
+      width: 100%;
+      height: 100%;
       overflow: hidden !important;
+      border-radius: 1.5rem !important;
+      position: relative;
     }
   }
 

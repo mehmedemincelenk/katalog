@@ -1,4 +1,4 @@
-import React, { useState, memo, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { LABELS, THEME } from '../data/config';
 import Button from './Button';
 import BaseModal from './BaseModal';

@@ -43,7 +43,7 @@ const ProductCard = memo(
     onOrderIndexChange,
     itemsInCategory = 1,
   }: ProductCardProps) => {
-    const { settings, visitorCurrency, exchangeRates } = useStore();
+    const { visitorCurrency, exchangeRates } = useStore();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const cardContainerRef = useRef<HTMLElement>(null);
 
@@ -158,13 +158,13 @@ const ProductCard = memo(
         : null;
 
     const primaryImageSource =
-      optimisticImagePreview ||
-      (product.image_url ? resolveVisualAssetUrl(product.image_url) : settings?.logoUrl);
-    const highDefinitionImageSource = product.image_url
+      (optimisticImagePreview ||
+      (product.image_url ? resolveVisualAssetUrl(product.image_url) : null)) ?? null;
+    const highDefinitionImageSource = (product.image_url
       ? resolveVisualAssetUrl(
           product.image_url.replace('/lq/', '/hq/').split('?')[0],
         )
-      : settings?.logoUrl;
+      : null) ?? null;
 
     return (
       <>
@@ -198,7 +198,6 @@ const ProductCard = memo(
             <SmartImage
               src={primaryImageSource}
               alt={product.name}
-              fallbackSrc={settings?.logoUrl}
               aspectRatio="square"
               objectFit={
                 theme.image.fit === 'object-cover' ? 'cover' : 'contain'

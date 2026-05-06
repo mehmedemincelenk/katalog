@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Button from './Button';
 import { MarqueeText } from './MarqueeText';
 import { X, LayoutGrid } from 'lucide-react';
-import { THEME } from '../data/config';
+
 
 /**
  * BASE FLOATING MENU (DIAMOND FRAME)
@@ -86,9 +86,9 @@ export default function BaseFloatingMenu({
   }, [isExpanded, autoCloseDelay, clearTimer]);
 
   return (
-    <div ref={containerRef} className="z-[100] origin-bottom-right" style={{ transform: 'scale(0.8)' }}>
+    <div ref={containerRef} className="z-[100] origin-bottom-right" style={{ transform: 'scale(0.95)' }}>
       <div 
-        className={`flex flex-col items-center p-1 bg-white/70 backdrop-blur-3xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-xl transition-all duration-200 ease-in-out overflow-hidden w-[125px]`}
+        className={`flex flex-col items-center p-1 bg-white/70 backdrop-blur-3xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-xl transition-all duration-200 ease-in-out overflow-hidden w-[110px]`}
       >
         {/* ACTION CLUSTER (Above toggle, no gap) */}
         <AnimatePresence>
@@ -109,10 +109,10 @@ export default function BaseFloatingMenu({
                   open: { transition: { staggerChildren: 0.04, delayChildren: 0.05 } },
                   closed: { transition: { staggerChildren: 0.02, staggerDirection: -1 } }
                 }}
-                className="flex flex-col gap-1.5 items-center w-full py-1.5 px-0.5"
+                className="flex flex-col gap-1 items-center w-full py-1 px-0.5"
               >
                 {/* LABELED ACTIONS */}
-                <div className="flex flex-col gap-1.5 items-center w-full">
+                <div className="flex flex-col gap-1 items-center w-full">
                   {actions.filter(a => a.label).map((btn) => (
                     <motion.div
                       key={btn.id}
@@ -128,12 +128,12 @@ export default function BaseFloatingMenu({
                         variant={btn.variant || 'secondary'}
                         size="sm"
                         mode="rectangle"
-                        className={`shrink-0 shadow-sm rounded-lg ${btn.className || ''} w-full !justify-start px-3 gap-3 h-[42px] !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md transition-all`}
+                        className={`shrink-0 shadow-sm rounded-lg ${btn.className || ''} w-full !justify-start px-2 gap-2 h-[40px] !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md transition-all`}
                       >
-                        <div className="flex-1 min-w-0 overflow-hidden">
+                        <div className="flex-1 min-w-0 overflow-hidden text-left">
                           <MarqueeText
                             text={btn.label}
-                            textClass="text-[9px] font-black uppercase tracking-tighter text-stone-900"
+                            textClass="text-[8px] font-black uppercase tracking-tighter text-stone-900"
                             isAdmin={false}
                           />
                         </div>
@@ -143,7 +143,7 @@ export default function BaseFloatingMenu({
                 </div>
 
                 {/* ICON ACTIONS GRID */}
-                <div className="grid grid-cols-2 gap-1.5 justify-items-center w-full px-0.5">
+                <div className="grid grid-cols-2 gap-1 justify-items-center w-full px-0.5">
                   {actions.filter(a => !a.label).map((btn) => (
                     <motion.div
                       key={btn.id}
@@ -185,12 +185,12 @@ export default function BaseFloatingMenu({
             mode="rectangle"
             className={`
               ${isExpanded ? '!bg-white !text-stone-900 border-stone-100' : '!bg-stone-900 !text-white border-transparent'} 
-              hover:scale-[1.02] active:scale-95 transition-all h-10 w-full shadow-lg rounded-lg relative overflow-hidden
+              hover:scale-[1.02] active:scale-95 transition-all h-12 w-full shadow-lg rounded-lg relative overflow-hidden
             `}
             aria-label={isExpanded ? 'Menüyü Kapat' : 'Menüyü Aç'}
           >
             <div className="flex flex-row items-center justify-center gap-2.5 w-full h-full px-1">
-              <span className="text-[11px] font-black uppercase tracking-[0.2em] leading-none">
+              <span className="text-[11px] font-black uppercase tracking-tight leading-none">
                 {labelText}
               </span>
               <div className="w-4 h-4 flex items-center justify-center shrink-0">

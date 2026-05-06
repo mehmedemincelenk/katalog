@@ -3,10 +3,10 @@
 exports[`HeroCarousel (Diamond Snapshot) > Boş carousel görünümü (Admin) snapshot ile eşleşmeli 1`] = `
 <DocumentFragment>
   <div
-    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 animate-pulse"
+    class="max-w-7xl mx-auto px-4 mt-6 animate-pulse"
   >
     <div
-      class="relative w-full group/carousel overflow-hidden rounded-lg aspect-[16/9] sm:aspect-[32/9] bg-stone-100 flex items-center justify-center"
+      class="relative w-full group/carousel overflow-hidden rounded-lg aspect-[16/9] bg-stone-100 flex items-center justify-center"
     >
       <div
         class="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin"
@@ -19,10 +19,10 @@ exports[`HeroCarousel (Diamond Snapshot) > Boş carousel görünümü (Admin) sn
 exports[`HeroCarousel (Diamond Snapshot) > Yükleniyor durumu snapshot ile eşleşmeli 1`] = `
 <DocumentFragment>
   <div
-    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 animate-pulse"
+    class="max-w-7xl mx-auto px-4 mt-6 animate-pulse"
   >
     <div
-      class="relative w-full group/carousel overflow-hidden rounded-lg aspect-[16/9] sm:aspect-[32/9] bg-stone-100 flex items-center justify-center"
+      class="relative w-full group/carousel overflow-hidden rounded-lg aspect-[16/9] bg-stone-100 flex items-center justify-center"
     >
       <div
         class="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin"

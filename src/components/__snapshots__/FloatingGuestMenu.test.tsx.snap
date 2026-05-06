@@ -3,76 +3,21 @@
 exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığında 4x2 grid yapısı doğru görünmeli 1`] = `
 <DocumentFragment>
   <div
-    class="z-[100]"
+    class="z-[100] origin-bottom-right"
+    style="transform: scale(0.95);"
   >
     <div
-      class="flex flex-col items-center p-1 bg-stone-200/50 backdrop-blur-xl border border-white/20 shadow-2xl rounded-full"
+      class="flex flex-col items-center p-1 bg-white/70 backdrop-blur-3xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-xl transition-all duration-200 ease-in-out overflow-hidden w-[110px]"
     >
       <div
-        class="w-full"
-      >
-        <button
-          aria-label="Menüyü Kapat"
-          class="
-        relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
-        bg-stone-900 text-white hover:bg-stone-800 shadow-lg shadow-stone-200 
-        px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-2xl 
-        
-        !bg-white !text-stone-900 border-2 border-stone-100 hover:scale-105 active:scale-95 transition-all h-11 sm:h-8 w-full shadow-none rounded-lg relative overflow-hidden
-      "
-        >
-          <div
-            class="
-          
-          
-        "
-          >
-            <div
-              class="flex flex-row items-center justify-center gap-1.5 w-full h-full"
-            >
-              <div
-                class="w-4 h-4 flex items-center justify-center shrink-0"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="lucide lucide-x w-full h-full p-0.5"
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2.5"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M18 6 6 18"
-                  />
-                  <path
-                    d="m6 6 12 12"
-                  />
-                </svg>
-              </div>
-              <span
-                class="text-[10px] font-black uppercase tracking-widest leading-none"
-              >
-                MENÜ
-              </span>
-            </div>
-          </div>
-        </button>
-      </div>
-      <div
         class="w-full flex flex-col items-center overflow-hidden"
-        style="height: 0px; opacity: 0;"
+        style="opacity: 0; height: 0px;"
       >
         <div
-          class="flex flex-col gap-2 sm:gap-1 items-center w-full py-1"
+          class="flex flex-col gap-1 items-center w-full py-1 px-0.5"
         >
           <div
-            class="flex flex-col gap-2 sm:gap-1 items-center w-full px-1"
+            class="flex flex-col gap-1 items-center w-full"
           >
             <div
               class="w-full"
@@ -85,7 +30,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
         px-3 py-1.5 text-[9px] gap-1.5 
         rounded-2xl 
         
-        shrink-0 shadow-md rounded-xl sm:rounded-lg  w-full !justify-start px-2 gap-2 h-[42px]
+        shrink-0 shadow-sm rounded-lg  w-full !justify-start px-2 gap-2 h-[40px] !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md transition-all
       "
               >
                 <div
@@ -97,85 +42,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
                 >
                   <svg
                     aria-hidden="true"
-                    class="lucide lucide-file-spreadsheet w-5 h-5 sm:w-4 sm:h-4"
-                    fill="none"
-                    height="24"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
-                    />
-                    <path
-                      d="M14 2v5a1 1 0 0 0 1 1h5"
-                    />
-                    <path
-                      d="M8 13h2"
-                    />
-                    <path
-                      d="M14 13h2"
-                    />
-                    <path
-                      d="M8 17h2"
-                    />
-                    <path
-                      d="M14 17h2"
-                    />
-                  </svg>
-                </div>
-                <div
-                  class="
-          
-          
-        "
-                >
-                  <div
-                    class="flex-1 min-w-0 overflow-hidden"
-                  >
-                    <div
-                      class="
-        overflow-hidden whitespace-nowrap 
-        text-[8px] font-black uppercase tracking-tighter 
-        
-      "
-                    >
-                      <span>
-                        LİSTE İNDİR
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </button>
-            </div>
-            <div
-              class="w-full"
-              style="opacity: 0; transform: translateY(10px) scale(0.8);"
-            >
-              <button
-                class="
-        relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
-        bg-stone-100 text-stone-900 hover:bg-stone-200 
-        px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-2xl 
-        
-        shrink-0 shadow-md rounded-xl sm:rounded-lg  w-full !justify-start px-2 gap-2 h-[42px]
-      "
-              >
-                <div
-                  class="
-          flex items-center justify-center shrink-0 transition-transform duration-300
-          
-          
-        "
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="lucide lucide-ticket w-5 h-5 sm:w-4 sm:h-4"
+                    class="lucide lucide-ticket w-5 h-5"
                     fill="none"
                     height="24"
                     stroke="currentColor"
@@ -207,12 +74,12 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
         "
                 >
                   <div
-                    class="flex-1 min-w-0 overflow-hidden"
+                    class="flex-1 min-w-0 overflow-hidden text-left"
                   >
                     <div
                       class="
         overflow-hidden whitespace-nowrap 
-        text-[8px] font-black uppercase tracking-tighter 
+        text-[8px] font-black uppercase tracking-tighter text-stone-900 
         
       "
                     >
@@ -226,10 +93,10 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
             </div>
           </div>
           <div
-            class="grid grid-cols-2 gap-2 sm:gap-1 justify-items-center w-full px-1"
+            class="grid grid-cols-2 gap-1 justify-items-center w-full px-0.5"
           >
             <div
-              class="w-full flex justify-center"
+              class="w-full"
               style="opacity: 0; transform: translateY(10px) scale(0.8);"
             >
               <button
@@ -237,9 +104,9 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
         bg-stone-100 text-stone-900 hover:bg-stone-200 
         px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-full aspect-square !p-0 
+        rounded-2xl 
         
-        shrink-0 shadow-md rounded-full sm:rounded-lg  w-[42px] h-[42px] !p-0
+        shrink-0 shadow-sm rounded-lg  w-full h-[46px] !p-0 transition-all !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md
       "
               >
                 <div
@@ -251,7 +118,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
                 >
                   <svg
                     aria-hidden="true"
-                    class="lucide lucide-share2 lucide-share-2 w-5 h-5 sm:w-4 sm:h-4"
+                    class="lucide lucide-user-plus w-5 h-5"
                     fill="none"
                     height="24"
                     stroke="currentColor"
@@ -262,39 +129,32 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
                     width="24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <circle
-                      cx="18"
-                      cy="5"
-                      r="3"
+                    <path
+                      d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
                     />
                     <circle
-                      cx="6"
-                      cy="12"
-                      r="3"
-                    />
-                    <circle
-                      cx="18"
-                      cy="19"
-                      r="3"
+                      cx="9"
+                      cy="7"
+                      r="4"
                     />
                     <line
-                      x1="8.59"
-                      x2="15.42"
-                      y1="13.51"
-                      y2="17.49"
+                      x1="19"
+                      x2="19"
+                      y1="8"
+                      y2="14"
                     />
                     <line
-                      x1="15.41"
-                      x2="8.59"
-                      y1="6.51"
-                      y2="10.49"
+                      x1="22"
+                      x2="16"
+                      y1="11"
+                      y2="11"
                     />
                   </svg>
                 </div>
               </button>
             </div>
             <div
-              class="w-full flex justify-center"
+              class="w-full"
               style="opacity: 0; transform: translateY(10px) scale(0.8);"
             >
               <button
@@ -302,9 +162,9 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
         bg-[#e3d5c1] text-[#5d4037] hover:bg-[#d7c4aa] 
         px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-full aspect-square !p-0 
+        rounded-2xl 
         
-        shrink-0 shadow-md rounded-full sm:rounded-lg  w-[42px] h-[42px] !p-0
+        shrink-0 shadow-sm rounded-lg  w-full h-[46px] !p-0 transition-all hover:scale-[1.05] hover:shadow-lg
       "
               >
                 <div
@@ -316,7 +176,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
                 >
                   <svg
                     aria-hidden="true"
-                    class="lucide lucide-map-pin w-5 h-5 sm:w-4 sm:h-4"
+                    class="lucide lucide-map-pin w-5 h-5"
                     fill="none"
                     height="24"
                     stroke="currentColor"
@@ -340,7 +200,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
               </button>
             </div>
             <div
-              class="w-full flex justify-center"
+              class="w-full"
               style="opacity: 0; transform: translateY(10px) scale(0.8);"
             >
               <button
@@ -348,9 +208,9 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
         bg-stone-100 text-stone-900 hover:bg-stone-200 
         px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-full aspect-square !p-0 
+        rounded-2xl 
         
-        shrink-0 shadow-md rounded-full sm:rounded-lg  w-[42px] h-[42px] !p-0
+        shrink-0 shadow-sm rounded-lg  w-full h-[46px] !p-0 transition-all !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md
       "
               >
                 <div
@@ -364,7 +224,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
                     class="w-full h-full flex items-center justify-center"
                   >
                     <span
-                      class="text-[20px] sm:text-[14px] font-medium leading-none"
+                      class="text-[20px] font-medium leading-none"
                     >
                       ₺
                     </span>
@@ -373,17 +233,17 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
               </button>
             </div>
             <div
-              class="w-full flex justify-center"
+              class="w-full"
               style="opacity: 0; transform: translateY(10px) scale(0.8);"
             >
               <button
                 class="
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
-        bg-[#FF0069] text-white hover:bg-[#D40058] shadow-lg shadow-pink-100 
+        bg-stone-100 text-stone-900 hover:bg-stone-200 
         px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-full aspect-square !p-0 
+        rounded-2xl 
         
-        shrink-0 shadow-md rounded-full sm:rounded-lg  w-[42px] h-[42px] !p-0
+        shrink-0 shadow-sm rounded-lg  w-full h-[46px] !p-0 transition-all !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md
       "
               >
                 <div
@@ -394,7 +254,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
         "
                 >
                   <div
-                    class="w-5 h-5 sm:w-4 sm:h-4 flex items-center justify-center"
+                    class="w-5 h-5 flex items-center justify-center"
                   >
                     <svg
                       class="w-full h-full fill-current"
@@ -414,7 +274,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
               </button>
             </div>
             <div
-              class="w-full flex justify-center"
+              class="w-full"
               style="opacity: 0; transform: translateY(10px) scale(0.8);"
             >
               <button
@@ -422,9 +282,9 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
         bg-stone-100 text-stone-900 hover:bg-stone-200 
         px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-full aspect-square !p-0 
+        rounded-2xl 
         
-        shrink-0 shadow-md rounded-full sm:rounded-lg  w-[42px] h-[42px] !p-0
+        shrink-0 shadow-sm rounded-lg  w-full h-[46px] !p-0 transition-all !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md
       "
               >
                 <div
@@ -436,7 +296,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
                 >
                   <svg
                     aria-hidden="true"
-                    class="lucide lucide-qr-code w-5 h-5 sm:w-4 sm:h-4"
+                    class="lucide lucide-qr-code w-5 h-5"
                     fill="none"
                     height="24"
                     stroke="currentColor"
@@ -500,7 +360,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
               </button>
             </div>
             <div
-              class="w-full flex justify-center"
+              class="w-full"
               style="opacity: 0; transform: translateY(10px) scale(0.8);"
             >
               <button
@@ -508,9 +368,9 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
         bg-[#25D366] text-white hover:bg-[#128C7E] shadow-lg shadow-green-100 
         px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-full aspect-square !p-0 
+        rounded-2xl 
         
-        shrink-0 shadow-md rounded-full sm:rounded-lg  w-[42px] h-[42px] !p-0
+        shrink-0 shadow-sm rounded-lg  w-full h-[46px] !p-0 transition-all hover:scale-[1.05] hover:shadow-lg
       "
               >
                 <div
@@ -521,7 +381,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
         "
                 >
                   <div
-                    class="w-5 h-5 sm:w-4 sm:h-4 flex items-center justify-center"
+                    class="w-5 h-5 flex items-center justify-center"
                   >
                     <svg
                       class="fill-current w-full h-full"
@@ -536,7 +396,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
               </button>
             </div>
             <div
-              class="w-full flex justify-center"
+              class="w-full"
               style="opacity: 0; transform: translateY(10px) scale(0.8);"
             >
               <button
@@ -544,9 +404,9 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
         bg-stone-100 text-stone-900 hover:bg-stone-200 
         px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-full aspect-square !p-0 
+        rounded-2xl 
         
-        shrink-0 shadow-md rounded-full sm:rounded-lg  w-[42px] h-[42px] !p-0
+        shrink-0 shadow-sm rounded-lg  w-full h-[46px] !p-0 transition-all !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md
       "
               >
                 <div
@@ -558,7 +418,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
                 >
                   <svg
                     aria-hidden="true"
-                    class="lucide lucide-search w-5 h-5 sm:w-4 sm:h-4"
+                    class="lucide lucide-search w-5 h-5"
                     fill="none"
                     height="24"
                     stroke="currentColor"
@@ -582,17 +442,17 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
               </button>
             </div>
             <div
-              class="w-full flex justify-center"
+              class="w-full"
               style="opacity: 0; transform: translateY(10px) scale(0.8);"
             >
               <button
                 class="
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
-        bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-100 
+        bg-stone-100 text-stone-900 hover:bg-stone-200 
         px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-full aspect-square !p-0 
+        rounded-2xl 
         
-        shrink-0 shadow-md rounded-full sm:rounded-lg  w-[42px] h-[42px] !p-0
+        shrink-0 shadow-sm rounded-lg  w-full h-[46px] !p-0 transition-all !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md
       "
               >
                 <div
@@ -604,7 +464,7 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
                 >
                   <svg
                     aria-hidden="true"
-                    class="lucide lucide-phone w-5 h-5 sm:w-4 sm:h-4"
+                    class="lucide lucide-phone w-5 h-5"
                     fill="none"
                     height="24"
                     stroke="currentColor"
@@ -625,31 +485,21 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü açıldığınd
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü kilitli tasarım snapshotu ile eşleşmeli 1`] = `
-<DocumentFragment>
-  <div
-    class="z-[100]"
-  >
-    <div
-      class="flex flex-col items-center p-1 bg-stone-200/50 backdrop-blur-xl border border-white/20 shadow-2xl rounded-full"
-    >
       <div
-        class="w-full"
+        class="w-full p-0.5"
       >
         <button
-          aria-label="Menüyü Aç"
+          aria-label="Menüyü Kapat"
           class="
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
         bg-stone-100 text-stone-900 hover:bg-stone-200 
         px-3 py-1.5 text-[9px] gap-1.5 
         rounded-2xl 
         
-        !bg-stone-900 !text-white hover:scale-105 active:scale-95 transition-all h-11 sm:h-8 w-full shadow-none rounded-lg relative overflow-hidden
+        
+              !bg-white !text-stone-900 border-stone-100 
+              hover:scale-[1.02] active:scale-95 transition-all h-12 w-full shadow-lg rounded-lg relative overflow-hidden
+            
       "
         >
           <div
@@ -659,14 +509,19 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü kilitli tasarı
         "
           >
             <div
-              class="flex flex-row items-center justify-center gap-1.5 w-full h-full"
+              class="flex flex-row items-center justify-center gap-2.5 w-full h-full px-1"
             >
+              <span
+                class="text-[11px] font-black uppercase tracking-tight leading-none"
+              >
+                MENÜ
+              </span>
               <div
                 class="w-4 h-4 flex items-center justify-center shrink-0"
               >
                 <svg
                   aria-hidden="true"
-                  class="lucide lucide-menu w-full h-full p-0.5"
+                  class="lucide lucide-x w-full h-full p-0.5"
                   fill="none"
                   height="24"
                   stroke="currentColor"
@@ -678,21 +533,108 @@ exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü kilitli tasarı
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M4 5h16"
+                    d="M18 6 6 18"
                   />
                   <path
-                    d="M4 12h16"
-                  />
-                  <path
-                    d="M4 19h16"
+                    d="m6 6 12 12"
                   />
                 </svg>
               </div>
+            </div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`FloatingGuestMenu (Diamond Snapshot) > misafir menüsü kilitli tasarım snapshotu ile eşleşmeli 1`] = `
+<DocumentFragment>
+  <div
+    class="z-[100] origin-bottom-right"
+    style="transform: scale(0.95);"
+  >
+    <div
+      class="flex flex-col items-center p-1 bg-white/70 backdrop-blur-3xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-xl transition-all duration-200 ease-in-out overflow-hidden w-[110px]"
+    >
+      <div
+        class="w-full p-0.5"
+      >
+        <button
+          aria-label="Menüyü Aç"
+          class="
+        relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
+        bg-stone-100 text-stone-900 hover:bg-stone-200 
+        px-3 py-1.5 text-[9px] gap-1.5 
+        rounded-2xl 
+        
+        
+              !bg-stone-900 !text-white border-transparent 
+              hover:scale-[1.02] active:scale-95 transition-all h-12 w-full shadow-lg rounded-lg relative overflow-hidden
+            
+      "
+        >
+          <div
+            class="
+          
+          
+        "
+          >
+            <div
+              class="flex flex-row items-center justify-center gap-2.5 w-full h-full px-1"
+            >
               <span
-                class="text-[10px] font-black uppercase tracking-widest leading-none"
+                class="text-[11px] font-black uppercase tracking-tight leading-none"
               >
                 MENÜ
               </span>
+              <div
+                class="w-4 h-4 flex items-center justify-center shrink-0"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-layout-grid w-full h-full p-0.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect
+                    height="7"
+                    rx="1"
+                    width="7"
+                    x="3"
+                    y="3"
+                  />
+                  <rect
+                    height="7"
+                    rx="1"
+                    width="7"
+                    x="14"
+                    y="3"
+                  />
+                  <rect
+                    height="7"
+                    rx="1"
+                    width="7"
+                    x="14"
+                    y="14"
+                  />
+                  <rect
+                    height="7"
+                    rx="1"
+                    width="7"
+                    x="3"
+                    y="14"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
         </button>

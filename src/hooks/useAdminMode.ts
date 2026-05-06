@@ -18,7 +18,7 @@ const STORE_SLUG = getActiveStoreSlug();
  * - Sunucu taraflı PIN doğrulama (RPC).
  */
 export function useAdminMode() {
-  const { isAdmin, setIsAdmin, isInlineEnabled, toggleInlineEdit } = useStore();
+  const { isAdmin, setIsAdmin, isInlineEnabled, toggleInlineEdit, setAdminPin } = useStore();
 
   const [lockoutUntil, setLockoutUntil] = useState<number | null>(() => {
     const saved = sessionStorage.getItem('admin_lockout_until');
@@ -80,11 +80,12 @@ export function useAdminMode() {
       } else {
         setFailedAttempts(0);
         setIsLockedOut(false);
+        setAdminPin(pin);
       }
 
       return isSuccess;
     },
-    [failedAttempts, isLockedOut],
+    [failedAttempts, isLockedOut, setAdminPin],
   );
 
   const openModal = useStore((state) => state.openModal);
@@ -99,9 +100,10 @@ export function useAdminMode() {
   // LOGOUT
   const logout = useCallback(() => {
     setIsAdmin(false);
+    setAdminPin(null);
     sessionStorage.removeItem(STORAGE.adminSession);
     if (timeoutTimer.current) clearTimeout(timeoutTimer.current);
-  }, [setIsAdmin]);
+  }, [setIsAdmin, setAdminPin]);
 
   // SESSION TIMEOUT
   const resetTimeout = useCallback(() => {

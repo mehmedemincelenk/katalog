@@ -142,8 +142,6 @@ const CategoryFilterChip = memo(
               onRename(categoryName, newName.trim());
             }
           }}
-          title="Kategori Adını Değiştir"
-          subtitle="Bu kategorinin adını güncelleyerek dükkan nizamını koruyabilirsiniz."
           initialValue={categoryName}
           placeholder="Yeni kategori adı girin..."
         />

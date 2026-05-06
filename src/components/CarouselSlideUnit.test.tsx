@@ -17,9 +17,9 @@ describe('CarouselSlideUnit (Diamond Snapshot)', () => {
   };
 
   const commonProps = {
-    onImageUpdateTrigger: vi.fn(),
     onDeleteTrigger: vi.fn(),
-    onReorderTrigger: vi.fn(),
+    onOrderChange: vi.fn(),
+    onUpload: vi.fn(),
     editingTargetSlideId: null,
   };
 

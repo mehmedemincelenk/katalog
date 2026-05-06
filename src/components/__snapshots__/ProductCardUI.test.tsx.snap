@@ -74,12 +74,12 @@ exports[`ProductCardUI (Diamond Snapshot) > Admin görünümü snapshotu ile eş
         class="flex flex-col gap-1"
       >
         <h3
-          class="text-[0.6875rem] sm:text-xs leading-normal font-bold sm:text-[1.1rem] text-stone-900 leading-tight tracking-tight truncate"
+          class="text-[0.6875rem] leading-normal font-bold text-stone-900 leading-tight tracking-tight truncate"
         >
           Test Ürünü
         </h3>
         <p
-          class="text-[0.5rem] leading-tight font-medium uppercase tracking-wider sm:text-[0.75rem] text-stone-500 leading-snug font-medium normal-case line-clamp-3 leading-relaxed min-h-[3em]"
+          class="text-[0.5rem] leading-tight font-medium uppercase tracking-wider text-stone-600 leading-snug font-bold normal-case line-clamp-3 leading-relaxed min-h-[3em]"
         >
           Harika bir test açıklaması
         </p>
@@ -172,12 +172,12 @@ exports[`ProductCardUI (Diamond Snapshot) > Normal görünüm snaphotu ile eşle
         class="flex flex-col gap-1"
       >
         <h3
-          class="text-[0.6875rem] sm:text-xs leading-normal font-bold sm:text-[1.1rem] text-stone-900 leading-tight tracking-tight truncate"
+          class="text-[0.6875rem] leading-normal font-bold text-stone-900 leading-tight tracking-tight truncate"
         >
           Test Ürünü
         </h3>
         <p
-          class="text-[0.5rem] leading-tight font-medium uppercase tracking-wider sm:text-[0.75rem] text-stone-500 leading-snug font-medium normal-case line-clamp-3 leading-relaxed min-h-[3em]"
+          class="text-[0.5rem] leading-tight font-medium uppercase tracking-wider text-stone-600 leading-snug font-bold normal-case line-clamp-3 leading-relaxed min-h-[3em]"
         >
           Harika bir test açıklaması
         </p>
@@ -280,12 +280,12 @@ exports[`ProductCardUI (Diamond Snapshot) > Stokta olmayan görünüm snapshotu 
         class="flex flex-col gap-1"
       >
         <h3
-          class="text-[0.6875rem] sm:text-xs leading-normal font-bold sm:text-[1.1rem] text-stone-900 leading-tight tracking-tight truncate"
+          class="text-[0.6875rem] leading-normal font-bold text-stone-900 leading-tight tracking-tight truncate"
         >
           Test Ürünü
         </h3>
         <p
-          class="text-[0.5rem] leading-tight font-medium uppercase tracking-wider sm:text-[0.75rem] text-stone-500 leading-snug font-medium normal-case line-clamp-3 leading-relaxed min-h-[3em]"
+          class="text-[0.5rem] leading-tight font-medium uppercase tracking-wider text-stone-600 leading-snug font-bold normal-case line-clamp-3 leading-relaxed min-h-[3em]"
         >
           Harika bir test açıklaması
         </p>

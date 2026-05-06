@@ -78,7 +78,7 @@ export default function BaseModal({
             exit={isStatic ? undefined : { opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className={`
-              relative w-full max-w-[460px] mx-auto
+              relative w-full ${maxWidth} mx-auto
               rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.3)] 
               flex flex-col max-h-[85vh] 
               print:max-h-none print:shadow-none print:border-none print:w-full print:max-w-full print:rounded-none

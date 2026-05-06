@@ -1,6 +1,5 @@
 import { useState, useMemo, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { THEME } from '../data/config';
+import { motion } from 'framer-motion';
 import Button from './Button';
 import BaseModal from './BaseModal';
 import * as Lucide from 'lucide-react';
@@ -121,7 +120,7 @@ export default function BulkPriceUpdateModal({
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [deskItems, setDeskItems] = useState<Record<string, DeskItemState>>({});
 
-  const modalTheme = THEME.addProductModal;
+
 
   const resetAll = () => {
     setCurrentStep(1);

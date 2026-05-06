@@ -3,76 +3,21 @@
 exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü açıldığında butonlar doğru görünmeli 1`] = `
 <DocumentFragment>
   <div
-    class="z-[100]"
+    class="z-[100] origin-bottom-right"
+    style="transform: scale(0.95);"
   >
     <div
-      class="flex flex-col items-center p-1 bg-stone-200/50 backdrop-blur-xl border border-white/20 shadow-2xl rounded-full"
+      class="flex flex-col items-center p-1 bg-white/70 backdrop-blur-3xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-xl transition-all duration-200 ease-in-out overflow-hidden w-[110px]"
     >
       <div
-        class="w-full"
-      >
-        <button
-          aria-label="Menüyü Kapat"
-          class="
-        relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
-        bg-stone-900 text-white hover:bg-stone-800 shadow-lg shadow-stone-200 
-        px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-2xl 
-        
-        !bg-white !text-stone-900 border-2 border-stone-100 hover:scale-105 active:scale-95 transition-all h-11 sm:h-8 w-full shadow-none rounded-lg relative overflow-hidden
-      "
-        >
-          <div
-            class="
-          
-          
-        "
-          >
-            <div
-              class="flex flex-row items-center justify-center gap-1.5 w-full h-full"
-            >
-              <div
-                class="w-4 h-4 flex items-center justify-center shrink-0"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="lucide lucide-x w-full h-full p-0.5"
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2.5"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M18 6 6 18"
-                  />
-                  <path
-                    d="m6 6 12 12"
-                  />
-                </svg>
-              </div>
-              <span
-                class="text-[10px] font-black uppercase tracking-widest leading-none"
-              >
-                AYARLAR
-              </span>
-            </div>
-          </div>
-        </button>
-      </div>
-      <div
         class="w-full flex flex-col items-center overflow-hidden"
-        style="height: 0px; opacity: 0;"
+        style="opacity: 0; height: 0px;"
       >
         <div
-          class="flex flex-col gap-2 sm:gap-1 items-center w-full py-1"
+          class="flex flex-col gap-1 items-center w-full py-1 px-0.5"
         >
           <div
-            class="flex flex-col gap-2 sm:gap-1 items-center w-full px-1"
+            class="flex flex-col gap-1 items-center w-full"
           >
             <div
               class="w-full"
@@ -81,11 +26,11 @@ exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü açıldığında 
               <button
                 class="
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
-        bg-stone-900 text-white hover:bg-stone-800 shadow-lg shadow-stone-200 
+        bg-stone-100 text-stone-900 hover:bg-stone-200 
         px-3 py-1.5 text-[9px] gap-1.5 
         rounded-2xl 
         
-        shrink-0 shadow-md rounded-xl sm:rounded-lg bg-stone-900 text-white w-full !col-span-2 !rounded-2xl mb-1 w-full !justify-start px-2 gap-2 h-[42px]
+        shrink-0 shadow-sm rounded-lg bg-white text-stone-900 border-2 border-stone-100 w-full !col-span-2 !rounded-lg mb-1 w-full !justify-start px-2 gap-2 h-[40px] !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md transition-all
       "
               >
                 <div
@@ -96,7 +41,7 @@ exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü açıldığında 
         "
                 >
                   <div
-                    class="w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center"
+                    class="w-6 h-6 flex items-center justify-center text-stone-900"
                   >
                     <svg
                       aria-hidden="true"
@@ -133,12 +78,12 @@ exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü açıldığında 
         "
                 >
                   <div
-                    class="flex-1 min-w-0 overflow-hidden"
+                    class="flex-1 min-w-0 overflow-hidden text-left"
                   >
                     <div
                       class="
         overflow-hidden whitespace-nowrap 
-        text-[8px] font-black uppercase tracking-tighter 
+        text-[8px] font-black uppercase tracking-tighter text-stone-900 
         
       "
                     >
@@ -150,152 +95,22 @@ exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü açıldığında 
                 </div>
               </button>
             </div>
-            <div
-              class="w-full"
-              style="opacity: 0; transform: translateY(10px) scale(0.8);"
-            >
-              <button
-                class="
-        relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
-        bg-stone-100 text-stone-900 hover:bg-stone-200 
-        px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-2xl 
-        
-        shrink-0 shadow-md rounded-xl sm:rounded-lg bg-white text-stone-900 border-2 border-stone-100 w-full !justify-start px-2 gap-2 h-[42px]
-      "
-              >
-                <div
-                  class="
-          flex items-center justify-center shrink-0 transition-transform duration-300
-          
-          
-        "
-                >
-                  <div
-                    class="w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="lucide lucide-bell"
-                      fill="none"
-                      height="24"
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M10.268 21a2 2 0 0 0 3.464 0"
-                      />
-                      <path
-                        d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <div
-                  class="
-          
-          
-        "
-                >
-                  <div
-                    class="flex-1 min-w-0 overflow-hidden"
-                  >
-                    <div
-                      class="
-        overflow-hidden whitespace-nowrap 
-        text-[8px] font-black uppercase tracking-tighter 
-        
-      "
-                    >
-                      <span>
-                        BİLDİRİMLER
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </button>
-            </div>
-            <div
-              class="w-full"
-              style="opacity: 0; transform: translateY(10px) scale(0.8);"
-            >
-              <button
-                class="
-        relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
-        bg-stone-100 text-stone-900 hover:bg-stone-200 
-        px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-2xl 
-        
-        shrink-0 shadow-md rounded-xl sm:rounded-lg bg-white text-stone-900 border-2 border-stone-100 w-full !justify-start px-2 gap-2 h-[42px]
-      "
-              >
-                <div
-                  class="
-          flex items-center justify-center shrink-0 transition-transform duration-300
-          
-          
-        "
-                >
-                  <div
-                    class="w-6 h-6 sm:w-5 sm:h-5 flex flex-col items-center justify-center leading-none"
-                  >
-                    <span
-                      class="text-[12px] sm:text-[14px] font-black"
-                    >
-                      ₺
-                    </span>
-                    <span
-                      class="text-[5px] sm:text-[6px] font-bold uppercase tracking-tighter opacity-70 -mt-0.5"
-                    >
-                      TRY
-                    </span>
-                  </div>
-                </div>
-                <div
-                  class="
-          
-          
-        "
-                >
-                  <div
-                    class="flex-1 min-w-0 overflow-hidden"
-                  >
-                    <div
-                      class="
-        overflow-hidden whitespace-nowrap 
-        text-[8px] font-black uppercase tracking-tighter 
-        
-      "
-                    >
-                      <span>
-                        PARA BİRİMİ
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </button>
-            </div>
           </div>
           <div
-            class="grid grid-cols-2 gap-2 sm:gap-1 justify-items-center w-full px-1"
+            class="grid grid-cols-2 gap-1 justify-items-center w-full px-0.5"
           >
             <div
-              class="w-full flex justify-center"
+              class="w-full"
               style="opacity: 0; transform: translateY(10px) scale(0.8);"
             >
               <button
                 class="
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
-        bg-stone-900 text-white hover:bg-stone-800 shadow-lg shadow-stone-200 
+        bg-stone-100 text-stone-900 hover:bg-stone-200 
         px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-full aspect-square !p-0 
+        rounded-2xl 
         
-        shrink-0 shadow-md rounded-full sm:rounded-lg  w-[42px] h-[42px] !p-0
+        shrink-0 shadow-sm rounded-lg  w-full h-[46px] !p-0 transition-all !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md
       "
               >
                 <div
@@ -306,7 +121,7 @@ exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü açıldığında 
         "
                 >
                   <div
-                    class="w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center"
+                    class="w-6 h-6 flex items-center justify-center"
                   >
                     <svg
                       aria-hidden="true"
@@ -333,7 +148,7 @@ exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü açıldığında 
               </button>
             </div>
             <div
-              class="w-full flex justify-center"
+              class="w-full"
               style="opacity: 0; transform: translateY(10px) scale(0.8);"
             >
               <button
@@ -341,9 +156,9 @@ exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü açıldığında 
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
         bg-stone-100 text-stone-900 hover:bg-stone-200 
         px-3 py-1.5 text-[9px] gap-1.5 
-        rounded-full aspect-square !p-0 
+        rounded-2xl 
         
-        shrink-0 shadow-md rounded-full sm:rounded-lg bg-white text-stone-900 border-2 border-stone-100 w-[42px] h-[42px] !p-0
+        shrink-0 shadow-sm rounded-lg bg-white text-stone-900 border-2 border-stone-100 w-full h-[46px] !p-0 transition-all !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md
       "
               >
                 <div
@@ -354,7 +169,98 @@ exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü açıldığında 
         "
                 >
                   <div
-                    class="w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center"
+                    class="w-6 h-6 flex items-center justify-center"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-image"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <rect
+                        height="18"
+                        rx="2"
+                        ry="2"
+                        width="18"
+                        x="3"
+                        y="3"
+                      />
+                      <circle
+                        cx="9"
+                        cy="9"
+                        r="2"
+                      />
+                      <path
+                        d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </button>
+            </div>
+            <div
+              class="w-full"
+              style="opacity: 0; transform: translateY(10px) scale(0.8);"
+            >
+              <button
+                class="
+        relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
+        bg-stone-100 text-stone-900 hover:bg-stone-200 
+        px-3 py-1.5 text-[9px] gap-1.5 
+        rounded-2xl 
+        
+        shrink-0 shadow-sm rounded-lg bg-white text-stone-900 border-2 border-stone-100 w-full h-[46px] !p-0 transition-all !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md
+      "
+              >
+                <div
+                  class="
+          flex items-center justify-center shrink-0 transition-transform duration-300
+          
+          
+        "
+                >
+                  <div
+                    class="w-full h-full flex items-center justify-center"
+                  >
+                    <span
+                      class="text-[20px] font-medium leading-none text-stone-900"
+                    >
+                      ₺
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </div>
+            <div
+              class="w-full"
+              style="opacity: 0; transform: translateY(10px) scale(0.8);"
+            >
+              <button
+                class="
+        relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
+        bg-stone-100 text-stone-900 hover:bg-stone-200 
+        px-3 py-1.5 text-[9px] gap-1.5 
+        rounded-2xl 
+        
+        shrink-0 shadow-sm rounded-lg bg-white text-stone-900 border-2 border-stone-100 w-full h-[46px] !p-0 transition-all !bg-stone-50/80 !border-stone-100 hover:!bg-white hover:shadow-md
+      "
+              >
+                <div
+                  class="
+          flex items-center justify-center shrink-0 transition-transform duration-300
+          
+          
+        "
+                >
+                  <div
+                    class="w-6 h-6 flex items-center justify-center"
                   >
                     <svg
                       aria-hidden="true"
@@ -393,31 +299,21 @@ exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü açıldığında 
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü kilitli tasarım snapshotu ile eşleşmeli 1`] = `
-<DocumentFragment>
-  <div
-    class="z-[100]"
-  >
-    <div
-      class="flex flex-col items-center p-1 bg-stone-200/50 backdrop-blur-xl border border-white/20 shadow-2xl rounded-full"
-    >
       <div
-        class="w-full"
+        class="w-full p-0.5"
       >
         <button
-          aria-label="Menüyü Aç"
+          aria-label="Menüyü Kapat"
           class="
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
         bg-stone-100 text-stone-900 hover:bg-stone-200 
         px-3 py-1.5 text-[9px] gap-1.5 
         rounded-2xl 
         
-        !bg-stone-900 !text-white hover:scale-105 active:scale-95 transition-all h-11 sm:h-8 w-full shadow-none rounded-lg relative overflow-hidden
+        
+              !bg-white !text-stone-900 border-stone-100 
+              hover:scale-[1.02] active:scale-95 transition-all h-12 w-full shadow-lg rounded-lg relative overflow-hidden
+            
       "
         >
           <div
@@ -427,8 +323,86 @@ exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü kilitli tasarım 
         "
           >
             <div
-              class="flex flex-row items-center justify-center gap-1.5 w-full h-full"
+              class="flex flex-row items-center justify-center gap-2.5 w-full h-full px-1"
             >
+              <span
+                class="text-[11px] font-black uppercase tracking-tight leading-none"
+              >
+                AYARLAR
+              </span>
+              <div
+                class="w-4 h-4 flex items-center justify-center shrink-0"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-x w-full h-full p-0.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18 6 6 18"
+                  />
+                  <path
+                    d="m6 6 12 12"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü kilitli tasarım snapshotu ile eşleşmeli 1`] = `
+<DocumentFragment>
+  <div
+    class="z-[100] origin-bottom-right"
+    style="transform: scale(0.95);"
+  >
+    <div
+      class="flex flex-col items-center p-1 bg-white/70 backdrop-blur-3xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-xl transition-all duration-200 ease-in-out overflow-hidden w-[110px]"
+    >
+      <div
+        class="w-full p-0.5"
+      >
+        <button
+          aria-label="Menüyü Aç"
+          class="
+        relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
+        bg-stone-100 text-stone-900 hover:bg-stone-200 
+        px-3 py-1.5 text-[9px] gap-1.5 
+        rounded-2xl 
+        
+        
+              !bg-stone-900 !text-white border-transparent 
+              hover:scale-[1.02] active:scale-95 transition-all h-12 w-full shadow-lg rounded-lg relative overflow-hidden
+            
+      "
+        >
+          <div
+            class="
+          
+          
+        "
+          >
+            <div
+              class="flex flex-row items-center justify-center gap-2.5 w-full h-full px-1"
+            >
+              <span
+                class="text-[11px] font-black uppercase tracking-tight leading-none"
+              >
+                AYARLAR
+              </span>
               <div
                 class="w-4 h-4 flex items-center justify-center shrink-0"
               >
@@ -463,11 +437,6 @@ exports[`FloatingAdminMenu (Diamond Snapshot) > admin menüsü kilitli tasarım 
                   />
                 </svg>
               </div>
-              <span
-                class="text-[10px] font-black uppercase tracking-widest leading-none"
-              >
-                AYARLAR
-              </span>
             </div>
           </div>
         </button>

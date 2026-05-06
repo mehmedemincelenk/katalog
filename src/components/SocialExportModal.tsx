@@ -16,11 +16,7 @@ import { MarketingGallery } from './MarketingGallery';
  * Sadece "EKATALOG". 
  * Modern, Sade, Zeki.
  */
-interface SocialExportModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  products?: Product[];
-}
+
 
 export default function SocialExportModal({ 
   isOpen, 
@@ -40,6 +36,7 @@ export default function SocialExportModal({
   const [designIndex, setDesignIndex] = useState(0);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState<'STORY' | 'POST'>('STORY'); // STORY: 9:16, POST: 16:9
   const designRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -69,16 +66,40 @@ export default function SocialExportModal({
   const handleDownload = async () => {
     if (!designRef.current) return;
     setIsExporting(true);
+    
+    const isPost = aspectRatio === 'POST';
+    const width = isPost ? 640 : 360;
+    const height = isPost ? 360 : 640;
+
     const captureEl = document.createElement('div');
-    captureEl.style.position = 'fixed'; captureEl.style.left = '-9999px'; captureEl.style.top = '0';
-    captureEl.style.width = '360px'; captureEl.style.height = '640px'; captureEl.style.zIndex = '-1';
+    captureEl.style.position = 'fixed'; 
+    captureEl.style.left = '-9999px'; 
+    captureEl.style.top = '0';
+    captureEl.style.width = `${width}px`; 
+    captureEl.style.height = `${height}px`; 
+    captureEl.style.zIndex = '-1';
     captureEl.innerHTML = designRef.current.innerHTML;
     document.body.appendChild(captureEl);
+    
     try {
-      const canvas = await html2canvas(captureEl, { scale: 3, useCORS: true, width: 360, height: 640, logging: false, backgroundColor: null });
-      const link = document.createElement('a'); link.href = canvas.toDataURL('image/jpeg', 0.95);
-      link.download = `EKATALOG_PROMO_${Date.now()}.jpg`; link.click();
-    } catch (err) { console.error(err); } finally { document.body.removeChild(captureEl); setIsExporting(false); }
+      const canvas = await html2canvas(captureEl, { 
+        scale: 3, 
+        useCORS: true, 
+        width: width, 
+        height: height, 
+        logging: false, 
+        backgroundColor: null 
+      });
+      const link = document.createElement('a'); 
+      link.href = canvas.toDataURL('image/jpeg', 0.95);
+      link.download = `EKATALOG_${aspectRatio}_${Date.now()}.jpg`; 
+      link.click();
+    } catch (err) { 
+      console.error(err); 
+    } finally { 
+      document.body.removeChild(captureEl); 
+      setIsExporting(false); 
+    }
   };
 
   const CurrentDesign = MarketingGallery[designIndex];
@@ -106,16 +127,44 @@ export default function SocialExportModal({
             />
          </div>
 
+         {/* ASPECT RATIO TOGGLE */}
+         <div className="flex bg-stone-100 p-1.5 rounded-2xl w-[260px] shadow-inner">
+            <button 
+              onClick={() => setAspectRatio('STORY')}
+              className={`flex-1 py-2.5 rounded-xl text-[10px] font-black transition-all ${aspectRatio === 'STORY' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
+            >
+              HİKAYE (9:16)
+            </button>
+            <button 
+              onClick={() => setAspectRatio('POST')}
+              className={`flex-1 py-2.5 rounded-xl text-[10px] font-black transition-all ${aspectRatio === 'POST' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
+            >
+              YATAY (16:9)
+            </button>
+         </div>
+
          {/* PREVIEW CONTAINER */}
-         <div className="relative">
-            <div className="w-[280px] h-[497px] rounded-[3.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.4)] overflow-hidden border-[12px] border-stone-950 relative bg-stone-50">
-               <div ref={designRef} className="w-[360px] h-[640px] absolute top-0 left-0 origin-top-left scale-[0.777] bg-white relative overflow-hidden">
+         <div className="relative transition-all duration-500">
+            <div 
+              className={`
+                ${aspectRatio === 'STORY' ? 'w-[260px] h-[462px] rounded-[3rem]' : 'w-[320px] h-[180px] rounded-[2rem]'} 
+                shadow-[0_50px_100px_-20px_rgba(0,0,0,0.4)] overflow-hidden border-[10px] border-stone-950 relative bg-stone-50 transition-all duration-500
+              `}
+            >
+               <div 
+                  ref={designRef} 
+                  className={`
+                    ${aspectRatio === 'STORY' ? 'w-[360px] h-[640px] scale-[0.722]' : 'w-[640px] h-[360px] scale-[0.484]'} 
+                    absolute top-0 left-0 origin-top-left bg-white relative overflow-hidden transition-all duration-500
+                  `}
+               >
                   {activeProduct && (
                     <CurrentDesign 
                       product={activeProduct} 
                       storeName={storeName} 
                       storeUrl={storeUrl} 
                       onProductClick={handleProductChange}
+                      aspectRatio={aspectRatio}
                     />
                   )}
                </div>

@@ -19,7 +19,7 @@ import { TECH, sortCategories } from '../data/config';
 
 // --- 0. STORAGE SERVICE (Internal Asset Management) ---
 
-async function uploadProductVisual(targetProduct: Product, visualFile: File) {
+async function uploadProductVisual(targetProduct: Product, visualFile: File, adminPin: string) {
   try {
     const { processDualQualityVisuals } = await import('../utils/image');
     const { hq: highQualityAsset, lq: previewAsset } =
@@ -31,10 +31,16 @@ async function uploadProductVisual(targetProduct: Product, visualFile: File) {
         const assetUrl = new URL(targetProduct.image_url);
         const legacyFileName = assetUrl.pathname.split('/').pop();
         if (legacyFileName && !legacyFileName.includes('placeholder')) {
-          await supabase.storage.from(TECH.storage.bucket).remove([
-            `${TECH.storage.lqFolder}/${legacyFileName}`,
-            `${TECH.storage.hqFolder}/${legacyFileName}`,
+          const lqLegacy = `${TECH.storage.lqFolder}/${legacyFileName}`;
+          const hqLegacy = `${TECH.storage.hqFolder}/${legacyFileName}`;
+
+          // Authorize deletions
+          await Promise.all([
+            supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: lqLegacy }),
+            supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: hqLegacy })
           ]);
+
+          await supabase.storage.from(TECH.storage.bucket).remove([lqLegacy, hqLegacy]);
         }
       } catch { /* ignore */ }
     }
@@ -47,6 +53,12 @@ async function uploadProductVisual(targetProduct: Product, visualFile: File) {
 
     const lqPath = `${TECH.storage.lqFolder}/${storageFileName}`;
     const hqPath = `${TECH.storage.hqFolder}/${storageFileName}`;
+
+    // Authorize new uploads
+    await Promise.all([
+      supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: lqPath }),
+      supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: hqPath })
+    ]);
 
     const [lqRes, hqRes] = await Promise.all([
       supabase.storage.from(TECH.storage.bucket).upload(lqPath, previewAsset, { upsert: true, cacheControl: TECH.storage.cacheControl }),
@@ -91,12 +103,17 @@ export function useProductsQuery(storeId?: string) {
 
 export function useProductsActions() {
   const queryClient = useQueryClient();
-  const { settings } = useStore();
+  const { settings, adminPin } = useStore();
   const queryKey = ['products', settings?.id];
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, changes }: { id: string; changes: Partial<Product> }) => {
-      const { error } = await supabase.from('prods').update(changes).eq('id', id);
+      if (!adminPin) throw new Error('Yetkisiz işlem: PIN gerekli');
+      const { error } = await supabase.rpc('secure_update_product', {
+        p_id: id,
+        p_pin: adminPin,
+        p_changes: changes
+      });
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
@@ -104,7 +121,11 @@ export function useProductsActions() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('prods').delete().eq('id', id);
+      if (!adminPin) throw new Error('Yetkisiz işlem: PIN gerekli');
+      const { error } = await supabase.rpc('secure_delete_product', {
+        p_id: id,
+        p_pin: adminPin
+      });
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
@@ -112,10 +133,12 @@ export function useProductsActions() {
 
   const reorderCategoryMutation = useMutation({
     mutationFn: async (newOrder: string[]) => {
-      const { error } = await supabase
-        .from('stores')
-        .update({ category_order: newOrder })
-        .eq('id', settings?.id);
+      if (!settings?.id || !adminPin) throw new Error('Yetkisiz işlem');
+      const { error } = await supabase.rpc('secure_reorder_categories', {
+        p_store_id: settings.id,
+        p_pin: adminPin,
+        p_new_order: newOrder
+      });
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['settings'] }),
@@ -123,12 +146,13 @@ export function useProductsActions() {
 
   const renameCategoryMutation = useMutation({
     mutationFn: async ({ oldName, newName }: { oldName: string; newName: string }) => {
-      if (!settings?.id) throw new Error('Mağaza ID bulunamadı');
-      const { error } = await supabase
-        .from('prods')
-        .update({ category: newName })
-        .eq('category', oldName)
-        .eq('store_id', settings.id);
+      if (!settings?.id || !adminPin) throw new Error('Yetkisiz işlem');
+      const { error } = await supabase.rpc('secure_rename_category', {
+        p_store_id: settings.id,
+        p_pin: adminPin,
+        p_old_name: oldName,
+        p_new_name: newName
+      });
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
@@ -136,10 +160,12 @@ export function useProductsActions() {
 
   const reorderProductsMutation = useMutation({
     mutationFn: async ({ id, newSortOrder }: { id: string; newSortOrder: number }) => {
-      const { error } = await supabase
-        .from('prods')
-        .update({ sort_order: newSortOrder })
-        .eq('id', id);
+      if (!adminPin) throw new Error('Yetkisiz işlem');
+      const { error } = await supabase.rpc('secure_update_product', {
+        p_id: id,
+        p_pin: adminPin,
+        p_changes: { sort_order: newSortOrder }
+      });
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
@@ -147,16 +173,16 @@ export function useProductsActions() {
 
   const addMutation = useMutation({
     mutationFn: async (newProduct: NewProductPayload) => {
-      if (!settings?.id) throw new Error('Mağaza ID bulunamadı');
-      const { data, error } = await supabase.from('prods').insert([{
-        ...newProduct,
-        store_id: settings.id,
-        out_of_stock: false,
-        is_archived: false,
-        sort_order: 0,
-      }]).select('id').single();
+      if (!settings?.id || !adminPin) throw new Error('Yetkisiz işlem');
+      const { data, error } = await supabase.rpc('secure_add_product', {
+        p_pin: adminPin,
+        p_payload: {
+          ...newProduct,
+          store_id: settings.id
+        }
+      });
       if (error) throw error;
-      return data?.id as string;
+      return data.id as string;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
   });
@@ -164,15 +190,21 @@ export function useProductsActions() {
 
   const uploadImageMutation = useMutation({
     mutationFn: async ({ id, file }: { id: string; file: File }) => {
+      if (!adminPin) throw new Error('Yetkisiz işlem: PIN gerekli');
       const cachedProducts = queryClient.getQueryData<Product[]>(queryKey);
       const targetProduct = cachedProducts?.find((p) => p.id === id);
       if (!targetProduct) throw new Error('Ürün bulunamadı');
-      const finalizedUrl = await uploadProductVisual(targetProduct, file);
+      const finalizedUrl = await uploadProductVisual(targetProduct, file, adminPin);
       if (finalizedUrl) {
-        const { error } = await supabase.from('prods').update({
-          image_url: finalizedUrl,
-          is_polished_pending: false,
-        }).eq('id', id);
+        if (!adminPin) throw new Error('Yetkisiz işlem');
+        const { error } = await supabase.rpc('secure_update_product', {
+          p_id: id,
+          p_pin: adminPin,
+          p_changes: {
+            image_url: finalizedUrl,
+            is_polished_pending: false,
+          }
+        });
         if (error) throw error;
       }
       return finalizedUrl;
@@ -193,43 +225,24 @@ export function useProductsActions() {
       }[],
     ) => {
       if (!actions.length) return;
+      if (!adminPin) throw new Error('Yetkisiz işlem: PIN gerekli');
 
-      const deleteIds = actions.filter((a) => a.delete).map((a) => a.productId);
-      const updates = actions.filter((a) => !a.delete);
-
-      // 1. ATOMIC DELETE: Tek seferde tüm silmeleri yap
-      const deletePromise = deleteIds.length
-        ? supabase.from('prods').delete().in('id', deleteIds)
-        : Promise.resolve({ error: null });
-
-      // 2. PARALLEL UPDATES: Güncellemeleri paralel koştur (Promise.all)
-      const updatePromises = updates.map(async (action) => {
-        const update: Partial<Product> = {};
+      // Process actions to match RPC format (converting prices if needed)
+      const formattedActions = await Promise.all(actions.map(async (action) => {
+        const formatted: any = { ...action };
         if (action.newPrice !== undefined) {
           const { formatNumberToCurrency } = await import('../utils/core');
-          update.price = formatNumberToCurrency(action.newPrice);
+          formatted.newPrice = formatNumberToCurrency(action.newPrice);
         }
-        if (action.newSortOrder !== undefined) update.sort_order = action.newSortOrder;
-        if (action.category !== undefined) update.category = action.category;
-        if (action.out_of_stock !== undefined)
-          update.out_of_stock = action.out_of_stock;
-        if (action.is_archived !== undefined)
-          update.is_archived = action.is_archived;
+        return formatted;
+      }));
 
-        if (Object.keys(update).length > 0) {
-          return supabase.from('prods').update(update).eq('id', action.productId);
-        }
-        return Promise.resolve({ error: null });
+      const { error } = await supabase.rpc('secure_bulk_update_products', {
+        p_pin: adminPin,
+        p_actions: formattedActions
       });
 
-      const [deleteRes, ...updateResults] = await Promise.all([
-        deletePromise,
-        ...updatePromises,
-      ]);
-
-      if (deleteRes.error) throw deleteRes.error;
-      const firstUpdateError = updateResults.find((r) => r.error);
-      if (firstUpdateError?.error) throw firstUpdateError.error;
+      if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
   });

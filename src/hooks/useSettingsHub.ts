@@ -61,7 +61,7 @@ export function useSettingsQuery() {
 // --- 2. SETTINGS COORDINATOR (Main Hook) ---
 
 export function useSettings(isAdmin: boolean) {
-  const setSettingsStore = useStore((state) => state.setSettings);
+  const { setSettings: setSettingsStore, adminPin } = useStore();
   const queryClient = useQueryClient();
   const { data: settings, isLoading: loading, isError } = useSettingsQuery();
 
@@ -98,10 +98,13 @@ export function useSettings(isAdmin: boolean) {
         visitor_leads: 'visitor_leads',
       };
 
-      const { error } = await supabase
-        .from('stores')
-        .update({ [dbMap[key] || key]: value })
-        .eq('id', settings.id);
+      if (!adminPin) throw new Error('Yetkisiz işlem: PIN gerekli');
+
+      const { error } = await supabase.rpc('secure_update_store', {
+        p_id: settings.id,
+        p_pin: adminPin,
+        p_changes: { [dbMap[key] || key]: value }
+      });
       if (error) throw error;
     },
     onSuccess: () =>
@@ -122,13 +125,11 @@ export function useSettings(isAdmin: boolean) {
     isError,
     addVisitorLead: async (phone: string) => {
       if (!settings?.id) return;
-      const currentLeads = Array.isArray(settings.visitor_leads) ? settings.visitor_leads : [];
-      const newLead = { phone, created_at: new Date().toISOString() };
       
-      const { error } = await supabase
-        .from('stores')
-        .update({ visitor_leads: [...currentLeads, newLead] })
-        .eq('id', settings.id);
+      const { error } = await supabase.rpc('add_visitor_lead', {
+        p_store_id: settings.id,
+        p_phone: phone
+      });
       
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['settings', STORE_SLUG] });

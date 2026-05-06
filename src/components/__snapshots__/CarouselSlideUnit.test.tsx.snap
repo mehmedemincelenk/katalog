@@ -3,16 +3,10 @@
 exports[`CarouselSlideUnit (Diamond Snapshot) > Admin modunda aktif slide görünümü snapshot ile eşleşmeli 1`] = `
 <DocumentFragment>
   <div
-    class="
-        absolute inset-0 transition-opacity duration-700 ease-in-out 
-        rounded-lg overflow-hidden relative w-full h-full
-        pointer-events-auto 
-        bg-stone-200
-      "
-    style="opacity: 1; filter: blur(0px); z-index: 10; transform: none;"
+    class="absolute inset-0 transition-opacity duration-700 ease-in-out overflow-hidden rounded-none relative"
   >
     <div
-      class="relative w-full h-full overflow-hidden cursor-pointer"
+      class="relative w-full h-full"
     >
       <div
         class="relative overflow-hidden bg-stone-100 aspect-[4/3] 
@@ -57,62 +51,103 @@ exports[`CarouselSlideUnit (Diamond Snapshot) > Admin modunda aktif slide görü
       </div>
     </div>
     <div
-      class="absolute top-4 right-4 z-[50] flex items-center gap-2"
-      style="opacity: 0; transform: translateX(20px);"
+      class="absolute inset-0 pointer-events-none z-[999]"
     >
-      <button
-        class="
+      <div
+        class="absolute top-4 left-4 z-30 pointer-events-auto bg-stone-900 text-white px-3 py-1.5 rounded-[var(--radius-button)] text-[0.5rem] leading-tight font-medium uppercase tracking-wider font-black shadow-xl !top-4 !left-4 !right-auto !pointer-events-auto flex items-center relative w-fit h-fit transition-opacity duration-500 opacity-100"
+      >
+        <select
+          class="absolute inset-0 cursor-pointer z-10 opacity-0"
+        >
+          <option
+            value="0"
+          >
+            1.
+          </option>
+          <option
+            value="1"
+          >
+            2.
+          </option>
+          <option
+            value="2"
+          >
+            3.
+          </option>
+        </select>
+        <span
+          class="text-white text-[11px] font-black"
+        >
+          2.
+        </span>
+      </div>
+      <div
+        class="absolute top-4 right-4 !pointer-events-auto transition-opacity duration-500 opacity-100"
+        style="opacity: 0; transform: scale(0.8);"
+      >
+        <button
+          class="
         relative inline-flex items-center justify-center transition-all duration-300 font-black uppercase tracking-widest active:scale-95 disabled:opacity-50 disabled:pointer-events-none overflow-hidden 
         bg-red-50 text-red-600 hover:bg-red-600 hover:text-white 
         px-6 py-3 text-xs gap-2 
         rounded-full aspect-square !p-0 
         
-        w-8 h-8 sm:w-10 sm:h-10 shadow-xl border-2 border-white/20
+        w-8 h-8 shadow-xl border-2 border-white/20
       "
-        title="AFİŞİ SİL"
-      >
-        <div
-          class="
+          title="AFİŞİ SİL"
+        >
+          <div
+            class="
           flex items-center justify-center shrink-0 transition-transform duration-300
           
           
         "
-        >
-          <div
-            class="w-3.5 h-3.5 sm:w-5 sm:h-5"
           >
-            <svg
-              aria-hidden="true"
-              class="lucide lucide-trash2 lucide-trash-2 w-full h-full p-0.5"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.5"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
+            <div
+              class="w-3.5 h-3.5"
             >
-              <path
-                d="M10 11v6"
-              />
-              <path
-                d="M14 11v6"
-              />
-              <path
-                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
-              />
-              <path
-                d="M3 6h18"
-              />
-              <path
-                d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-              />
-            </svg>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-trash2 lucide-trash-2 w-full h-full p-0.5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 11v6"
+                />
+                <path
+                  d="M14 11v6"
+                />
+                <path
+                  d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                />
+                <path
+                  d="M3 6h18"
+                />
+                <path
+                  d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
-      </button>
+        </button>
+      </div>
+    </div>
+    <div
+      class="absolute inset-0 z-20 cursor-pointer group"
+    >
+      <input
+        accept="image/*"
+        class="absolute inset-0 opacity-0 cursor-pointer z-30"
+        type="file"
+      />
     </div>
   </div>
 </DocumentFragment>
@@ -121,16 +156,10 @@ exports[`CarouselSlideUnit (Diamond Snapshot) > Admin modunda aktif slide görü
 exports[`CarouselSlideUnit (Diamond Snapshot) > Aktif slide görünümü snapshot ile eşleşmeli 1`] = `
 <DocumentFragment>
   <div
-    class="
-        absolute inset-0 transition-opacity duration-700 ease-in-out 
-        rounded-lg overflow-hidden relative w-full h-full
-        pointer-events-auto 
-        bg-stone-200
-      "
-    style="opacity: 1; filter: blur(0px); z-index: 10; transform: none;"
+    class="absolute inset-0 transition-opacity duration-700 ease-in-out overflow-hidden rounded-none relative"
   >
     <div
-      class="relative w-full h-full overflow-hidden "
+      class="relative w-full h-full"
     >
       <div
         class="relative overflow-hidden bg-stone-100 aspect-[4/3] 
@@ -181,16 +210,10 @@ exports[`CarouselSlideUnit (Diamond Snapshot) > Aktif slide görünümü snapsho
 exports[`CarouselSlideUnit (Diamond Snapshot) > Pasif (Ghost) slide görünümü snapshot ile eşleşmeli 1`] = `
 <DocumentFragment>
   <div
-    class="
-        absolute inset-0 transition-opacity duration-700 ease-in-out 
-        rounded-lg overflow-hidden relative w-full h-full
-        pointer-events-none 
-        bg-stone-200
-      "
-    style="opacity: 0.35; filter: blur(2px); z-index: 0; transform: scale(0.95);"
+    class="absolute inset-0 transition-opacity duration-700 ease-in-out overflow-hidden rounded-none relative"
   >
     <div
-      class="relative w-full h-full overflow-hidden "
+      class="relative w-full h-full"
     >
       <div
         class="relative overflow-hidden bg-stone-100 aspect-[4/3] 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, PanInfo } from 'framer-motion';
 import { THEME, CAROUSEL, TECH } from '../data/config';
 import { supabase } from '../supabase';
@@ -99,7 +99,6 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
   const [activeEditingSlideId, setActiveEditingSlideId] = useState<number | null>(null);
   
   const carouselTheme = THEME.heroCarousel;
-  const globalIcons = THEME.icons;
 
   const handleNext = useCallback(() => {
     if (marketingSlides.length <= 1) return;
@@ -148,7 +147,7 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
       setTimeout(() => setUploadSuccess(false), 1500);
     } catch (err) {
       console.error('Hero upload error:', err);
-      showFeedback('İşlem başarısız oldu.', 'danger');
+      showFeedback('error', 'İşlem başarısız oldu.');
     } finally {
       setIsAssetUploading(false);
       setActiveEditingSlideId(null);
@@ -171,7 +170,7 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
   if (marketingSlides.length === 0 && isAdminModeActive) {
     return (
       <div className="px-6 py-10 fade-in relative">
-        <PlusPlaceholder type="CAROUSEL" />
+        <PlusPlaceholder type="CAROUSEL" onClick={() => {}} />
         <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" accept="image/*" 
           onChange={(e) => { setActiveEditingSlideId(-1); handleFileUploadAction(e); }} />
       </div>
@@ -213,9 +212,12 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
                 isCurrentlyUploading={isAssetUploading}
                 currentIndex={index}
                 totalSlides={marketingSlides.length}
+                editingTargetSlideId={activeEditingSlideId}
                 onOrderChange={(newPos) => reorderSlides(slideItem.id, newPos)}
-                onImageUpdateTrigger={(id) => setActiveEditingSlideId(id)}
-                onUpload={handleFileUploadAction}
+                onUpload={(e) => {
+                  setActiveEditingSlideId(slideItem.id);
+                  handleFileUploadAction(e);
+                }}
                 onDeleteTrigger={deleteSlide}
               />
             </div>
@@ -223,12 +225,34 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
         </motion.div>
 
         {marketingSlides.length > 1 && (
-          <div className={carouselTheme.navigation.dotsWrapper}>
-            {marketingSlides.map((_, dotIndex) => (
-              <div key={dotIndex} onClick={() => { setIsTransitioning(true); setCurrentIndex(dotIndex); }}
-                className={`${carouselTheme.navigation.dotBase} ${currentIndex === dotIndex ? carouselTheme.navigation.dotActive : carouselTheme.navigation.dotInactive}`} />
-            ))}
-          </div>
+          <>
+            {/* NAVIGATION BUTTONS (DIAMOND GLASS EDITION) */}
+            <div className="absolute inset-y-0 left-2 z-50 flex items-center">
+              <Button
+                variant="glass"
+                mode="circle"
+                className="!w-10 !h-10 !bg-white/10 backdrop-blur-md border-white/20 hover:!bg-white/30 text-white shadow-2xl transition-all active:scale-90"
+                icon={<Lucide.ChevronLeft size={24} strokeWidth={2.5} />}
+                onClick={handlePrev}
+              />
+            </div>
+            <div className="absolute inset-y-0 right-2 z-50 flex items-center">
+              <Button
+                variant="glass"
+                mode="circle"
+                className="!w-10 !h-10 !bg-white/10 backdrop-blur-md border-white/20 hover:!bg-white/30 text-white shadow-2xl transition-all active:scale-90"
+                icon={<Lucide.ChevronRight size={24} strokeWidth={2.5} />}
+                onClick={handleNext}
+              />
+            </div>
+
+            <div className={carouselTheme.navigation.dotsWrapper}>
+              {marketingSlides.map((_, dotIndex) => (
+                <div key={dotIndex} onClick={() => { setIsTransitioning(true); setCurrentIndex(dotIndex); }}
+                  className={`${carouselTheme.navigation.dotBase} ${currentIndex === dotIndex ? carouselTheme.navigation.dotActive : carouselTheme.navigation.dotInactive}`} />
+              ))}
+            </div>
+          </>
         )}
 
         {/* ADMIN: TOP-CENTER ADD BUTTON */}

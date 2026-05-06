@@ -8,7 +8,6 @@ import DisplaySettingsModal from './DisplaySettingsModal';
 import CouponModal from './CouponModal';
 import PriceListModal from './PriceListModal';
 import GlobalAddMenuModal from './GlobalAddMenuModal';
-import AIStudioCompareModal from './AIStudioCompareModal';
 import LocationModal from './LocationModal';
 import ContactModal from './ContactModal';
 import NotificationsModal from './NotificationsModal';
@@ -18,7 +17,6 @@ import { useStore } from '../store';
 import { useProducts } from '../hooks/useProductsHub';
 import { useAdminMode } from '../hooks/useAdminMode';
 import { useSettings } from '../hooks/useSettingsHub';
-import { Product } from '../types';
 
 /**
  * APP MODALS CONTAINER (DIAMOND EDITION)
@@ -46,7 +44,6 @@ const AppModals = memo(() => {
     allProducts,
     categoryOrder,
     addProduct,
-    updateProduct,
     uploadImage,
     executeGranularBulkActions,
     addCategory

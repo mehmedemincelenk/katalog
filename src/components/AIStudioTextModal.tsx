@@ -14,8 +14,6 @@ const AIStudioTextModal: React.FC<AIStudioTextModalProps> = ({
   suggestedDescription,
   onConfirm,
   onDismiss,
-  visitorCurrency = 'TRY',
-  exchangeRates,
   isStatic = false,
 }) => {
   return (
@@ -34,8 +32,6 @@ const AIStudioTextModal: React.FC<AIStudioTextModalProps> = ({
           <ProductCardUI
             product={product}
             isDimmed={false}
-            visitorCurrency={visitorCurrency}
-            exchangeRates={exchangeRates}
             className="w-full scale-90 origin-top"
             labelOverride="MEVCUT DURUM"
           />
@@ -46,8 +42,6 @@ const AIStudioTextModal: React.FC<AIStudioTextModalProps> = ({
             nameOverride={suggestedName}
             descriptionOverride={suggestedDescription}
             isHighlighted={true}
-            visitorCurrency={visitorCurrency}
-            exchangeRates={exchangeRates}
             className="w-full scale-90 origin-top"
             labelOverride="YENİ TAVSİYE"
           />

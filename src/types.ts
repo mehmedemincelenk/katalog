@@ -522,7 +522,8 @@ export interface AppModalsProps {
 }
 
 export interface MaintenancePageProps {
-  forceVisible?: boolean;
+  onLogoPointerDown: () => void;
+  onLogoPointerUp: () => void;
 }
 
 export interface GlobalAddMenuModalProps {
@@ -626,6 +627,8 @@ export type ModalType =
 export interface StoreState {
   isAdmin: boolean;
   setIsAdmin: (status: boolean) => void;
+  adminPin: string | null;
+  setAdminPin: (pin: string | null) => void;
   settings: CompanySettings | null;
   setSettings: (settings: CompanySettings) => void;
   updateSetting: <K extends keyof CompanySettings>(

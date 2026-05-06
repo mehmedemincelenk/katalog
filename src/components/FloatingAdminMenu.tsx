@@ -39,41 +39,16 @@ export default function FloatingAdminMenu({
       ? [
           {
             id: 'bulk',
-            icon: <div className="w-6 h-6 flex items-center justify-center">{globalIcons.bulkPrice}</div>,
+            icon: <div className="w-6 h-6 flex items-center justify-center text-stone-900">{globalIcons.bulkPrice}</div>,
             action: onBulkUpdateTrigger,
             label: 'TOPLU İŞLEM',
-            className: 'bg-stone-900 text-white w-full !col-span-2 !rounded-2xl mb-1',
+            className: 'bg-white text-stone-900 border-2 border-stone-100 w-full !col-span-2 !rounded-lg mb-1',
             primary: true
           },
         ]
       : []),
     
-    // BOTTOM ROW: 2x2 GRID ITEMS
-    {
-      id: 'notifications',
-      icon: <div className="w-6 h-6 flex items-center justify-center"><Lucide.Bell size={24} /></div>,
-      action: () => useStore.getState().openModal('NOTIFICATIONS'),
-      label: 'BİLDİRİMLER', 
-      className: 'bg-white text-stone-900 border-2 border-stone-100',
-    },
-    {
-      id: 'currency',
-      icon: (
-        <div className="w-6 h-6 flex flex-col items-center justify-center leading-none">
-          <span className="text-[12px] font-black">
-            {activeCurrency === 'TRY' ? '₺' : activeCurrency === 'USD' ? '$' : '€'}
-          </span>
-          <span className="text-[5px] font-bold uppercase tracking-tighter opacity-70 -mt-0.5">
-            {activeCurrency}
-          </span>
-        </div>
-      ),
-      action: onCurrencyToggle,
-      label: 'PARA BİRİMİ',
-      className: 'bg-white text-stone-900 border-2 border-stone-100',
-    },
-
-    // CENTER PRIMARY ACTIONS (FAB STYLE)
+    // ICON GRID ACTIONS (2x2 Auto-layout)
     {
       id: 'add',
       icon: <div className="w-6 h-6 flex items-center justify-center">{globalIcons.plus}</div>,
@@ -83,16 +58,30 @@ export default function FloatingAdminMenu({
     },
     {
       id: 'social',
-      icon: <div className="w-6 h-6 flex items-center justify-center"><Lucide.Share2 size={24} /></div>,
+      icon: <div className="w-6 h-6 flex items-center justify-center"><Lucide.Image size={24} /></div>,
       action: () => useStore.getState().openModal('SOCIAL_EXPORT'),
-      label: 'SOSYAL',
+      label: '',
       className: 'bg-white text-stone-900 border-2 border-stone-100',
+    },
+    {
+      id: 'currency',
+      icon: (
+        <div className="w-full h-full flex items-center justify-center">
+          <span className="text-[20px] font-medium leading-none text-stone-900">
+            {activeCurrency === 'TRY' ? '₺' : activeCurrency === 'USD' ? '$' : '€'}
+          </span>
+        </div>
+      ),
+      action: onCurrencyToggle,
+      label: '',
+      className: 'bg-white text-stone-900 border-2 border-stone-100',
+      closeOnClick: false,
     },
     {
       id: 'settings',
       icon: <div className="w-6 h-6 flex items-center justify-center">{globalIcons.settings}</div>,
       action: onSettingsTrigger,
-      label: 'AYARLAR', 
+      label: '', 
       className: 'bg-white text-stone-900 border-2 border-stone-100',
     },
   ];

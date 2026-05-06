@@ -1,6 +1,6 @@
 import BaseModal from './BaseModal';
 import Button from './Button';
-import { Phone, MessageCircle, BellRing } from 'lucide-react';
+import { Phone } from 'lucide-react';
 import { useStore } from '../store';
 import Badge from './Badge';
 

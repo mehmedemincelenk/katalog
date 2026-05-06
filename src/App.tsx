@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as Lucide from 'lucide-react';
 import { useGlobalFeedback } from './hooks/useGlobalFeedback';
 import Navbar from './components/Navbar';
-import { THEME, LABELS, UI } from './data/config';
+import { LABELS, UI } from './data/config';
 import HeroCarousel from './components/HeroCarousel';
 import SearchFilter from './components/SearchFilter';
 import ProductGrid from './components/ProductGrid';
@@ -112,7 +112,7 @@ function CatalogView() {
   if (storeSettings && storeSettings.maintenanceMode?.enabled && !isAdmin) {
     return (
       <div className="relative z-0">
-        <MaintenancePage />
+        <MaintenancePage onLogoPointerDown={handleLogoPointerDown} onLogoPointerUp={handleLogoPointerUp} />
         <AppModals />
       </div>
     );
@@ -124,7 +124,7 @@ function CatalogView() {
       <div className="relative w-full h-full overflow-hidden flex flex-col">
         {/* SCROLLABLE LAYER */}
         <div id="mobile-viewport-scroll" className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar scroll-smooth relative z-10">
-          <div className="print:hidden pb-32">
+          <div className="print:hidden pb-0">
             <Navbar onLogoPointerDown={handleLogoPointerDown} onLogoPointerUp={handleLogoPointerUp} isInlineEnabled={isInlineEnabled} />
             <main className="bg-stone-50">
               <HeroCarousel isAdminModeActive={isAdmin} />
@@ -154,9 +154,19 @@ function CatalogView() {
               </div>
               {storeSettings?.displayConfig?.showReferences && <References isInlineEnabled={isInlineEnabled} isAdmin={isAdmin} />}
             </main>
-            <div className="bg-stone-50">
-              <Footer />
-            </div>
+            <Footer />
+            
+            {/* CTA BANNER: EKATALOG PROMOTION */}
+            <a 
+              href="https://ekatalog.site" 
+              target="_blank" 
+              rel="noreferrer"
+              className="block w-full bg-[#FFD700] hover:bg-[#FFC800] transition-colors py-2 px-6 text-center cursor-pointer"
+            >
+              <span className="text-[10px] font-black text-black uppercase tracking-[0.2em]">
+                ekatalogunuz hala yoksa tıklayın
+              </span>
+            </a>
           </div>
         </div>
 
@@ -166,7 +176,7 @@ function CatalogView() {
         
         {!isAdmin && (
           <div className="fixed inset-0 pointer-events-none z-[400] print:hidden">
-            <div className="absolute bottom-4 right-4 pointer-events-auto">
+            <div className="absolute bottom-10 right-4 pointer-events-auto">
               <FloatingGuestMenu
                 onCouponClick={() => openModal('COUPON')}
                 onExcelClick={() => openModal('PRICE_LIST')}
@@ -191,7 +201,7 @@ function CatalogView() {
                 initial={{ opacity: 0, y: 20 }} 
                 animate={{ opacity: 1, y: 0 }} 
                 exit={{ opacity: 0, y: 20 }} 
-                className="absolute bottom-4 right-4 pointer-events-auto"
+                className="absolute bottom-10 right-4 pointer-events-auto"
               >
                 <FloatingAdminMenu 
                   onProductAddTrigger={() => openModal('GLOBAL_ADD_MENU')} 
@@ -204,7 +214,7 @@ function CatalogView() {
         </AnimatePresence>
 
         <div className="fixed inset-0 pointer-events-none z-[9999] print:hidden">
-          <div className="absolute bottom-4 left-4 pointer-events-auto">
+          <div className="absolute bottom-10 left-4 pointer-events-auto">
             <Button 
               onClick={toggleWorkspace} 
               variant="secondary" 
@@ -220,9 +230,9 @@ function CatalogView() {
   );
 
   return (
-    <div className={`min-h-screen font-sans desktop:bg-gradient-to-br desktop:from-stone-950 desktop:to-stone-900 flex desktop:overflow-hidden ${UI.layout.bodyBg} ${UI.layout.selection} relative z-0`}>
+    <div className={`min-h-screen font-sans md:bg-gradient-to-br md:from-stone-950 md:to-stone-900 flex md:overflow-hidden ${UI.layout.bodyBg} ${UI.layout.selection} relative z-0`}>
       {/* DESKTOP SIDEBAR */}
-      <div className="hidden desktop:flex flex-1 flex-col items-center justify-center p-12 select-none z-0">
+      <div className="hidden md:flex flex-1 flex-col items-center justify-center p-12 select-none z-0">
         <div className="max-w-lg w-full space-y-10">
           <div className="space-y-4">
             <h1 className="text-[3.5rem] font-black text-white tracking-tighter leading-[0.9] uppercase animate-in fade-in slide-in-from-bottom-4 duration-700">Gerçek<br /><span className="text-stone-600">Mobil Deneyim.</span></h1>
@@ -238,35 +248,35 @@ function CatalogView() {
         </div>
       </div>
 
-      {/* VIEWPORT AREA */}
-      <div className="relative flex-1 desktop:flex-none desktop:w-[550px] flex items-center justify-center desktop:bg-black/40 desktop:backdrop-blur-md desktop:border-l desktop:border-white/10 z-10">
+      <div className="relative flex-1 md:flex-none md:w-[650px] flex justify-center md:bg-black/40 md:backdrop-blur-md md:border-l md:border-white/10 z-10 md:overflow-y-auto custom-scrollbar">
         {/* THE DEVICE FRAME */}
         <div 
           className={`
             relative transition-all duration-700 ease-in-out 
             phone-frame-container
-            desktop:rounded-[0.75rem] 
-            desktop:shadow-[0_0_0_8px_#1c1917,0_0_0_9px_rgba(255,255,255,0.1),0_40px_100px_rgba(0,0,0,0.8)] 
-            desktop:overflow-hidden desktop:z-10 desktop:scale-[1.25]
+            md:rounded-[2.5rem] 
+            md:shadow-[0_0_0_12px_#1c1917,0_0_0_13px_rgba(255,255,255,0.1),0_40px_100px_rgba(0,0,0,0.8)] 
+            md:z-10 md:scale-[0.95] lg:scale-[1.05]
+            md:my-24
             w-full min-h-screen 
             ${UI.layout.bodyBg}
           `}
-          style={{ transformOrigin: 'center' }}
+          style={{ transformOrigin: 'top center' }}
         >
           {/* VIRTUAL HARDWARE */}
-          <div className="hidden desktop:block">
+          <div className="hidden md:block">
             {/* Hardware Buttons */}
-            <div className="absolute -left-[10px] top-32 w-[4px] h-10 bg-stone-800 rounded-l shadow-sm" />
-            <div className="absolute -left-[10px] top-44 w-[4px] h-16 bg-stone-800 rounded-l shadow-sm" />
-            <div className="absolute -right-[10px] top-40 w-[4px] h-20 bg-stone-800 rounded-r shadow-sm" />
+            <div className="absolute -left-[12px] top-32 w-[4px] h-10 bg-stone-800 rounded-l shadow-sm" />
+            <div className="absolute -left-[12px] top-44 w-[4px] h-16 bg-stone-800 rounded-l shadow-sm" />
+            <div className="absolute -right-[12px] top-40 w-[4px] h-20 bg-stone-800 rounded-r shadow-sm" />
           </div>
 
           {/* APPLICATION PORTAL */}
-          <div className="w-full h-full overflow-hidden relative bg-transparent">
+          <div className="phone-frame-content bg-transparent">
             {mobileContent}
             
             {/* Home Indicator (Desktop only) */}
-            <div className="hidden desktop:block absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-1 bg-stone-900/10 rounded-full z-[500] hover:bg-stone-900/20 transition-colors" />
+            <div className="hidden md:block absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-1 bg-stone-900/10 rounded-full z-[500] hover:bg-stone-900/20 transition-colors" />
           </div>
         </div>
       </div>

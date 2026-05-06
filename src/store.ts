@@ -17,6 +17,14 @@ export const useStore = create<StoreState>((set) => ({
     sessionStorage.getItem(STORAGE.adminSession) === TECH.auth.sessionActiveValue : false,
   setIsAdmin: (status: boolean) => set({ isAdmin: status }),
 
+  adminPin: typeof window !== 'undefined' ? 
+    sessionStorage.getItem('ekatalog_admin_pin') : null,
+  setAdminPin: (pin: string | null) => {
+    if (pin) sessionStorage.setItem('ekatalog_admin_pin', pin);
+    else sessionStorage.removeItem('ekatalog_admin_pin');
+    set({ adminPin: pin });
+  },
+
   // Dükkan Ayarları
   settings: null,
   setSettings: (settings: CompanySettings) => set({ settings }),

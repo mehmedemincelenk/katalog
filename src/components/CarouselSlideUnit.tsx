@@ -47,7 +47,7 @@ const CarouselSlideUnit = memo(
     const globalIcons = THEME.icons;
 
     return (
-      <div className={`${carouselTheme.slide.container} overflow-hidden rounded-none relative`}>
+      <div className={`${carouselTheme.slide.base} overflow-hidden rounded-none relative`}>
         {/* VISUAL ASSET LAYER */}
         <div className="relative w-full h-full">
           <SmartImage

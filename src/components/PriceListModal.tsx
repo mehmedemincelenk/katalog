@@ -1,6 +1,6 @@
-// FILE ROLE: B2B Price List Generator (Export/Print Utility)
-// DEPENDS ON: THEME, Product Logic, html2canvas
-// CONSUMED BY: FloatingGuestMenu.tsx, Admin Controls
+// FILE ROLE: Story-mode Price List Generator (Social Media Export)
+// DEPENDS ON: Product Logic, html2canvas
+// CONSUMED BY: FloatingGuestMenu.tsx
 import { useState, useRef, useMemo, useEffect } from 'react';
 import { Product } from '../types';
 import Button from './Button';
@@ -12,18 +12,17 @@ import {
 import { TECH } from '../data/config';
 import html2canvas from 'html2canvas';
 import * as Lucide from 'lucide-react';
-import { motion } from 'framer-motion';
 
 import { useStore } from '../store';
 import { PriceListModalProps } from '../types';
-import SmartImage from './SmartImage';
 import { resolveVisualAssetUrl } from '../utils/image';
 
 /**
- * PRICE LIST MODAL (Diamond Standard)
+ * PRICE LIST MODAL — HİKAYE MODU (Diamond Standard)
  * -----------------------------------------------------------
- * Specialized tool for generating printable/exportable price catalogs.
- * Standardized to use the atomic Button unit for consistent B2B experience.
+ * Ürünleri 9:16 Story formatında dışa aktarır.
+ * Adım 1: Kategori seçimi
+ * Adım 2: Önizleme & İndirme
  */
 export default function PriceListModal({
   isOpen,
@@ -38,16 +37,13 @@ export default function PriceListModal({
   initialStep,
 }: PriceListModalProps) {
   const { settings } = useStore();
-  const [step, setStep] = useState<0 | 1 | 2 | 3 | 4>((initialStep as 0 | 1 | 2 | 3 | 4) || 1); // 0: Intro, 1: Mode, 2: Theme, 3: Categories, 4: Preview
-  const [exportMode, setExportMode] = useState<'LIST' | 'STORY'>('LIST');
+  // step: 1 = Kategori, 2 = Önizleme
+  const [step, setStep] = useState<1 | 2>((initialStep && initialStep >= 2 ? 2 : 1) as 1 | 2);
   const [storyTheme, setStoryTheme] = useState<'LIGHT' | 'DARK'>('LIGHT');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isExporting, setIsExporting] = useState(false);
-  const [listOrientation, setListOrientation] = useState<'VERTICAL' | 'HORIZONTAL'>('VERTICAL');
-  const listContainerRef = useRef<HTMLDivElement>(null);
   const storiesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Group products (Move up)
   const groupedProducts = useMemo(() => {
     return products.reduce(
       (acc, product) => {
@@ -60,52 +56,32 @@ export default function PriceListModal({
     );
   }, [products]);
 
-  // Story Paging Logic (Move up)
   const storyPages = useMemo(() => {
-    if (exportMode !== 'STORY') return [];
-    
     const pages: { category: string; products: Product[] }[] = [];
-    
     selectedCategories.forEach(cat => {
       const catProducts = groupedProducts[cat] || [];
-      // Chunk by 6 products per page
       for (let i = 0; i < catProducts.length; i += 6) {
-        pages.push({
-          category: cat,
-          products: catProducts.slice(i, i + 6)
-        });
+        pages.push({ category: cat, products: catProducts.slice(i, i + 6) });
       }
     });
-    
     return pages;
-  }, [exportMode, selectedCategories, groupedProducts]);
-
+  }, [selectedCategories, groupedProducts]);
 
   const storeUrl = settings?.slug
     ? `${settings.slug.toLowerCase()}.ekatalog.site`
     : storeName.toLowerCase().replace(/\s+/g, '') + '.ekatalog.site';
 
-
-
-  // Categories that actually have products
   const populatedCategories = useMemo(() => {
     return categories.filter((cat) => (groupedProducts[cat] || []).length > 0);
   }, [categories, groupedProducts]);
 
   useEffect(() => {
-    if (isOpen && initialStep === undefined) {
-      const skipIntro = localStorage.getItem('ekatalog_skip_price_list_intro');
-      setStep(skipIntro === 'true' ? 1 : 0);
+    if (isOpen) {
+      setStep(1);
       setSelectedCategories([]);
       setIsExporting(false);
     }
-  }, [isOpen, initialStep]);
-
-  useEffect(() => {
-    if (initialStep !== undefined) {
-      setStep(initialStep as 0 | 1 | 2 | 3 | 4);
-    }
-  }, [initialStep]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -126,95 +102,61 @@ export default function PriceListModal({
   const calculateFinalPrice = (product: Product) => {
     const isPromotionActive =
       activeDiscount &&
-      (!activeDiscount.category ||
-        activeDiscount.category === product.category);
+      (!activeDiscount.category || activeDiscount.category === product.category);
     const baseMathPrice = transformCurrencyStringToNumber(product.price);
-
     if (isPromotionActive && baseMathPrice > 0) {
-      return formatNumberToCurrency(
-        baseMathPrice * (1 - activeDiscount.rate),
-        visitorCurrency,
-        exchangeRates,
-      );
+      return formatNumberToCurrency(baseMathPrice * (1 - activeDiscount.rate), visitorCurrency, exchangeRates);
     }
-    return formatNumberToCurrency(
-      baseMathPrice,
-      visitorCurrency,
-      exchangeRates,
-    );
+    return formatNumberToCurrency(baseMathPrice, visitorCurrency, exchangeRates);
   };
 
-  const filteredProductsCount = selectedCategories.reduce(
-    (total, cat) => total + (groupedProducts[cat]?.length || 0),
-    0,
-  );
-
-  const downloadAsImage = async () => {
-    const targetRef =
-      exportMode === 'STORY' ? storiesContainerRef : listContainerRef;
-    if (!targetRef.current) return;
-
+  const downloadStories = async () => {
+    if (!storiesContainerRef.current) return;
     setIsExporting(true);
 
     try {
-      if (exportMode === 'STORY') {
-        const pages = targetRef.current.querySelectorAll('[data-story-page="true"]');
-        for (let i = 0; i < pages.length; i++) {
-          const canvas = await html2canvas(pages[i] as HTMLElement, {
-            scale: 3, // Full HD Story Quality (1080x1920)
-            useCORS: true,
-            backgroundColor: storyTheme === 'DARK' ? '#1d1d1f' : '#f9fafb',
-            logging: false,
-            scrollX: 0,
-            scrollY: 0,
-            windowWidth: 360,
-            windowHeight: 640,
-            onclone: (clonedDoc) => {
-              // Target only the story product text containers to fix the upward shift
-              const textContainers = clonedDoc.querySelectorAll('[data-story-text="true"]');
-              textContainers.forEach((el) => {
-                const htmlEl = el as HTMLElement;
-                htmlEl.style.paddingTop = '8px'; // Compensate for the canvas offset
-              });
-              const priceContainers = clonedDoc.querySelectorAll('[data-story-price="true"]');
-              priceContainers.forEach((el) => {
-                const htmlEl = el as HTMLElement;
-                htmlEl.style.paddingTop = '6px';
-              });
-            }
-          });
-          const image = canvas.toDataURL('image/jpeg', 0.95);
-          const link = document.createElement('a');
-          link.href = image;
-          link.download = `${storeName.replace(/\s+/g, '_')}_Story_${i + 1}.jpg`;
-          link.click();
-          // Small delay between downloads to prevent browser blocking
-          await new Promise((r) => setTimeout(r, 400));
-        }
-      } else {
-        // Dynamic scale adjustment based on product count to prevent canvas limits
-        const productCount = selectedCategories.reduce((acc, cat) => acc + (groupedProducts[cat]?.length || 0), 0);
-        const dynamicScale = productCount > 100 ? 0.8 : productCount > 50 ? 1.0 : 1.5;
+      // Bariyer 1: Fontların yüklenmesini bekle
+      await document.fonts.ready;
 
-        const canvas = await html2canvas(listContainerRef.current!, {
-          scale: dynamicScale,
+      // Bariyer 2: Görsellerin yüklenmesini bekle
+      const allImages = storiesContainerRef.current.querySelectorAll('img');
+      await Promise.all(
+        Array.from(allImages).map(
+          (img) =>
+            new Promise<void>((resolve) => {
+              if (img.complete) return resolve();
+              img.onload = () => resolve();
+              img.onerror = () => resolve();
+            })
+        )
+      );
+
+      // Bariyer 3: Render için kısa bir nefes al (layout settling)
+      await new Promise(r => setTimeout(r, 100));
+
+      const pages = storiesContainerRef.current.querySelectorAll('[data-story-page="true"]');
+      for (let i = 0; i < pages.length; i++) {
+        const canvas = await html2canvas(pages[i] as HTMLElement, {
+          scale: 2.5, // 3 yerine 2.5 daha stabil sonuç verebilir
           useCORS: true,
-          backgroundColor: storyTheme === 'DARK' ? '#1d1d1f' : '#ffffff',
+          backgroundColor: storyTheme === 'DARK' ? '#1d1d1f' : '#f9fafb',
           logging: false,
-          scrollX: 0,
-          scrollY: 0,
-          windowWidth: listContainerRef.current!.scrollWidth,
-          windowHeight: listContainerRef.current!.scrollHeight,
+          scrollX: 0, scrollY: 0,
+          windowWidth: 360, windowHeight: 640,
           onclone: (clonedDoc) => {
-            const el = clonedDoc.querySelector('[data-capture-area="true"]');
-            if (el) (el as HTMLElement).style.opacity = '1';
-          },
+            // html2canvas için "Champ" seviyesi yazı düzeltmeleri
+            clonedDoc.querySelectorAll('.story-text-container').forEach((el) => {
+              (el as HTMLElement).style.paddingTop = '10px';
+              (el as HTMLElement).style.letterSpacing = '0px';
+              (el as any).style.webkitFontSmoothing = 'antialiased';
+            });
+          }
         });
-        const image = canvas.toDataURL('image/jpeg', 0.9);
         const link = document.createElement('a');
-        link.href = image;
-        link.download = `${storeName.replace(/\s+/g, '_')}_Fiyat_Listesi.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 0.9);
+        link.download = `${storeName.replace(/\s+/g, '_')}_Story_${i + 1}.jpg`;
         link.click();
+        await new Promise((r) => setTimeout(r, 300));
       }
     } catch (error) {
       console.error('Export error:', error);
@@ -223,535 +165,191 @@ export default function PriceListModal({
     }
   };
 
-  const printAsPDF = () => {
-    window.print();
-  };
-
   const footer = (
-    <div className="w-full">
-      {step === 0 ? (
-        <div className="flex flex-col gap-4 w-full">
-          <div className="flex gap-3 w-full">
-            <Button
-              onClick={() => {
-                localStorage.setItem('ekatalog_skip_price_list_intro', 'true');
-                setStep(1);
-              }}
-              variant="secondary"
-              size="md"
-              mode="rectangle"
-              className="flex-1 h-16 !rounded-[24px]"
-              showFingerprint={true}
-            >
-              ANLADIM TEKRAR GÖSTERME
-            </Button>
-            <Button
-              variant="primary"
-              size="md"
-              onClick={() => setStep(1)}
-              className="flex-1 h-16 !rounded-[24px]"
-              mode="rectangle"
-              showFingerprint={true}
-            >
-              TAMAM
-            </Button>
-          </div>
-        </div>
+    <div className="flex gap-3 w-full">
+      {step === 2 && (
+        <Button
+          variant="secondary"
+          mode="rectangle"
+          onClick={() => setStep(1)}
+          className="w-16 h-16 shrink-0"
+        >
+          <Lucide.ChevronLeft size={24} strokeWidth={4} />
+        </Button>
+      )}
+      {step === 1 ? (
+        <Button
+          variant="primary"
+          size="md"
+          disabled={selectedCategories.length === 0}
+          onClick={() => setStep(2)}
+          className="flex-1 h-16 !rounded-[24px]"
+          mode="rectangle"
+          showFingerprint={true}
+        >
+          ÖNİZLEME
+        </Button>
       ) : (
-        <div className="flex gap-3 w-full">
+        <>
+          <Button
+            variant="primary"
+            size="md"
+            icon={<Lucide.Download size={18} />}
+            onClick={downloadStories}
+            loading={isExporting}
+            className="flex-1 h-16 shadow-lg !rounded-[24px]"
+            mode="rectangle"
+            showFingerprint={true}
+          >
+            SERİ KAYDET ({storyPages.length} SAYFA)
+          </Button>
           <Button
             variant="secondary"
+            size="md"
+            icon={storyTheme === 'LIGHT' ? <Lucide.Moon size={18} /> : <Lucide.Sun size={18} />}
+            onClick={() => setStoryTheme(prev => prev === 'LIGHT' ? 'DARK' : 'LIGHT')}
+            className="w-16 shrink-0 h-16 flex items-center justify-center p-0 !bg-stone-50 border-stone-100 shadow-sm"
             mode="rectangle"
-            onClick={() => {
-              setStep((prev) => (prev - 1) as 0 | 1 | 2 | 3 | 4);
-            }}
-            className="w-16 h-16 shrink-0"
-            showFingerprint={false}
-          >
-            <Lucide.ChevronLeft size={24} strokeWidth={4} />
-          </Button>
-          {step === 4 ? (
-            <div className="flex gap-2 flex-1">
-              <Button
-                variant="primary"
-                size="md"
-                icon={<Lucide.Download size={18} />}
-                onClick={downloadAsImage}
-                loading={isExporting}
-                className="flex-1 h-16 shadow-lg !rounded-[24px]"
-                mode="rectangle"
-                showFingerprint={true}
-              >
-                {exportMode === 'STORY' ? 'SERİ KAYDET' : 'KAYDET'}
-              </Button>
-              <Button
-                variant="secondary"
-                size="md"
-                icon={<Lucide.Printer size={18} />}
-                onClick={printAsPDF}
-                className="w-16 shrink-0 h-16 flex items-center justify-center p-0 !bg-stone-50 border-stone-100 shadow-sm"
-                mode="rectangle"
-              />
-            </div>
-          ) : (
-            <Button
-              variant="primary"
-              size="md"
-              disabled={step === 1 && selectedCategories.length === 0}
-              onClick={() => {
-                // If we are at step 2 (Orientation), skip step 3 (Theme) and go to 4 (Preview)
-                setStep((prev) => (prev === 2 ? 4 : prev + 1) as 0 | 1 | 2 | 3 | 4);
-              }}
-              className="flex-1 h-16 !rounded-[24px]"
-              mode="rectangle"
-              showFingerprint={true}
-            >
-              {step === 2 ? 'ÖNİZLEME' : 'DEVAM'}
-            </Button>
-          )}
-        </div>
+          />
+        </>
       )}
     </div>
   );
-
-  const getStepTitle = () => {
-    switch (step) {
-      case 0: return "";
-      case 1: return "KATEGORİ";
-      case 2: return "BİÇİM";
-      case 3: return "TEMA";
-      case 4: return "Katalog Hazır!";
-      default: return "Fiyat Listesi";
-    }
-  };
-
-  const progress = step > 0 ? {
-    current: step,
-    total: 4
-  } : undefined;
-
-  const getMaxWidth = () => {
-    switch (step) {
-      case 0: return "max-w-4xl";
-      case 1: return "max-w-4xl";
-      case 2: return "max-w-2xl";
-      case 3: return "max-w-xl";
-      case 4: return exportMode === 'STORY' ? 'max-w-sm' : 'max-w-5xl';
-      default: return "max-w-4xl";
-    }
-  };
 
   return (
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title={step === 1 ? "" : getStepTitle()}
-      maxWidth={getMaxWidth()}
+      title={step === 1 ? 'KATEGORİ SEÇ' : 'ÖNİZLEME'}
+      maxWidth={step === 1 ? 'max-w-xl' : 'max-w-sm'}
       footer={footer}
-      progress={progress}
-      noPadding={step === 4}
+      progress={{ current: step, total: 2 }}
+      noPadding={step === 2}
       isStatic={isStatic}
     >
-      <div className="print:p-0">
-        {step === 0 ? (
-          <div className="py-2 px-1 flex flex-col items-center">
-            <div className="w-full grid grid-cols-1 gap-3 mb-6">
-              {[
-                { id: 1, img: '/assets/onboarding/step1.png', text: 'İndirmek istediğiniz ürün kategorilerini seçin.' },
-                { id: 2, img: '/assets/onboarding/step2.png', text: 'Formatınızı seçin ve indir butonuna basın.' },
-                { id: 3, img: '/assets/onboarding/step3.png', text: "Tüm ürünler galerinizde! WhatsApp'ta paylaşın." }
-              ].map((card) => (
-                <div key={card.id} className="relative bg-stone-50/50 p-3 rounded-[2rem] border border-stone-100 flex flex-row items-center gap-4 text-left group hover:bg-white hover:shadow-xl transition-all duration-500 overflow-hidden">
-                  {/* Image Unit (Hardened Square 1:1) */}
-                  <div 
-                    className="w-24 h-24 aspect-square rounded-3xl overflow-hidden shadow-sm border border-white shrink-0 group-hover:scale-105 transition-transform duration-500 relative bg-stone-100"
-                  >
-                    <img src={card.img} alt="" className="w-full h-full object-cover" />
-                    {/* Sequence Number Overlay */}
-                    <div className="absolute top-2 left-2 w-7 h-7 bg-white/90 backdrop-blur-sm text-stone-900 rounded-xl flex items-center justify-center font-black text-[11px] shadow-sm border border-white/50 z-10">
-                      {card.id}
-                    </div>
-                  </div>
-
-                  {/* Text Unit */}
-                  <p className="text-[10px] font-bold text-stone-500 leading-relaxed flex-1 pb-2">
-                    {card.text}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <p className="text-[10px] font-black text-stone-300 uppercase tracking-[0.2em] mb-2 italic">
-              İşte bu kadar kolay!
-            </p>
+      {step === 1 ? (
+        <div className="p-2">
+          <div className="mb-6 flex items-center justify-between -mt-2">
+            <h3 className="text-xl font-black text-stone-900 uppercase tracking-tight leading-tight">
+              KATEGORİ
+            </h3>
+            <Button
+              onClick={selectAllCategories}
+              variant="secondary"
+              mode="rectangle"
+              size="sm"
+              className="!flex !items-center !gap-1.5 !text-[9px] font-black !text-stone-900 hover:!text-stone-600 transition-colors !bg-stone-50 !px-4 !py-2 !rounded-xl whitespace-nowrap shrink-0 border border-stone-100 shadow-sm"
+              showFingerprint={true}
+              icon={
+                selectedCategories.length === populatedCategories.length ? (
+                  <Lucide.CheckSquare size={14} />
+                ) : (
+                  <Lucide.Square size={14} />
+                )
+              }
+            >
+              TÜMÜNÜ SEÇ
+            </Button>
           </div>
-        ) : step === 1 ? (
-          <div className="p-2">
-            <div className="mb-6 flex items-center justify-between -mt-2">
-              <h3 className="text-xl font-black text-stone-900 uppercase tracking-tight leading-tight">
-                KATEGORİ
-              </h3>
+          <div className="flex flex-wrap gap-2">
+            {populatedCategories.map((cat) => (
               <Button
-                onClick={selectAllCategories}
-                variant="secondary"
+                key={cat}
+                onClick={() => handleToggleCategory(cat)}
+                variant={selectedCategories.includes(cat) ? 'primary' : 'secondary'}
                 mode="rectangle"
                 size="sm"
-                className="!flex !items-center !gap-1.5 !text-[9px] font-black !text-stone-900 hover:!text-stone-600 transition-colors !bg-stone-50 !px-4 !py-2 !rounded-xl whitespace-nowrap shrink-0 border border-stone-100 shadow-sm"
+                className="!text-[10px] !py-2 !px-4 !rounded-xl"
                 showFingerprint={true}
-                icon={
-                  selectedCategories.length === populatedCategories.length ? (
-                    <Lucide.CheckSquare size={14} />
-                  ) : (
-                    <Lucide.Square size={14} />
-                  )
-                }
               >
-                TÜMÜNÜ SEÇ
+                {cat}
               </Button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {populatedCategories.map((cat) => (
-                <Button
-                  key={cat}
-                  onClick={() => handleToggleCategory(cat)}
-                  variant={selectedCategories.includes(cat) ? 'primary' : 'secondary'}
-                  mode="rectangle"
-                  size="sm"
-                  className="!text-[10px] !py-2 !px-4 !rounded-xl"
-                  showFingerprint={true}
-                >
-                  {cat}
-                </Button>
-              ))}
-            </div>
+            ))}
           </div>
-        ) : step === 2 ? (
-          <div className="p-2 space-y-8">
-            <div className="text-center">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-stone-300 mb-2">KATALOG BİÇİMİ</h4>
-              <p className="text-stone-400 text-[11px] font-bold">Sayfalarınızın nasıl görüneceğini seçin.</p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                layout="vertical"
-                onClick={() => setListOrientation('VERTICAL')}
-                className={`!h-auto !py-12 !rounded-[2.5rem] transition-all duration-500 border-2 ${
-                  listOrientation === 'VERTICAL' 
-                    ? '!bg-white border-stone-900 shadow-2xl scale-[1.02]' 
-                    : '!bg-stone-50 border-stone-100 opacity-60'
-                }`}
-                showFingerprint={false}
-                icon={
-                  <div className={`w-16 h-24 rounded-lg flex flex-col gap-1.5 p-2 transition-all duration-500 border-2 ${
-                    listOrientation === 'VERTICAL' 
-                      ? 'bg-stone-900 border-stone-900 shadow-lg' 
-                      : 'bg-stone-50 border-stone-200'
-                  }`}>
-                    <div className="w-full h-2 bg-white/20 rounded-sm mb-2" />
-                    <div className="grid grid-cols-2 gap-1 flex-1">
-                      {[1,2,3,4].map(i => (
-                        <div key={i} className="bg-white/10 rounded-[1px]" />
-                      ))}
-                    </div>
-                  </div>
-                }
-              >
-                <span className={`text-[11px] font-black uppercase tracking-widest mt-4 transition-colors ${
-                  listOrientation === 'VERTICAL' ? 'text-stone-900' : 'text-stone-400'
-                }`}>DİKEY (A4)</span>
-              </Button>
-
-              <Button
-                layout="vertical"
-                onClick={() => setListOrientation('HORIZONTAL')}
-                className={`!h-auto !py-12 !rounded-[2.5rem] transition-all duration-500 border-2 ${
-                  listOrientation === 'HORIZONTAL' 
-                    ? '!bg-white border-stone-900 shadow-2xl scale-[1.02]' 
-                    : '!bg-stone-50 border-stone-100 opacity-60'
-                }`}
-                showFingerprint={false}
-                icon={
-                  <div className={`w-24 h-16 rounded-lg flex flex-col gap-1.5 p-2 transition-all duration-500 border-2 ${
-                    listOrientation === 'HORIZONTAL' 
-                      ? 'bg-stone-900 border-stone-900 shadow-lg' 
-                      : 'bg-stone-50 border-stone-200'
-                  }`}>
-                    <div className="w-1/2 h-2 bg-white/20 rounded-sm mb-1" />
-                    <div className="grid grid-cols-3 gap-1 flex-1">
-                      {[1,2,3,4,5,6].map(i => (
-                        <div key={i} className="bg-white/10 rounded-[1px]" />
-                      ))}
-                    </div>
-                  </div>
-                }
-              >
-                <span className={`text-[11px] font-black uppercase tracking-widest mt-4 transition-colors ${
-                  listOrientation === 'HORIZONTAL' ? 'text-stone-900' : 'text-stone-400'
-                }`}>YATAY (B2B)</span>
-              </Button>
-            </div>
-
-            {/* HIDDEN STORY MODE - CODE PRESERVED */}
-            <div className="hidden">
-              <Button onClick={() => setExportMode('STORY')}>STORY</Button>
-            </div>
-          </div>
-        ) : step === 3 ? (
-          <div className="p-2">
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                variant="secondary"
-                layout="vertical"
-                selected={storyTheme === 'LIGHT'}
-                onClick={() => setStoryTheme('LIGHT')}
-                className="!h-auto !py-10 !rounded-[2.5rem]"
-              >
-                BEYAZ
-              </Button>
-
-              <Button
-                variant="primary"
-                layout="vertical"
-                selected={storyTheme === 'DARK'}
-                onClick={() => setStoryTheme('DARK')}
-                className="!h-auto !py-10 !rounded-[2.5rem]"
-              >
-                SİYAH
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className={`py-4 ${storyTheme === 'DARK' ? 'bg-[#121212]' : 'bg-stone-50/30'} print:bg-white print:p-0`}>
-            {/* LARGE CATALOG TIP */}
-            {selectedCategories.reduce((acc, cat) => acc + (groupedProducts[cat]?.length || 0), 0) > 50 && (
-              <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mx-6 mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-100 flex items-start gap-3 print:hidden"
-              >
-                <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
-                  <Lucide.Info size={18} className="text-amber-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-[11px] font-black text-amber-900 uppercase tracking-tight mb-1">DİAMOND İPUCU</p>
-                  <p className="text-[10px] font-bold text-amber-700 leading-relaxed">
-                    Kataloğunuzda 50'den fazla ürün var. En yüksek kalite ve jilet gibi netlik için 
-                    <span className="font-black text-amber-900 mx-1">YAZDIR (PDF)</span> 
-                    seçeneğini kullanmanızı öneririz.
-                  </p>
-                </div>
-              </motion.div>
-            )}
-
-            {exportMode === 'LIST' ? (
+        </div>
+      ) : (
+        <div className={`py-4 ${storyTheme === 'DARK' ? 'bg-[#121212]' : 'bg-stone-50/30'}`}>
+          <div
+            ref={storiesContainerRef}
+            className="flex flex-col items-center gap-4 overflow-y-auto"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {storyPages.map((page, pageIdx) => (
               <div
-                ref={listContainerRef}
-                data-capture-area="true"
-                className={`
-                  ${storyTheme === 'DARK' ? 'bg-[#1d1d1f] text-white' : 'bg-white text-stone-900'} 
-                  px-8 py-10 rounded-[40px] shadow-sm border border-stone-100 
-                  print:shadow-none print:border-none print:p-0 overflow-hidden mx-auto
-                  ${listOrientation === 'HORIZONTAL' ? 'max-w-none w-full' : 'max-w-4xl'}
-                `}
+                key={pageIdx}
+                data-story-page="true"
+                className={`w-[360px] h-[640px] relative flex flex-col items-center px-12 pt-12 pb-6 shrink-0 overflow-hidden ${storyTheme === 'DARK' ? 'bg-[#1d1d1f] text-white' : 'bg-[#f8f8f8] text-[#1c1c1e]'}`}
+                style={{ aspectRatio: '9/16' }}
               >
-                {/* PUZZLE HEADER */}
-                <div className={`flex flex-col mb-12 border-b-4 ${storyTheme === 'DARK' ? 'border-white/10' : 'border-stone-900'} pb-10 relative pt-4 text-center items-center`}>
-                  <div className={`absolute top-0 px-8 py-2 ${storyTheme === 'DARK' ? 'bg-white text-black' : 'bg-stone-900 text-white'} rounded-b-3xl shadow-xl`}>
-                    <span className="text-[9px] font-black lowercase tracking-[0.3em] opacity-90">
-                      {storeUrl}
-                    </span>
-                  </div>
-
-                  <h1 className="text-3xl font-black tracking-tighter mt-12 uppercase px-4 leading-none">
-                    {storeName}
-                  </h1>
-                  <p className={`text-[10px] font-black uppercase tracking-[0.5em] mt-4 ${storyTheme === 'DARK' ? 'text-stone-500' : 'text-stone-300'}`}>
-                    ÜRÜN KATALOĞU
-                  </p>
-
-                  <div className="mt-10 flex gap-8 items-center">
-                    <div className="text-center">
-                      <p className="text-[8px] font-black opacity-30 uppercase tracking-widest mb-1">GÜNCELLEME</p>
-                      <p className="text-xs font-black">{new Date().toLocaleDateString('tr-TR')}</p>
-                    </div>
-                    <div className={`w-[1px] h-8 ${storyTheme === 'DARK' ? 'bg-white/10' : 'bg-stone-100'}`}></div>
-                    <div className="text-center">
-                      <p className="text-[8px] font-black opacity-30 uppercase tracking-widest mb-1">TOPLAM</p>
-                      <p className="text-xs font-black">{filteredProductsCount} ÜRÜN</p>
-                    </div>
+                {/* STORY HEADER */}
+                <div className="w-full flex items-center justify-end mb-4 shrink-0 px-1 py-1">
+                  <div className={`px-3 py-1.5 rounded-lg shadow-sm border ${storyTheme === 'DARK' ? 'bg-stone-900/50 border-stone-800 text-white' : 'bg-stone-900 text-white border-stone-900'}`}>
+                    <h2 className="text-[9px] font-black uppercase tracking-tighter leading-none">
+                      {page.category}
+                    </h2>
                   </div>
                 </div>
 
-                {/* CATEGORY PUZZLE BOXES */}
-                <div className="space-y-12">
-                  {selectedCategories.map((cat) => {
-                    const categoryProducts = groupedProducts[cat];
-                    if (!categoryProducts || categoryProducts.length === 0) return null;
-
+                {/* PRODUCTS */}
+                <div className="w-full flex flex-col gap-2 overflow-hidden">
+                  {page.products.map((product) => {
                     return (
-                      <div key={cat} className="break-inside-avoid-page space-y-6">
-                        <div className="flex items-center gap-4 mb-8">
-                          <h2 className={`text-lg font-black uppercase tracking-tight shrink-0 ${storyTheme === 'DARK' ? 'text-white' : 'text-stone-900'}`}>
-                            {cat}
-                          </h2>
-                          <div className={`h-[1px] flex-1 ${storyTheme === 'DARK' ? 'bg-white/10' : 'bg-stone-200'}`}></div>
-                          <span className="text-[10px] font-black opacity-40 uppercase tracking-widest">
-                            {categoryProducts.length} ÜRÜN
-                          </span>
+                      <div
+                        key={product.id}
+                        className={`w-full h-[64px] rounded-xl border flex items-center px-3 transition-all ${storyTheme === 'DARK' ? 'bg-stone-900/40 border-stone-800/50' : 'bg-stone-50/50 border-stone-100 shadow-sm'}`}
+                      >
+                        {/* Image Cell */}
+                        <div className={`w-12 h-12 rounded-lg overflow-hidden border shadow-sm bg-white shrink-0 ${storyTheme === 'DARK' ? 'border-stone-800' : 'border-white'}`}>
+                          <img
+                            src={resolveVisualAssetUrl(product.image_url) || ''}
+                            alt={product.name}
+                            loading="eager"
+                            crossOrigin="anonymous"
+                            className="w-full h-full object-contain"
+                          />
                         </div>
 
-                        <div className={`
-                          grid gap-4
-                          ${listOrientation === 'VERTICAL' ? 'grid-cols-2' : 'grid-cols-2'}
-                          print:grid-cols-2
-                        `}>
-                          {categoryProducts.map((product) => (
-                            <div
-                              key={product.id}
-                              className={`
-                                flex flex-col p-3 rounded-3xl border transition-all duration-500 group break-inside-avoid
-                                ${storyTheme === 'DARK' ? 'bg-black/20 border-white/5' : 'bg-white border-stone-100 shadow-sm'}
-                              `}
-                            >
-                              <div className="aspect-square w-full rounded-2xl overflow-hidden mb-3 bg-stone-100 relative shadow-sm">
-                                <SmartImage
-                                  src={resolveVisualAssetUrl(product.image_url)}
-                                  alt={product.name}
-                                  aspectRatio="square"
-                                  className="w-full h-full"
-                                />
-                              </div>
-                              <div className="flex flex-col flex-1 px-1">
-                                <h4 className="font-black text-[10px] leading-tight uppercase line-clamp-2 mb-2 min-h-[2.2em]">
-                                  {product.name}
-                                </h4>
-                                <div className="mt-auto pt-2 border-t border-stone-100/50 flex items-center justify-between">
-                                  <span className="text-[12px] font-black tracking-tighter">
-                                    {calculateFinalPrice(product)}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
+                        {/* Text & Price Group (Independent Blocks for html2canvas stability) */}
+                        <div className="flex-1 flex items-center justify-between min-w-0 pl-3 gap-2">
+                           <div className="flex-1 min-w-0 story-text-container">
+                              <h4 className={`text-[10px] font-black m-0 p-0 overflow-hidden whitespace-nowrap ${storyTheme === 'DARK' ? 'text-white' : 'text-stone-900'}`} style={{ lineHeight: '1.2' }}>
+                                 {product.name.toLocaleUpperCase('tr-TR')}
+                              </h4>
+                              <p className={`text-[8px] font-medium m-0 p-0 overflow-hidden whitespace-nowrap opacity-50 ${storyTheme === 'DARK' ? 'text-stone-300' : 'text-stone-500'}`} style={{ lineHeight: '1.2', marginTop: '2px' }}>
+                                 {(product.description || 'Standart Ürün').toLocaleUpperCase('tr-TR')}
+                              </p>
+                           </div>
+
+                           <div className="shrink-0 text-right">
+                              <span className={`text-[11px] font-black ${storyTheme === 'DARK' ? 'text-white' : 'text-stone-900'}`} style={{ lineHeight: '1', whiteSpace: 'nowrap' }}>
+                                 {calculateFinalPrice(product)}
+                              </span>
+                           </div>
                         </div>
                       </div>
                     );
                   })}
                 </div>
 
-                <div className="mt-16 pt-12 border-t border-stone-100/10 text-center flex flex-col items-center">
-                  <p className="text-[9px] font-black opacity-30 uppercase tracking-[0.5em] mb-4">
-                    BU KATALOG www.ekatalog.site İLE OLUŞTURULMUŞTUR
+                {/* STORY FOOTER */}
+                <div className="mt-4 flex flex-col items-center gap-2 shrink-0">
+                  <p className={`text-[8px] font-black lowercase tracking-[0.2em] opacity-40 ${storyTheme === 'DARK' ? 'text-white' : 'text-stone-900'}`}>
+                    {storeUrl}
                   </p>
+                  {settings?.logoUrl && (
+                    <img
+                      src={settings.logoUrl}
+                      alt="watermark"
+                      className={`w-10 h-10 object-contain rounded-lg opacity-40 ${storyTheme === 'DARK' ? 'brightness-125' : ''}`}
+                      crossOrigin="anonymous"
+                    />
+                  )}
                 </div>
               </div>
-            ) : (
-              <div
-                ref={storiesContainerRef}
-                className="flex flex-col items-center overflow-y-auto scrollbar-hide"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                {storyPages.map((page, pageIdx) => (
-                  <div
-                    key={pageIdx}
-                    data-story-page="true"
-                    className={`w-[360px] h-[640px] relative shadow-none flex flex-col items-center px-12 pt-12 pb-6 shrink-0 overflow-hidden transition-colors duration-500 ${storyTheme === 'DARK' ? 'bg-[#1d1d1f] text-white' : 'bg-[#f8f8f8] text-[#1c1c1e]'}`}
-                    style={{ aspectRatio: '9/16' }}
-                  >
-                    {/* STORY HEADER (SIMPLIFIED - NO LOGO) */}
-                    <div className="w-full flex items-center justify-end mb-4 shrink-0 px-1 py-1">
-                      <div className={`
-                        px-3 py-1.5 rounded-lg shadow-sm border
-                        ${storyTheme === 'DARK' ? 'bg-stone-900/50 border-stone-800 text-white' : 'bg-stone-900 text-white border-stone-900'}
-                      `}>
-                        <h2 className="text-[9px] font-black uppercase tracking-tighter leading-none">
-                          {page.category}
-                        </h2>
-                      </div>
-                    </div>
-
-                    {/* STORY PRODUCTS (TABLE BASED ALIGNMENT - DIAMOND STANDARD) */}
-                    <div className="w-full flex flex-col gap-2 overflow-hidden">
-                      {page.products.map((product) => {
-                        const description = product.description || 'Standart Ürün';
-                        const truncatedDesc = description.length > 50 
-                          ? description.substring(0, 47) + '...' 
-                          : description;
-
-                        return (
-                          <div
-                            key={product.id}
-                            className={`
-                              w-full h-[60px] rounded-xl border transition-all overflow-hidden
-                              ${storyTheme === 'DARK' ? 'bg-stone-900/40 border-stone-800/50' : 'bg-stone-50/50 border-stone-100 shadow-sm'}
-                            `}
-                            style={{ display: 'table', borderCollapse: 'separate', borderSpacing: '8px 0' }}
-                          >
-                            <div className="shrink-0" style={{ display: 'table-cell', verticalAlign: 'middle', width: '48px' }}>
-                              <div className={`w-12 h-12 rounded-lg overflow-hidden border shadow-sm bg-white ${storyTheme === 'DARK' ? 'border-stone-800' : 'border-white'}`}>
-                                <SmartImage
-                                  src={resolveVisualAssetUrl(product.image_url)}
-                                  alt={product.name}
-                                  aspectRatio="square"
-                                  className="w-full h-full"
-                                />
-                                {product.out_of_stock && (
-                                  <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-[2px] flex items-center justify-center">
-                                    <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg">
-                                      <span className="text-[10px]">🚫</span>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-
-                            <div 
-                              style={{ display: 'table-cell', verticalAlign: 'middle', paddingLeft: '8px' }}
-                              data-story-text="true"
-                            >
-                              <h4 className={`text-[10px] font-black uppercase line-clamp-1 m-0 p-0 ${storyTheme === 'DARK' ? 'text-white' : 'text-stone-900'}`} style={{ lineHeight: '1.2' }}>
-                                {product.name}
-                              </h4>
-                              <p className={`text-[8px] font-bold line-clamp-1 break-words m-0 p-0 ${storyTheme === 'DARK' ? 'text-stone-500' : 'text-stone-400'}`} style={{ lineHeight: '1.2' }}>
-                                {truncatedDesc}
-                              </p>
-                            </div>
-
-                            <div 
-                              className="text-right"
-                              style={{ display: 'table-cell', verticalAlign: 'middle', paddingRight: '8px' }}
-                              data-story-price="true"
-                            >
-                              <span className={`text-[11px] font-black tracking-tighter ${storyTheme === 'DARK' ? 'text-white' : 'text-stone-900'}`} style={{ lineHeight: '1' }}>
-                                {calculateFinalPrice(product)}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* STORY FOOTER WATERMARK (TRANSPARENT & ROUNDED) */}
-                    <div className="mt-4 flex flex-col items-center gap-2 shrink-0">
-                      <p className={`text-[8px] font-black lowercase tracking-[0.2em] opacity-40 ${storyTheme === 'DARK' ? 'text-white' : 'text-stone-900'}`}>
-                        {storeUrl}
-                      </p>
-                      {settings?.logoUrl && (
-                        <img
-                          src={settings.logoUrl}
-                          alt="watermark"
-                          className={`w-10 h-10 object-contain rounded-lg opacity-40 ${storyTheme === 'DARK' ? 'brightness-125' : ''}`}
-                          crossOrigin="anonymous"
-                        />
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </BaseModal>
   );
 }

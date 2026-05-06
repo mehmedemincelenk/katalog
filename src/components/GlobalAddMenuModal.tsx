@@ -1,7 +1,5 @@
 import BaseModal from './BaseModal';
 import Button from './Button';
-import { Package, Layers, Users, Image as ImageIcon } from 'lucide-react';
-
 import { GlobalAddMenuModalProps } from '../types';
 
 /**
@@ -19,9 +17,6 @@ export default function GlobalAddMenuModal({
   const options: {
     id: 'PRODUCT' | 'CATEGORY' | 'REFERENCE' | 'CAROUSEL';
     title: string;
-    subtitle: string;
-    icon: React.ReactNode;
-    color: string;
   }[] = [
     { id: 'PRODUCT', title: 'ÜRÜN EKLE' },
     { id: 'CATEGORY', title: 'KATEGORİ EKLE' },

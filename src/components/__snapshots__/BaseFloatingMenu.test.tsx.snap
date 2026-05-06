@@ -3,13 +3,14 @@
 exports[`BaseFloatingMenu (Diamond Snapshot) > Admin (AYARLAR) görünümü snapshotu ile eşleşmeli 1`] = `
 <DocumentFragment>
   <div
-    class="z-[100]"
+    class="z-[100] origin-bottom-right"
+    style="transform: scale(0.95);"
   >
     <div
-      class="flex flex-col items-center p-1 bg-stone-200/50 backdrop-blur-xl border border-white/20 shadow-2xl rounded-full"
+      class="flex flex-col items-center p-1 bg-white/70 backdrop-blur-3xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-xl transition-all duration-200 ease-in-out overflow-hidden w-[110px]"
     >
       <div
-        class="w-full"
+        class="w-full p-0.5"
       >
         <button
           aria-label="Menüyü Aç"
@@ -19,7 +20,10 @@ exports[`BaseFloatingMenu (Diamond Snapshot) > Admin (AYARLAR) görünümü snap
         px-3 py-1.5 text-[9px] gap-1.5 
         rounded-2xl 
         
-        !bg-stone-900 !text-white hover:scale-105 active:scale-95 transition-all h-11 sm:h-8 w-full shadow-none rounded-lg relative overflow-hidden
+        
+              !bg-stone-900 !text-white border-transparent 
+              hover:scale-[1.02] active:scale-95 transition-all h-12 w-full shadow-lg rounded-lg relative overflow-hidden
+            
       "
         >
           <div
@@ -29,8 +33,13 @@ exports[`BaseFloatingMenu (Diamond Snapshot) > Admin (AYARLAR) görünümü snap
         "
           >
             <div
-              class="flex flex-row items-center justify-center gap-1.5 w-full h-full"
+              class="flex flex-row items-center justify-center gap-2.5 w-full h-full px-1"
             >
+              <span
+                class="text-[11px] font-black uppercase tracking-tight leading-none"
+              >
+                AYARLAR
+              </span>
               <div
                 class="w-4 h-4 flex items-center justify-center shrink-0"
               >
@@ -58,11 +67,6 @@ exports[`BaseFloatingMenu (Diamond Snapshot) > Admin (AYARLAR) görünümü snap
                   />
                 </svg>
               </div>
-              <span
-                class="text-[10px] font-black uppercase tracking-widest leading-none"
-              >
-                AYARLAR
-              </span>
             </div>
           </div>
         </button>
@@ -75,13 +79,14 @@ exports[`BaseFloatingMenu (Diamond Snapshot) > Admin (AYARLAR) görünümü snap
 exports[`BaseFloatingMenu (Diamond Snapshot) > Default görünüm (kapalı) snapshotu ile eşleşmeli 1`] = `
 <DocumentFragment>
   <div
-    class="z-[100]"
+    class="z-[100] origin-bottom-right"
+    style="transform: scale(0.95);"
   >
     <div
-      class="flex flex-col items-center p-1 bg-stone-200/50 backdrop-blur-xl border border-white/20 shadow-2xl rounded-full"
+      class="flex flex-col items-center p-1 bg-white/70 backdrop-blur-3xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-xl transition-all duration-200 ease-in-out overflow-hidden w-[110px]"
     >
       <div
-        class="w-full"
+        class="w-full p-0.5"
       >
         <button
           aria-label="Menüyü Aç"
@@ -91,7 +96,10 @@ exports[`BaseFloatingMenu (Diamond Snapshot) > Default görünüm (kapalı) snap
         px-3 py-1.5 text-[9px] gap-1.5 
         rounded-2xl 
         
-        !bg-stone-900 !text-white hover:scale-105 active:scale-95 transition-all h-11 sm:h-8 w-full shadow-none rounded-lg relative overflow-hidden
+        
+              !bg-stone-900 !text-white border-transparent 
+              hover:scale-[1.02] active:scale-95 transition-all h-12 w-full shadow-lg rounded-lg relative overflow-hidden
+            
       "
         >
           <div
@@ -101,14 +109,19 @@ exports[`BaseFloatingMenu (Diamond Snapshot) > Default görünüm (kapalı) snap
         "
           >
             <div
-              class="flex flex-row items-center justify-center gap-1.5 w-full h-full"
+              class="flex flex-row items-center justify-center gap-2.5 w-full h-full px-1"
             >
+              <span
+                class="text-[11px] font-black uppercase tracking-tight leading-none"
+              >
+                MENÜ
+              </span>
               <div
                 class="w-4 h-4 flex items-center justify-center shrink-0"
               >
                 <svg
                   aria-hidden="true"
-                  class="lucide lucide-menu w-full h-full p-0.5"
+                  class="lucide lucide-layout-grid w-full h-full p-0.5"
                   fill="none"
                   height="24"
                   stroke="currentColor"
@@ -119,22 +132,36 @@ exports[`BaseFloatingMenu (Diamond Snapshot) > Default görünüm (kapalı) snap
                   width="24"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path
-                    d="M4 5h16"
+                  <rect
+                    height="7"
+                    rx="1"
+                    width="7"
+                    x="3"
+                    y="3"
                   />
-                  <path
-                    d="M4 12h16"
+                  <rect
+                    height="7"
+                    rx="1"
+                    width="7"
+                    x="14"
+                    y="3"
                   />
-                  <path
-                    d="M4 19h16"
+                  <rect
+                    height="7"
+                    rx="1"
+                    width="7"
+                    x="14"
+                    y="14"
+                  />
+                  <rect
+                    height="7"
+                    rx="1"
+                    width="7"
+                    x="3"
+                    y="14"
                   />
                 </svg>
               </div>
-              <span
-                class="text-[10px] font-black uppercase tracking-widest leading-none"
-              >
-                MENÜ
-              </span>
             </div>
           </div>
         </button>

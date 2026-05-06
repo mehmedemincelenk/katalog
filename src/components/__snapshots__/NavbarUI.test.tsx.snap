@@ -3,19 +3,19 @@
 exports[`Navbar UI (Diamond Lock) > should match the current snapshot (Aesthetics Lockdown) 1`] = `
 <DocumentFragment>
   <nav
-    class="bg-white/80 backdrop-blur-xl border-b border-stone-100 sticky top-0 z-[100] w-full min-h-0 py-0.5 sm:py-1"
+    class="bg-white/80 backdrop-blur-xl border-b border-stone-100 sticky top-0 z-[100] w-full min-h-0 py-2"
   >
     <div
-      class="w-full px-2 sm:px-4 lg:px-6 h-full flex items-center"
+      class="w-full px-2 h-full flex items-center"
     >
       <div
         class="flex justify-between items-center w-full justify-between"
       >
         <div
-          class="flex items-center flex-1 gap-0.5 sm:gap-1.5 min-w-0"
+          class="flex items-center flex-1 gap-0.5 min-w-0"
         >
           <div
-            class="flex items-center gap-1.5 sm:gap-3 shrink-0 relative flex items-center transition-all duration-200 scale-100"
+            class="flex items-center gap-1.5 shrink-0 relative flex items-center transition-all duration-200 scale-100"
             style="user-select: none; -webkit-user-select: none; touch-action: none;"
           >
             <div
@@ -31,7 +31,7 @@ exports[`Navbar UI (Diamond Lock) > should match the current snapshot (Aesthetic
                 type="file"
               />
               <div
-                class="relative overflow-hidden bg-stone-100 aspect-square w-9 h-9 sm:w-[3rem] sm:h-[3rem] rounded-[0.25rem]"
+                class="relative overflow-hidden bg-stone-100 aspect-square w-9 h-9 rounded-md"
               >
                 <div
                   class="absolute inset-0 z-10 flex items-center justify-center bg-stone-50"
@@ -70,13 +70,13 @@ exports[`Navbar UI (Diamond Lock) > should match the current snapshot (Aesthetic
               </div>
             </div>
             <div
-              class="flex flex-col leading-tight sm:gap-0 relative z-[30] pointer-events-none"
+              class="flex flex-col leading-tight relative z-[30] pointer-events-none"
             >
               <div
                 class="flex items-center"
               >
                 <span
-                  class="!text-[0.85rem] sm:!text-[0.9rem] font-black tracking-tighter text-stone-900  "
+                  class="!text-[0.85rem] font-black tracking-tighter text-stone-900  "
                   contenteditable="false"
                 >
                   Diamond Store
@@ -85,7 +85,7 @@ exports[`Navbar UI (Diamond Lock) > should match the current snapshot (Aesthetic
             </div>
           </div>
           <div
-            class="hidden sm:flex items-center w-full max-w-[10rem] lg:max-w-[14rem] ml-1 sm:ml-4"
+            class="hidden items-center w-full max-w-[10rem] ml-1"
           >
             <div
               class="relative w-full"
@@ -120,7 +120,7 @@ exports[`Navbar UI (Diamond Lock) > should match the current snapshot (Aesthetic
                 class="w-full"
               >
                 <input
-                  class="w-full border border-stone-200 rounded-[var(--radius-button)] px-3 py-2.5 sm:px-5 sm:py-4 text-[0.5625rem] leading-snug font-semibold sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-stone-900 transition outline-none bg-stone-50/50 !pl-9 !text-[0.65rem] sm:!text-[0.85rem] !py-2 sm:!py-2.5 !bg-stone-50/50"
+                  class="w-full border border-stone-200 rounded-[var(--radius-button)] px-3 py-2.5 text-[0.5625rem] leading-snug font-semibold focus:outline-none focus:ring-2 focus:ring-stone-900 transition outline-none bg-stone-50/50 !pl-9 !text-[0.65rem] !py-2 !bg-stone-50/50"
                   id="desktop-search-input"
                   placeholder="Ara..."
                   type="text"
@@ -131,10 +131,10 @@ exports[`Navbar UI (Diamond Lock) > should match the current snapshot (Aesthetic
           </div>
         </div>
         <div
-          class="flex flex-col items-end lg:flex-row lg:items-center gap-1.5 lg:gap-3 shrink-0"
+          class="flex flex-col items-end gap-0.5 shrink-0"
         >
           <div
-            class="order-1 lg:order-2 flex items-center gap-1 sm:gap-1.5 shrink-0"
+            class="order-1 flex items-center gap-1 shrink-0"
           >
             <button
               class="
@@ -143,7 +143,7 @@ exports[`Navbar UI (Diamond Lock) > should match the current snapshot (Aesthetic
         px-3 py-1.5 text-[9px] gap-1.5 
         rounded-2xl aspect-square !p-0 
         
-        !w-6 !h-6 sm:!w-8 sm:!h-8 !p-0 !bg-transparent !border-none flex items-center justify-center text-stone-400 hover:text-pink-600 shadow-none
+        !w-6 !h-6 !p-0 !bg-transparent !border-none flex items-center justify-center text-stone-400 hover:text-pink-600 shadow-none
       "
             >
               <div
@@ -154,7 +154,7 @@ exports[`Navbar UI (Diamond Lock) > should match the current snapshot (Aesthetic
         "
               >
                 <svg
-                  class="w-4 h-4 sm:w-5 sm:h-5 fill-current"
+                  class="w-4 h-4 fill-current"
                   viewBox="0 0 24 24"
                 >
                   <path
@@ -170,7 +170,7 @@ exports[`Navbar UI (Diamond Lock) > should match the current snapshot (Aesthetic
         px-6 py-3 text-xs gap-2 
         rounded-2xl 
         
-        !bg-stone-900 !text-white !px-3 !py-1 sm:!p-2.5 !rounded-lg hover:!bg-black !shadow-lg border-white/10
+        !bg-stone-900 !text-white !px-3 !py-1 !rounded-md hover:!bg-black !shadow-lg border-white/10
       "
             >
               <div
@@ -183,13 +183,13 @@ exports[`Navbar UI (Diamond Lock) > should match the current snapshot (Aesthetic
                   class="flex items-center gap-2"
                 >
                   <span
-                    class="!text-[0.6rem] sm:!text-[0.8rem] font-black tracking-tight leading-normal flex items-center "
+                    class="!text-[0.6rem] font-black tracking-tight leading-normal flex items-center "
                     contenteditable="false"
                   >
                     SİPARİŞ VER
                   </span>
                   <svg
-                    class="w-3 h-3 sm:w-4 sm:h-4 text-white opacity-60"
+                    class="w-3 h-3 text-white opacity-60"
                     fill="none"
                     stroke="currentColor"
                     stroke-linecap="round"

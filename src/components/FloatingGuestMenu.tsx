@@ -10,7 +10,6 @@ import * as Lucide from 'lucide-react';
  */
 export default function FloatingGuestMenu({
   onCouponClick,
-  onExcelClick,
   onSearchClick,
   onQRClick,
 }: FloatingGuestMenuProps) {
@@ -22,31 +21,40 @@ export default function FloatingGuestMenu({
 
   const whatsappNumber = settings?.whatsapp || '';
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: settings?.name || 'E-Katalog',
-          text: 'Ürün kataloğumuza göz atın!',
-          url: window.location.href,
-        });
-      } catch (err) {
-        console.error('Error sharing:', err);
-      }
-    } else {
-      await navigator.clipboard.writeText(window.location.href);
-      alert('Link kopyalandı!');
-    }
+  const handleVCard = () => {
+    if (!settings) return;
+
+    // vCard (vcf) Dosyası Oluşturma
+    // FN: Full Name, TEL: Telefon, ADR: Adres, ORG: Organizasyon/Mağaza Adı
+    const vCardLines = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      `FN:${settings.name}`,
+      `TEL;TYPE=CELL:${settings.whatsapp}`,
+      `ADR;TYPE=WORK:;;${settings.address || ''};;;;`,
+      `ORG:${settings.name}`,
+      `TITLE:${settings.subtitle || ''}`,
+      'END:VCARD'
+    ];
+
+    const vCardData = vCardLines.join('\n');
+    const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${settings.name.replace(/\s+/g, '_')}.vcf`);
+    document.body.appendChild(link);
+    link.click();
+    
+    // Temizlik
+    setTimeout(() => {
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }, 100);
   };
 
   const guestActions: FloatingAction[] = [
-    {
-      id: 'excel',
-      icon: <Lucide.FileSpreadsheet className="w-5 h-5" strokeWidth={2.5} />,
-      action: onExcelClick,
-      label: 'LİSTE İNDİR',
-      variant: 'secondary',
-    },
     {
       id: 'coupon',
       icon: <Lucide.Ticket className="w-5 h-5" strokeWidth={2.5} />,
@@ -56,9 +64,9 @@ export default function FloatingGuestMenu({
     },
     // ROW 1: Share | Location
     {
-      id: 'share',
-      icon: <Lucide.Share2 className="w-5 h-5" strokeWidth={2.5} />,
-      action: handleShare,
+      id: 'vcard',
+      icon: <Lucide.UserPlus className="w-5 h-5" strokeWidth={2.5} />,
+      action: handleVCard,
       label: '',
       variant: 'secondary',
     },
@@ -95,7 +103,7 @@ export default function FloatingGuestMenu({
       ),
       action: () => settings?.instagram && window.open(settings.instagram, '_blank'),
       label: '',
-      variant: 'instagram',
+      variant: 'secondary',
     },
     // ROW 3: QR | WhatsApp
     {
@@ -134,7 +142,7 @@ export default function FloatingGuestMenu({
       icon: <Lucide.Phone className="w-5 h-5" strokeWidth={2.5} />,
       action: () => window.open(`tel:${whatsappNumber.replace(/\D/g, '')}`, '_self'),
       label: '', 
-      variant: 'phone',
+      variant: 'secondary',
     },
   ];
 

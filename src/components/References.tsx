@@ -31,7 +31,7 @@ const ReferenceCard = memo(({
 
   return (
     <div
-      className={`${referencesTheme.card.base} relative group flex items-center justify-center p-8 text-center border-stone-100 bg-white shadow-[0_2px_15px_-5px_rgba(0,0,0,0.08)] hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 rounded-xl overflow-hidden`}
+      className={`${referencesTheme.card.base} relative group flex items-center justify-center p-4 text-center border-stone-100 bg-white shadow-[0_2px_15px_-5px_rgba(0,0,0,0.08)] hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 rounded-xl overflow-hidden`}
     >
       <span
         contentEditable={isAdmin && isInlineEnabled}

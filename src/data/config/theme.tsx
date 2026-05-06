@@ -465,12 +465,12 @@ export const THEME = {
 
   references: {
     layout: 'py-8 border-t border-stone-200',
-    container: 'max-w-4xl mx-auto px-6',
-    headerTitle: `text-center ${FS.xs} font-black text-stone-300 mb-16 tracking-[0.3em] uppercase`,
-    grid: 'grid grid-cols-3 gap-8 items-center justify-items-center',
+    container: 'max-w-4xl mx-auto px-4',
+    headerTitle: `text-center ${FS.xs} font-black text-stone-300 mb-8 tracking-[0.3em] uppercase`,
+    grid: 'grid grid-cols-2 gap-4 items-center justify-items-center',
     card: {
       base: 'w-full flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-700 opacity-40 hover:opacity-100',
-      logoSize: 'text-3xl select-none',
+      logoSize: 'text-2xl select-none',
     },
   },
 

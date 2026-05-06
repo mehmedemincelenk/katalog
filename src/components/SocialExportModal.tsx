@@ -135,32 +135,22 @@ export default function SocialExportModal({
             </div>
          </div>
 
-         {/* RIGHT: ACTION COLUMN */}
-         <div className="flex flex-col gap-3 shrink-0">
-            <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-black text-stone-400 tracking-widest uppercase ml-1">TASARIM</span>
+         {/* RIGHT: ACTION COLUMN - MINIMALIST ICONS ONLY */}
+         <div className="flex flex-col gap-4 shrink-0">
               <Button 
                 variant="primary" 
                 onClick={handleNextDesign} 
-                icon={<Lucide.RotateCw size={18} className={isExporting ? 'animate-spin' : ''} />}
-                className="!w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-2xl !bg-stone-900 hover:!bg-black !text-white shadow-xl flex flex-col !gap-1"
-              >
-                <span className="text-[10px] font-black tracking-widest uppercase">YENİ</span>
-              </Button>
-            </div>
+                icon={<Lucide.RotateCw size={24} className={isExporting ? 'animate-spin' : ''} />}
+                className="!w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-2xl !bg-stone-900 hover:!bg-black !text-white shadow-xl"
+              />
 
-            <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-black text-stone-400 tracking-widest uppercase ml-1">DOSYA</span>
               <Button 
                 variant="secondary" 
                 onClick={handleDownload} 
                 loading={isExporting} 
-                icon={<Lucide.Download size={20} />}
-                className="!w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-2xl shadow-lg border-2 border-stone-200 !bg-white !text-stone-900 flex flex-col !gap-1"
-              >
-                <span className="text-[10px] font-black tracking-widest uppercase">İNDİR</span>
-              </Button>
-            </div>
+                icon={<Lucide.Download size={24} />}
+                className="!w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-2xl shadow-lg border-2 border-stone-200 !bg-white !text-stone-900"
+              />
          </div>
       </div>
     </BaseModal>

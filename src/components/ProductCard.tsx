@@ -256,7 +256,9 @@ const ProductCard = memo(
                         (event.preventDefault(), event.currentTarget.blur()),
                       className: `outline-none focus:ring-2 focus:ring-stone-900/10 rounded px-1 -mx-1 transition-all hover:bg-stone-100 focus:bg-stone-100 cursor-text`,
                     }
-                  : {}
+                  : {
+                      className: `cursor-pointer transition-all ${isAdmin ? 'hover:text-stone-950' : ''}`
+                    }
               }
             />
 
@@ -293,7 +295,7 @@ const ProductCard = memo(
                     onClick={() =>
                       handlePromptEdit('description', 'Ürün Açıklaması')
                     }
-                    className={`${theme.typography.description} ${theme.typography.descriptionClamp} ${isAdmin ? `outline-none focus:ring-2 focus:ring-stone-900/10 rounded px-1 -mx-1 transition-all hover:bg-stone-100 focus:bg-stone-100 cursor-text` : ''}`}
+                    className={`${theme.typography.description} ${theme.typography.descriptionClamp} ${isAdmin && !isInlineEnabled ? `outline-none focus:ring-2 focus:ring-stone-900/10 rounded px-1 -mx-1 transition-all hover:bg-stone-100 focus:bg-stone-100 cursor-text` : ''}`}
                   >
                     {product.description ||
                       (isAdmin ? adminLabels.addDescription : '')}
@@ -336,7 +338,7 @@ const ProductCard = memo(
                         (event.preventDefault(), event.currentTarget.blur())
                       }
                       onClick={() => handlePromptEdit('price', 'Ürün Fiyatı')}
-                      className={`${theme.typography.price} ${isAdmin ? `outline-none focus:ring-2 focus:ring-stone-900/10 rounded px-1 -mx-1 transition-all hover:bg-stone-100 focus:bg-stone-100 cursor-text` : 'text-stone-900'} ${product.out_of_stock && !isAdmin ? theme.typography.priceOutOfStock : ''}`}
+                      className={`${theme.typography.price} ${isAdmin ? `outline-none focus:ring-2 focus:ring-stone-900/10 rounded px-1 -mx-1 transition-all hover:bg-stone-100 focus:bg-stone-100 ${!isInlineEnabled ? 'cursor-text' : ''}` : 'text-stone-900'} ${product.out_of_stock && !isAdmin ? theme.typography.priceOutOfStock : ''}`}
                     >
                       {originalPriceLabel}
                     </div>

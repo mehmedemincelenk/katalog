@@ -44,7 +44,7 @@ const StatusToggle = memo(
         <div className={`flex ${isCompact ? 'gap-1' : 'gap-1.5'}`}>
           <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}>
             <Button
-              onClick={() => onChange(true)}
+              onClick={(e) => { e.stopPropagation(); onChange(true); }}
               disabled={disabled}
               mode="square"
               size="sm"
@@ -54,7 +54,7 @@ const StatusToggle = memo(
           </motion.div>
           <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }}>
             <Button
-              onClick={() => onChange(false)}
+              onClick={(e) => { e.stopPropagation(); onChange(false); }}
               disabled={disabled}
               mode="square"
               size="sm"

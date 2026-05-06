@@ -147,22 +147,29 @@ export default function DisplaySettingsModal({
     const [localInline, setLocalInline] = useState(isInlineEnabled);
 
     // Sync local state when props update (server response)
-    const [prevSettings, setPrevSettings] = useState(settings);
-    const [prevIsInline, setPrevIsInline] = useState(isInlineEnabled);
-
-    if (settings !== prevSettings || isInlineEnabled !== prevIsInline) {
-      setPrevSettings(settings);
-      setPrevIsInline(isInlineEnabled);
+    useEffect(() => {
+      if (!isOpen) return; // Only sync when open or closing
       setLocalConfig(settings?.displayConfig || {});
       setLocalAnnouncement(settings?.announcementBar?.enabled || false);
       setLocalMaintenance(settings?.maintenanceMode?.enabled || false);
       setLocalInline(isInlineEnabled);
-    }
+    }, [settings, isInlineEnabled, isOpen]);
 
     if (!settings) return null;
 
-    const toggleOption = async (key: string) => {
-      const newVal = !localConfig[key as keyof DisplayConfig];
+    const getOptionState = (key: keyof DisplayConfig) => {
+      const val = localConfig[key];
+      // Default behavior for specifically flagged settings
+      if (key === 'showPrice') return val !== false; // Default true
+      if (key === 'showWhatsapp') return val !== false; // Default true
+      if (key === 'showCarousel') return val !== false; // Default true
+      return !!val;
+    };
+
+    const toggleOption = async (key: keyof DisplayConfig) => {
+      const currentVal = getOptionState(key);
+      const newVal = !currentVal;
+      
       // 1. Optimistic Update
       setLocalConfig(prev => ({ ...prev, [key]: newVal }));
       
@@ -218,15 +225,15 @@ export default function DisplaySettingsModal({
     };
 
     const allOptions = [
-      { key: 'showPrice', label: 'Ürün Fiyatları', isOn: localConfig.showPrice, onToggle: () => toggleOption('showPrice') },
-      { key: 'showWhatsapp', label: 'WhatsApp', isOn: localConfig.showWhatsapp, onToggle: () => toggleOption('showWhatsapp') },
-      { key: 'showInstagram', label: 'Instagram', isOn: localConfig.showInstagram, onToggle: () => toggleOption('showInstagram') },
-      { key: 'showCarousel', label: 'Afişler', isOn: localConfig.showCarousel, onToggle: () => toggleOption('showCarousel') },
-      { key: 'showReferences', label: 'Referanslar', isOn: localConfig.showReferences, onToggle: () => toggleOption('showReferences') },
+      { key: 'showPrice', label: 'Ürün Fiyatları', isOn: getOptionState('showPrice'), onToggle: () => toggleOption('showPrice') },
+      { key: 'showWhatsapp', label: 'WhatsApp', isOn: getOptionState('showWhatsapp'), onToggle: () => toggleOption('showWhatsapp') },
+      { key: 'showInstagram', label: 'Instagram', isOn: getOptionState('showInstagram'), onToggle: () => toggleOption('showInstagram') },
+      { key: 'showCarousel', label: 'Afişler', isOn: getOptionState('showCarousel'), onToggle: () => toggleOption('showCarousel') },
+      { key: 'showReferences', label: 'Referanslar', isOn: getOptionState('showReferences'), onToggle: () => toggleOption('showReferences') },
       { key: 'announcement', label: 'Duyuru Panosu', isOn: localAnnouncement, onToggle: toggleAnnouncement },
-      { key: 'showCoupons', label: 'Kupon İndirimi', isOn: localConfig.showCoupons, onToggle: () => toggleOption('showCoupons') },
-      { key: 'showCurrency', label: 'Döviz Çevirici', isOn: localConfig.showCurrency, onToggle: () => toggleOption('showCurrency') },
-      { key: 'showPriceList', label: 'Fiyat Listesi', isOn: localConfig.showPriceList, onToggle: () => toggleOption('showPriceList') },
+      { key: 'showCoupons', label: 'Kupon İndirimi', isOn: getOptionState('showCoupons'), onToggle: () => toggleOption('showCoupons') },
+      { key: 'showCurrency', label: 'Döviz Çevirici', isOn: getOptionState('showCurrency'), onToggle: () => toggleOption('showCurrency') },
+      { key: 'showPriceList', label: 'Fiyat Listesi', isOn: getOptionState('showPriceList'), onToggle: () => toggleOption('showPriceList') },
       { key: 'inline', label: 'Hızlı Düzenleme', isOn: localInline, onToggle: handleToggleInline, hasHelp: false },
       { key: 'maintenance', label: 'Bakım Modu', isOn: localMaintenance, onToggle: toggleMaintenance, hasHelp: true },
     ];

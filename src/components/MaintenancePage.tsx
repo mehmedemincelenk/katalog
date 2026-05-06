@@ -35,14 +35,11 @@ export default function MaintenancePage({ onLogoPointerDown, onLogoPointerUp }: 
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center select-none overflow-hidden relative">
-      {/* Background Decor */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-stone-900/10" />
-      
-      <div className="max-w-md w-full space-y-12 relative z-10">
+    <div className="min-h-screen bg-stone-50/50 flex flex-col items-center justify-center p-6 text-center select-none overflow-hidden relative">
+      <div className="max-w-md w-full space-y-16 relative z-10">
         {/* BRANDING (HIDDEN ADMIN ACCESS) */}
         <div 
-          className={`flex flex-col items-center space-y-4 transition-all duration-300 cursor-pointer touch-none ${isLogoPressed ? 'scale-90 opacity-60' : 'scale-100'}`}
+          className={`flex flex-col items-center space-y-6 transition-all duration-300 cursor-pointer touch-none ${isLogoPressed ? 'scale-95 opacity-50' : 'scale-100'}`}
           onPointerDown={handlePressStart}
           onPointerUp={handlePressEnd}
           onPointerLeave={handlePressEnd}
@@ -53,16 +50,16 @@ export default function MaintenancePage({ onLogoPointerDown, onLogoPointerUp }: 
             <img 
               src={settings.logoUrl} 
               alt={settings.title} 
-              className="h-20 w-auto object-contain mb-2 pointer-events-none drop-shadow-xl" 
+              className="h-24 w-auto object-contain pointer-events-none drop-shadow-sm" 
             />
           ) : (
-            <div className="w-20 h-20 bg-stone-900 rounded-[2rem] flex items-center justify-center text-white text-3xl font-black shadow-2xl">
+            <div className="w-16 h-16 bg-stone-900 rounded-3xl flex items-center justify-center text-white text-2xl font-black shadow-xl">
               {settings?.title?.charAt(0) || 'E'}
             </div>
           )}
-          <div className="space-y-1">
-            <h1 className="text-2xl font-black text-stone-900 tracking-tighter uppercase">{settings?.title}</h1>
-            <div className="h-0.5 w-12 bg-stone-900/10 mx-auto rounded-full" />
+          <div className="space-y-3">
+            <h1 className="text-sm font-black text-stone-400 tracking-[0.5em] uppercase">{settings?.title || 'KATALOG'}</h1>
+            <div className="h-0.5 w-8 bg-stone-900/5 mx-auto rounded-full" />
           </div>
         </div>
 
@@ -70,41 +67,31 @@ export default function MaintenancePage({ onLogoPointerDown, onLogoPointerUp }: 
           {/* SUCCESS STATE */}
           {isSuccess ? (
             <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-stone-50 rounded-[2.5rem] p-12 border border-stone-100 flex flex-col items-center space-y-6 shadow-sm"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center space-y-4"
             >
-              <div className="w-20 h-20 bg-emerald-500 text-white rounded-[1.5rem] flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                <Lucide.Check size={40} strokeWidth={3} />
+              <div className="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/10">
+                <Lucide.Check size={24} strokeWidth={3} />
               </div>
-              <div className="space-y-2">
-                <h4 className="text-2xl font-black text-stone-900 uppercase tracking-tight">KAYDEDİLDİ!</h4>
-                <p className="text-stone-400 text-sm font-bold leading-relaxed px-4">
-                  Dükkanı açtığımızda sizi ilk biz arayacağız. İlginiz için teşekkürler!
-                </p>
-              </div>
+              <p className="text-stone-400 text-[10px] font-black uppercase tracking-[0.2em]">KAYDINIZ ALINDI, GÖRÜŞMEK ÜZERE.</p>
             </motion.div>
           ) : (
-            <div className="space-y-10">
+            <div className="space-y-12">
               <div className="space-y-4">
-                <h2 className="text-6xl font-black text-stone-900 tracking-tighter leading-none uppercase">
-                  BAKIMDA
+                <h2 className="text-xs font-black text-stone-300 tracking-[1em] uppercase leading-none">
+                  GÜNCELLEME YAPILIYOR
                 </h2>
-                <p className="text-stone-400 text-xs font-black uppercase tracking-[0.3em] opacity-60">
-                  Şu an güncelleme yapıyoruz
-                </p>
               </div>
 
-              {/* LEAD CAPTURE SECTION */}
-              <div className="bg-white border-2 border-stone-100 rounded-[2.5rem] p-8 shadow-2xl shadow-stone-200/40 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-stone-50 rounded-full -mr-16 -mt-16 opacity-50 group-hover:scale-110 transition-transform duration-700" />
-                
-                <div className="text-center mb-8 relative z-10">
-                  <p className="text-xl font-black text-stone-900 tracking-tighter uppercase">Sizi Arayalım</p>
-                  <p className="text-[10px] text-stone-400 font-bold uppercase mt-1">Numaranızı bırakın, açılışta haber verelim</p>
+              {/* LEAD CAPTURE SECTION - MINIMALIST */}
+              <div className="space-y-8">
+                <div className="text-center">
+                  <p className="text-base font-black text-stone-800 tracking-tight uppercase">Sizi Arayalım</p>
+                  <p className="text-[10px] text-stone-400 font-bold uppercase mt-1 opacity-60">Açılışta haber vermek için numaranızı bırakın</p>
                 </div>
                 
-                <div className="relative z-10">
+                <div className="max-w-[280px] mx-auto bg-white rounded-[2.5rem] p-6 shadow-xl shadow-stone-200/20 border border-stone-100">
                   <Numpad onSubmit={handleLeadSubmit} maxDigits={10} />
                 </div>
               </div>
@@ -113,9 +100,9 @@ export default function MaintenancePage({ onLogoPointerDown, onLogoPointerUp }: 
         </div>
 
         {/* FOOTER */}
-        <div className="pt-8 opacity-30">
-          <p className="text-[9px] font-black text-stone-500 uppercase tracking-[0.6em]">
-            EKATALOG.SITE — #DIAMONDSTANDARD
+        <div className="pt-12">
+          <p className="text-[8px] font-black text-stone-300 uppercase tracking-[0.8em]">
+            DIAMOND INFRASTRUCTURE
           </p>
         </div>
       </div>

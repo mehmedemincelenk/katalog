@@ -103,7 +103,7 @@ export default function FloatingGuestMenu({
       ),
       action: () => settings?.instagram && window.open(settings.instagram, '_blank'),
       label: '',
-      variant: 'secondary',
+      variant: 'instagram',
     },
     // ROW 3: QR | WhatsApp
     {
@@ -142,7 +142,7 @@ export default function FloatingGuestMenu({
       icon: <Lucide.Phone className="w-5 h-5" strokeWidth={2.5} />,
       action: () => window.open(`tel:${whatsappNumber.replace(/\D/g, '')}`, '_self'),
       label: '', 
-      variant: 'secondary',
+      variant: 'phone',
     },
   ];
 

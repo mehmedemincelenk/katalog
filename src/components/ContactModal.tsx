@@ -28,50 +28,31 @@ export default function ContactModal({ isOpen, onClose, phone, storeName, isStat
       isOpen={isOpen}
       onClose={onClose}
       isStatic={isStatic}
-      maxWidth="max-w-sm"
-      title="İLETİŞİME GEÇİN"
+      maxWidth="max-w-xs"
       noPadding
     >
-      <div className="flex flex-col bg-stone-50 border-b border-stone-100 rounded-[2.5rem] shadow-sm overflow-hidden p-8 gap-8">
+      <div className="flex flex-col bg-stone-50 border-b border-stone-100 rounded-[2.5rem] shadow-sm overflow-hidden p-10">
         {/* Main Action Group: Phone & WhatsApp Side-by-Side */}
-        <div className="flex items-center justify-center gap-6 w-full">
+        <div className="flex items-center justify-center gap-8 w-full">
           {/* Phone Button */}
-          <div className="flex flex-col items-center gap-3">
-            <Button
-              onClick={handlePhoneCall}
-              variant="phone"
-              mode="circle"
-              className="!w-20 !h-20 shadow-2xl transition-all active:scale-90"
-              showFingerprint={true}
-              icon={<Lucide.Phone size={32} strokeWidth={2.5} />}
-            />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400">HEMEN ARA</span>
-          </div>
+          <Button
+            onClick={handlePhoneCall}
+            variant="phone"
+            mode="circle"
+            className="!w-20 !h-20 shadow-2xl transition-all active:scale-90"
+            showFingerprint={false}
+            icon={<Lucide.Phone size={32} strokeWidth={2.5} />}
+          />
 
           {/* WhatsApp Button */}
-          <div className="flex flex-col items-center gap-3">
-            <Button
-              onClick={handleWhatsApp}
-              variant="whatsapp"
-              mode="circle"
-              className="!w-20 !h-20 shadow-2xl transition-all active:scale-90 border-none"
-              showFingerprint={true}
-              icon={<div className="w-10 h-10 fill-white">{THEME.icons.whatsapp}</div>}
-            />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400">WHATSAPP</span>
-          </div>
-        </div>
-
-        {/* Footer Action: Dismiss */}
-        <div className="w-full pt-4">
           <Button
-            onClick={onClose}
-            variant="secondary"
-            mode="rectangle"
-            className="w-full !h-16 !bg-white !text-stone-400 !rounded-3xl hover:!bg-stone-100 transition-colors border border-stone-200/50"
-          >
-            <span className="text-[11px] font-black uppercase tracking-[0.3em]">SONRA ARAYACAĞIM</span>
-          </Button>
+            onClick={handleWhatsApp}
+            variant="whatsapp"
+            mode="circle"
+            className="!w-20 !h-20 shadow-2xl transition-all active:scale-90 border-none"
+            showFingerprint={false}
+            icon={<div className="w-10 h-10 fill-white">{THEME.icons.whatsapp}</div>}
+          />
         </div>
       </div>
     </BaseModal>

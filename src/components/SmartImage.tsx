@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { resolveVisualAssetUrl } from '../utils/image';
 import { THEME } from '../data/config';
 import Loading from './Loading';
+import * as Lucide from 'lucide-react';
 
 import { SmartImageProps } from '../types';
 
@@ -88,7 +89,7 @@ export default function SmartImage({
 
       {/* ERROR / FALLBACK STATE */}
       {status === 'error' && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-stone-50 text-stone-300 p-4">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-stone-50 text-stone-300">
           {fallbackSrc ? (
             <img
               src={resolveVisualAssetUrl(fallbackSrc) || ''}
@@ -96,16 +97,20 @@ export default function SmartImage({
               className="max-w-[50%] max-h-[50%] object-contain opacity-20 grayscale pointer-events-none"
             />
           ) : fallbackIcon || (
-            <>
-              <div className="w-8 h-8 opacity-20 mb-2">
-                {THEME.icons.search}
+            <div className="flex flex-col items-center">
+              <div className="relative">
+                <Lucide.Package 
+                  size={64} 
+                  strokeWidth={0.5} 
+                  className="text-stone-200" 
+                />
+                <Lucide.Search 
+                  size={18} 
+                  strokeWidth={1.5} 
+                  className="absolute -bottom-1 -right-1 text-stone-300" 
+                />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest opacity-30 text-center leading-tight">
-                Görsel
-                <br />
-                Bulunamadı
-              </span>
-            </>
+            </div>
           )}
         </div>
       )}

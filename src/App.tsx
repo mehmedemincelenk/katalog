@@ -216,9 +216,8 @@ function CatalogView() {
         </AnimatePresence>
 
         {/* Workspace button removed by request */}
-      </div>
-    </>
-  );
+      </>
+    );
 
   return (
     <div className={`min-h-screen font-sans md:bg-gradient-to-br md:from-stone-950 md:to-stone-900 flex md:overflow-hidden ${UI.layout.bodyBg} ${UI.layout.selection} relative z-0`}>

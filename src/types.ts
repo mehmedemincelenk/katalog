@@ -619,6 +619,7 @@ export type ModalType =
   | 'GLOBAL_ADD_MENU'
   | 'AI_STUDIO_TEXT'
   | 'AI_STUDIO_COMPARE'
+  | 'AI_STUDIO_BG'
   | 'LOCATION'
   | 'CONTACT'
   | 'SOCIAL_EXPORT'

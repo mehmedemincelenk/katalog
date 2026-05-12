@@ -2,7 +2,7 @@
 // DEPENDS ON: QuickEditModal, THEME
 import { memo, useRef, useCallback, useState } from 'react';
 import { THEME, LABELS } from '../../data/config';
-import QuickEditModal from '../../modals/QuickEditModal';
+import { QuickEditModal } from '../modals/UtilityModals';
 import { CategoryHeaderProps } from '../../types';
 
 /**

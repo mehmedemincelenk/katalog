@@ -3,8 +3,8 @@
 // CONSUMED BY: ProductGrid.tsx
 import { useRef, useState, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
-import Loading from '../../ui/Loading';
-import Badge from '../../ui/Badge';
+import Loading from '../ui/Loading';
+import Badge from '../ui/Badge';
 import { LABELS, THEME } from '../../data/config';
 import { Product } from '../../types';
 import { resolveVisualAssetUrl } from '../../utils/image';
@@ -13,10 +13,10 @@ import {
   transformCurrencyStringToNumber,
   formatNumberToCurrency,
 } from '../../utils/core';
-import SmartImage from '../../ui/SmartImage';
-import { MarqueeText } from '../../ui/MarqueeText';
+import SmartImage from '../ui/SmartImage';
+import { MarqueeText } from '../ui/MarqueeText';
 
-import { QuickEditModal, ProductDetailModal } from '../../modals/UtilityModals';
+import { QuickEditModal, ProductDetailModal } from '../modals/UtilityModals';
 import { useStore } from '../../store';
 
 /**

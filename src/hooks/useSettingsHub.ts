@@ -17,10 +17,39 @@ const STORE_SLUG = getActiveStoreSlug();
 // --- 1. SETTINGS QUERY (Data Layer) ---
 
 export function useSettingsQuery() {
+  const STORE_SLUG = getActiveStoreSlug();
 
   return useQuery({
     queryKey: ['settings', STORE_SLUG],
     queryFn: async () => {
+      // 0. EMPTY STATE BYPASS
+      if (STORE_SLUG === 'empty-state') {
+        return {
+          id: 'empty',
+          title: '',
+          logoUrl: '',
+          activeCurrency: 'TRY',
+          categoryOrder: [],
+          carouselData: { slides: [] },
+          referencesData: [],
+          displayConfig: { 
+            showLogo: true, 
+            showSearch: true, 
+            showAddress: true, 
+            showInstagram: true, 
+            showWhatsapp: true,
+            showSubtitle: true 
+          },
+          announcementBar: { enabled: false, text: '' },
+          exchangeRates: { usd: 0, eur: 0 },
+          whatsapp: '',
+          address: '',
+          instagram: '',
+          subtitle: '',
+          name: '',
+        } as CompanySettings;
+      }
+
       // Parallel execution: Settings + Currency Rates
       const [settingsRes, rates] = await Promise.all([
         supabase.from('stores').select('*').eq('slug', STORE_SLUG).maybeSingle(),
@@ -28,13 +57,38 @@ export function useSettingsQuery() {
       ]);
 
       if (settingsRes.error) throw settingsRes.error;
-      if (!settingsRes.data) return null;
+
+      // 1. FALLBACK TO PLACEHOLDERS IF NOT FOUND
+      if (!settingsRes.data) {
+        // Eğer veritabanında yoksa ama localhost veya varsayılan slug ise dükkanı göster.
+        if (STORE_SLUG === 'toptanambalajcim' || STORE_SLUG === 'landing') {
+          return {
+            id: 'placeholder',
+            name: 'Mağaza Adı',
+            title: 'Mağaza Adı',
+            subtitle: 'Sloganınızı buraya yazın',
+            logoUrl: '',
+            activeCurrency: 'TRY',
+            categoryOrder: DEFAULT_ORDER,
+            carouselData: { slides: [] },
+            referencesData: [],
+            displayConfig: { showLogo: true, showSearch: true, showAddress: true, showInstagram: true, showWhatsapp: true },
+            announcementBar: { enabled: false, text: '' },
+            exchangeRates: rates || { usd: 0, eur: 0 },
+            whatsapp: '05XX XXX XX XX',
+            address: 'Adres Bilgisi',
+            instagram: '',
+            maintenanceMode: { enabled: false, message: '' },
+          } as CompanySettings;
+        }
+        return null;
+      }
 
       const raw = settingsRes.data;
       const settings: CompanySettings = {
         id: raw.id,
-        title: raw.name || '',
-        logoUrl: raw.logo_url,
+        title: raw.name || 'Mağaza Adı',
+        logoUrl: raw.logo_url || '',
         activeCurrency: raw.active_currency || 'TRY',
         categoryOrder: raw.category_order || DEFAULT_ORDER,
         carouselData: raw.carousel_data || { slides: [] },
@@ -42,12 +96,19 @@ export function useSettingsQuery() {
         socialProofCards: raw.social_proof_cards || [],
         maintenanceMode: raw.maintenance_mode || { enabled: false, message: '' },
         exchangeRates: rates || { usd: 0, eur: 0 },
-        whatsapp: raw.phone || '',
-        address: raw.address || '',
+        whatsapp: raw.phone || '05XX XXX XX XX',
+        address: raw.address || 'Adres Bilgisi Girilmemiş',
         instagram: raw.instagram_url || '',
-        subtitle: raw.tagline || '',
-        name: raw.name || '',
-        displayConfig: raw.display_config || {},
+        subtitle: raw.tagline || 'Sloganınızı buraya yazın',
+        name: raw.name || 'Mağaza Adı',
+        displayConfig: {
+          showLogo: true,
+          showSearch: true,
+          showAddress: true,
+          showInstagram: true,
+          showWhatsapp: true,
+          ...raw.display_config
+        },
         announcementBar: raw.announcement_bar || { enabled: false, text: '' },
         visitor_leads: raw.visitor_leads || [],
       };

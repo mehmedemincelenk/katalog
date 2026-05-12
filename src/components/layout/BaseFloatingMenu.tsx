@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Button from '../../ui/Button';
-import { MarqueeText } from '../../ui/MarqueeText';
+import Button from '../ui/Button';
+import { MarqueeText } from '../ui/MarqueeText';
 import { X, LayoutGrid } from 'lucide-react';
 
 

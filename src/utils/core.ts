@@ -48,35 +48,57 @@ export function cn(...inputs: ClassValue[]) {
 // --- 2. STORE & CONTACT UTILS ---
 
 /**
- * getActiveStoreSlug: Resolves the active store slug from URL or Environment.
+ * getActiveStoreSlug: Resolves the active store slug from URL (Path priority), Subdomain, or Environment.
  */
 export const getActiveStoreSlug = (): string => {
-  if (typeof window === 'undefined') return 'main-site';
+  if (typeof window === 'undefined') return 'landing';
 
   const hostname = window.location.hostname.toLowerCase();
+  const pathname = window.location.pathname.toLowerCase();
   const urlParams = new URLSearchParams(window.location.search);
 
+  // 1. URL Path Overrides (Priority)
+  if (pathname === '/landing') return 'landing';
+  if (pathname === '/empty') return 'empty-state';
+  
+  // Custom slug from path (e.g. /kayiambalaj)
+  const pathSlug = pathname.split('/')[1];
+  if (pathSlug && pathSlug.length > 2 && !['showroom', 'maintenance', 'pages', 'assets'].includes(pathSlug)) {
+    return pathSlug;
+  }
+
+  // 2. Query Param Overrides
   const storeParam = urlParams.get('store');
   if (storeParam) return storeParam;
+  if (urlParams.get('main') === '1') return 'landing';
 
-  if (urlParams.get('main') === '1') return 'main-site';
-
+  // 3. Localhost & Dev Overrides
   if (
     hostname === 'localhost' ||
     hostname === '127.0.0.1' ||
+    hostname === '::1' ||
     hostname.startsWith('192.168.') ||
     hostname.startsWith('172.') ||
     hostname.startsWith('10.') ||
     (import.meta.env && import.meta.env.DEV)
   ) {
-    let envSlug = import.meta.env.VITE_STORE_SLUG;
-    if (envSlug) envSlug = envSlug.replace(/-/g, '');
-    return envSlug && envSlug !== 'mainsite' ? envSlug : 'toptanambalajcim';
+    const envSlug = import.meta.env.VITE_STORE_SLUG;
+    if (envSlug && envSlug !== 'mainsite' && envSlug !== 'landing') return envSlug.replace(/-/g, '');
+    return 'toptanambalajcim'; // Default Dev Shop
   }
 
+  // 4. Subdomain Resolution (Production)
+  const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname.startsWith('192.168.');
   const parts = hostname.split('.');
-  if (parts.length <= 2 || (parts.length === 3 && parts[0] === 'www')) {
-    return 'main-site';
+
+  // If it's a real domain (not local) and has no subdomain, it's the landing page
+  if (!isLocal && (parts.length <= 2 || (parts.length === 3 && (parts[0] === 'www' || parts[0] === 'landing')))) {
+    return 'landing';
+  }
+
+  // If it's localhost and we reached here, it means it's the default shop
+  if (isLocal && parts.length === 1) {
+    return 'toptanambalajcim';
   }
 
   return parts[0];

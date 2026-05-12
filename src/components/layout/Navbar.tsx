@@ -6,10 +6,11 @@ import { THEME, DEFAULT_COMPANY } from '../../data/config';
 import { CompanySettings } from '../../types';
 import { compressVisualToDataUri } from '../../utils/image';
 import { X } from 'lucide-react';
-import Button from '../../ui/Button';
-import SmartImage from '../../ui/SmartImage';
-import FormInput from '../../ui/FormInput';
+import Button from '../ui/Button';
+import SmartImage from '../ui/SmartImage';
+import FormInput from '../ui/FormInput';
 import { openInstagram } from '../../utils/contact';
+import { QuickEditModal } from '../modals/UtilityModals';
 
 /**
  * NAVBAR COMPONENT (Layout Correction)

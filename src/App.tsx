@@ -31,7 +31,7 @@ export default function App() {
   const currentSlug = getActiveStoreSlug();
 
   // Eğer ana site (Landing) isteniyorsa
-  if (currentSlug === 'main-site') {
+  if (currentSlug === 'main-site' || currentSlug === 'landing') {
     return (
       <>
         <LandingPage />

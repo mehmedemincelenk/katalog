@@ -5,8 +5,8 @@ import { THEME, CAROUSEL, TECH } from '../../data/config';
 import { supabase } from '../../supabase';
 import { getActiveStoreSlug, reorderArray } from '../../utils/core';
 import CarouselSlideUnit from './CarouselSlideUnit';
-import Button from '../../ui/Button';
-import PlusPlaceholder from '../../ui/PlusPlaceholder';
+import Button from '../ui/Button';
+import PlusPlaceholder from '../ui/PlusPlaceholder';
 
 import * as Lucide from 'lucide-react';
 
@@ -69,7 +69,7 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
 
   const uploadHeroImage = useCallback(async (slideId: number, visualFile: File) => {
     try {
-      const { processDualQualityVisuals } = await import('../utils/image');
+      const { processDualQualityVisuals } = await import('../../utils/image');
       const { hq: optimizedVisual } = await processDualQualityVisuals(visualFile, TECH.storage.heroWidth);
       const visualFileName = `hero-${activeStoreSlug}-${slideId === -1 ? 'new' : slideId}-${Date.now()}.jpg`;
       const storagePath = `${TECH.storage.heroFolder}/${visualFileName}`;

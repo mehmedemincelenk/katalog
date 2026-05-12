@@ -4,7 +4,7 @@ import {
   formatNumberToCurrency,
   transformCurrencyStringToNumber,
 } from '../../utils/core';
-import SmartImage from '../../ui/SmartImage';
+import SmartImage from '../ui/SmartImage';
 import Badge from '../ui/Badge';
 
 import { ProductCardUIProps } from '../../types';

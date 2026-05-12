@@ -1,9 +1,9 @@
 import { memo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { THEME } from '../../data/config';
-import SmartImage from '../../ui/SmartImage';
+import SmartImage from '../ui/SmartImage';
 import { resolveVisualAssetUrl } from '../../utils/image';
-import Button from '../../ui/Button';
+import Button from '../ui/Button';
 import * as Lucide from 'lucide-react';
 
 /**

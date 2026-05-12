@@ -50,7 +50,7 @@ export function useAdminMode() {
 
   const verifyPinWithServer = useCallback(
     async (pin: string) => {
-      if (STORE_SLUG === 'main-site') return false;
+      if (STORE_SLUG === 'main-site' || STORE_SLUG === 'landing') return false;
 
       if (isLockedOut) return false;
 

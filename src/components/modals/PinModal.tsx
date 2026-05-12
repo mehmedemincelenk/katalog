@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { THEME } from '../../data/config';
-import Turnstile from '../../ui/Turnstile';
-import Button from '../../ui/Button';
+import Turnstile from '../ui/Turnstile';
+import Button from '../ui/Button';
 
 import { PinModalProps } from '../../types';
 

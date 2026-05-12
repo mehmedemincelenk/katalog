@@ -1,9 +1,9 @@
 import { useState, memo } from 'react';
 import { THEME, REFERENCES } from '../../data/config';
 import { useSettings } from '../../hooks/useSettingsHub';
-import Button from '../../ui/Button';
-import PlusPlaceholder from '../../ui/PlusPlaceholder';
-import QuickEditModal from '../../modals/QuickEditModal';
+import Button from '../ui/Button';
+import PlusPlaceholder from '../ui/PlusPlaceholder';
+import { QuickEditModal } from '../modals/UtilityModals';
 import * as Lucide from 'lucide-react';
 
 import { ReferencesProps, Reference } from '../../types';

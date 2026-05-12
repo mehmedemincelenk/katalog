@@ -1,8 +1,8 @@
 import { memo, useEffect, useState, useRef } from 'react';
-import Button from '../../ui/Button';
-import BaseModal from '../../modals/BaseModal';
-import StatusToggle from '../../ui/StatusToggle';
-import Loading from '../../ui/Loading';
+import Button from '../ui/Button';
+import BaseModal from '../modals/BaseModal';
+import StatusToggle from '../ui/StatusToggle';
+import Loading from '../ui/Loading';
 import {
   Trash2,
   Download,

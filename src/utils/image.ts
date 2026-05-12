@@ -2,6 +2,8 @@
 // DEPENDS ON: TECH constants, THEME colors, FileReader API
 // CONSUMED BY: ProductCard.tsx, HeroCarousel.tsx, AddProductModal.tsx
 import { TECH, LABELS, THEME } from '../data/config';
+import { supabase } from '../supabase';
+import { slugify } from './core';
 
 /**
  * resolveVisualAssetUrl: Harmonizes raw storage paths into valid public URLs.
@@ -240,5 +242,86 @@ export async function downloadImage(url: string, fileName: string) {
   } catch (err) {
     console.error('Download error:', err);
     window.open(url, '_blank');
+  }
+}
+
+/**
+ * secureUploadVisualAsset: Unified engine for optimized, authorized, and cleaned-up asset uploads.
+ */
+export async function secureUploadVisualAsset({
+  file,
+  folder,
+  adminPin,
+  oldUrl,
+  slugBaseName,
+  uniqueIdPrefix = '',
+  isDualQuality = true
+}: {
+  file: File;
+  folder: string;
+  adminPin: string;
+  oldUrl?: string | null;
+  slugBaseName: string;
+  uniqueIdPrefix?: string;
+  isDualQuality?: boolean;
+}): Promise<string> {
+  // 1. Authorization
+  if (!adminPin) throw new Error('Security Error: PIN required for storage operations.');
+
+  // 2. Hygiene: Cleanup old assets
+  if (oldUrl) {
+    try {
+      const assetUrl = new URL(oldUrl);
+      const fileName = assetUrl.pathname.split('/').pop();
+      if (fileName && !fileName.includes('placeholder')) {
+        const pathsToDelete = isDualQuality 
+          ? [`${TECH.storage.lqFolder}/${fileName}`, `${TECH.storage.hqFolder}/${fileName}`]
+          : [`${folder}/${fileName}`];
+
+        for (const path of pathsToDelete) {
+          await supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: path });
+        }
+        await supabase.storage.from(TECH.storage.bucket).remove(pathsToDelete);
+      }
+    } catch { /* Silent fail for hygiene */ }
+  }
+
+  // 3. Optimization
+  const sanitizedName = slugify(slugBaseName).substring(0, TECH.products.maxFileNameLength);
+  const uniqueSuffix = Math.random().toString(36).substring(2, 2 + TECH.products.uniqueIdSuffixLength);
+  const storageFileName = `${sanitizedName}-${uniqueIdPrefix ? `${uniqueIdPrefix}-` : ''}${uniqueSuffix}.jpg`;
+
+  if (isDualQuality) {
+    const { hq, lq } = await processDualQualityVisuals(file);
+    const lqPath = `${TECH.storage.lqFolder}/${storageFileName}`;
+    const hqPath = `${TECH.storage.hqFolder}/${storageFileName}`;
+
+    await Promise.all([
+      supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: lqPath }),
+      supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: hqPath })
+    ]);
+
+    const [lqRes, hqRes] = await Promise.all([
+      supabase.storage.from(TECH.storage.bucket).upload(lqPath, lq, { upsert: true, cacheControl: TECH.storage.cacheControl }),
+      supabase.storage.from(TECH.storage.bucket).upload(hqPath, hq, { upsert: true, cacheControl: TECH.storage.cacheControl }),
+    ]);
+
+    if (lqRes.error) throw lqRes.error;
+    if (hqRes.error) throw hqRes.error;
+
+    const { data: { publicUrl } } = supabase.storage.from(TECH.storage.bucket).getPublicUrl(lqPath);
+    return `${publicUrl}?t=${Date.now()}`;
+  } else {
+    // Single quality upload (e.g. Logo)
+    const optimized = await compressVisualToDataUri(file, 400, 0.85);
+    const blob = await (await fetch(optimized)).blob();
+    const filePath = `${folder}/${storageFileName}`;
+
+    await supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: filePath });
+    const { error } = await supabase.storage.from(TECH.storage.bucket).upload(filePath, blob, { upsert: true, cacheControl: TECH.storage.cacheControl });
+    if (error) throw error;
+
+    const { data: { publicUrl } } = supabase.storage.from(TECH.storage.bucket).getPublicUrl(filePath);
+    return `${publicUrl}?t=${Date.now()}`;
   }
 }

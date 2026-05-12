@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { CompanySettings, StoreState } from './types';
-import { STORAGE, TECH, LABELS } from './data/config';
+import { TECH, LABELS } from './data/config';
 
 /**
  * STORE.TS (DÜKKANIN ORTAK AKLI)
@@ -123,4 +123,15 @@ export const useStore = create<StoreState>((set) => ({
   // Workspace
   isWorkspaceOpen: false,
   toggleWorkspace: () => set((state) => ({ isWorkspaceOpen: !state.isWorkspaceOpen })),
+
+  // Global Feedback
+  feedbackStatus: 'idle',
+  feedbackMessage: '',
+  showFeedback: (type, message = '', duration = 1500) => {
+    set({ feedbackStatus: type, feedbackMessage: message });
+    setTimeout(() => {
+      set({ feedbackStatus: 'idle', feedbackMessage: '' });
+    }, duration);
+  },
+  hideFeedback: () => set({ feedbackStatus: 'idle', feedbackMessage: '' }),
 }));

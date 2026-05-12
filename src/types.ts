@@ -665,6 +665,16 @@ export interface StoreState {
   // Workspace
   isWorkspaceOpen: boolean;
   toggleWorkspace: () => void;
+
+  // Global Feedback
+  feedbackStatus: 'success' | 'error' | 'idle';
+  feedbackMessage: string;
+  showFeedback: (
+    type: 'success' | 'error' | 'idle',
+    message?: string,
+    duration?: number,
+  ) => void;
+  hideFeedback: () => void;
 }
 
 export interface AIStudioTextModalProps {

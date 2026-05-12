@@ -56,6 +56,9 @@ export const getActiveStoreSlug = (): string => {
   const hostname = window.location.hostname.toLowerCase();
   const urlParams = new URLSearchParams(window.location.search);
 
+  const storeParam = urlParams.get('store');
+  if (storeParam) return storeParam;
+
   if (urlParams.get('main') === '1') return 'main-site';
 
   if (
@@ -79,17 +82,7 @@ export const getActiveStoreSlug = (): string => {
   return parts[0];
 };
 
-/**
- * generateWhatsAppLink: Creates a professional encoded WhatsApp API link.
- */
-export const generateWhatsAppLink = (
-  number: string,
-  message?: string,
-): string => {
-  const cleanNumber = (number || '').replace(/\D/g, '');
-  const encodedText = message ? encodeURIComponent(message) : '';
-  return `https://wa.me/${cleanNumber}${encodedText ? `?text=${encodedText}` : ''}`;
-};
+
 
 /**
  * reorderArray: Moves an item within an array (Immutable).
@@ -139,6 +132,24 @@ export async function fetchCurrentRates(): Promise<ExchangeRates | null> {
 // --- 4. TEXT & SEARCH UTILS ---
 
 /**
+ * slugify: Turkish-aware SEO friendly text converter.
+ */
+export const slugify = (text: string): string => {
+  const turkishCharMap: Record<string, string> = {
+    ç: 'c', ğ: 'g', ı: 'i', ö: 'o', ş: 's', ü: 'u',
+    Ç: 'C', Ğ: 'G', İ: 'I', Ö: 'O', Ş: 'S', Ü: 'U'
+  };
+  return (text || '')
+    .replace(/[çğıöşüÇĞİÖŞÜ]/g, (c) => turkishCharMap[c])
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-');
+};
+
+
+/**
  * normalizeText: Professional Turkish-aware text normalization.
  */
 export const normalizeText = (text: string): string => {
@@ -176,3 +187,16 @@ export const smartSearch = (query: string, products: Product[]): Product[] => {
     return { p, score };
   }).filter(i => i.score > 0).sort((a, b) => b.score - a.score).map(i => i.p);
 };
+
+/**
+ * copyToClipboard: Professional async clipboard handler.
+ */
+export async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (err) {
+    console.error('Clipboard copy failed:', err);
+    return false;
+  }
+}

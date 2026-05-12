@@ -86,3 +86,14 @@ export const standardizePriceInput = (input: string): string => {
   }
   return cleanValue;
 };
+/**
+ * getNextCurrency: Rotates currency between TRY, USD, and EUR.
+ */
+export const getNextCurrency = (current: 'TRY' | 'USD' | 'EUR'): 'TRY' | 'USD' | 'EUR' => {
+  const cycle: Record<string, 'TRY' | 'USD' | 'EUR'> = {
+    TRY: 'USD',
+    USD: 'EUR',
+    EUR: 'TRY',
+  };
+  return cycle[current] || 'TRY';
+};

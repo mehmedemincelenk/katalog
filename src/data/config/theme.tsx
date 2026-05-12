@@ -127,6 +127,15 @@ export const THEME = {
     ai: <Sparkles className="w-full h-full p-1.5" strokeWidth={2.2} />,
   },
 
+  shadows: {
+    sm: 'shadow-[0_2px_15px_-5px_rgba(0,0,0,0.08)]',
+    md: 'shadow-[0_10px_30px_rgba(0,0,0,0.1)]',
+    lg: 'shadow-[0_20px_50px_rgba(0,0,0,0.15)]',
+    xl: 'shadow-[0_20px_60px_rgba(0,0,0,0.3)]',
+    glow: 'shadow-[0_0_15px_rgba(16,185,129,0.5)]',
+    inner: 'shadow-inner',
+  },
+
   statusState: {
     success: 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20',
     danger: 'bg-red-500 text-white shadow-lg shadow-red-500/20',

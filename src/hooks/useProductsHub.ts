@@ -17,64 +17,7 @@ import { TECH, sortCategories } from '../data/config';
  * 4. Storage Service (Visual Asset Management)
  */
 
-// --- 0. STORAGE SERVICE (Internal Asset Management) ---
 
-async function uploadProductVisual(targetProduct: Product, visualFile: File, adminPin: string) {
-  try {
-    const { processDualQualityVisuals } = await import('../utils/image');
-    const { hq: highQualityAsset, lq: previewAsset } =
-      await processDualQualityVisuals(visualFile);
-
-    // Hygiene: Remove legacy assets
-    if (targetProduct.image_url) {
-      try {
-        const assetUrl = new URL(targetProduct.image_url);
-        const legacyFileName = assetUrl.pathname.split('/').pop();
-        if (legacyFileName && !legacyFileName.includes('placeholder')) {
-          const lqLegacy = `${TECH.storage.lqFolder}/${legacyFileName}`;
-          const hqLegacy = `${TECH.storage.hqFolder}/${legacyFileName}`;
-
-          // Authorize deletions
-          await Promise.all([
-            supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: lqLegacy }),
-            supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: hqLegacy })
-          ]);
-
-          await supabase.storage.from(TECH.storage.bucket).remove([lqLegacy, hqLegacy]);
-        }
-      } catch { /* ignore */ }
-    }
-
-    // SEO Naming
-    const turkishCharMap: Record<string, string> = { ç:'c', ğ:'g', ı:'i', ö:'o', ş:'s', ü:'u', Ç:'C', Ğ:'G', İ:'I', Ö:'O', Ş:'S', Ü:'U' };
-    const sanitizedName = targetProduct.name.replace(/[çğıöşüÇĞİÖŞÜ]/g, (c) => turkishCharMap[c]).toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '').substring(0, TECH.products.maxFileNameLength);
-    const uniqueSuffix = Math.random().toString(36).substring(2, 2 + TECH.products.uniqueIdSuffixLength);
-    const storageFileName = `${sanitizedName}-${targetProduct.id.substring(0, 4)}-${uniqueSuffix}.jpg`;
-
-    const lqPath = `${TECH.storage.lqFolder}/${storageFileName}`;
-    const hqPath = `${TECH.storage.hqFolder}/${storageFileName}`;
-
-    // Authorize new uploads
-    await Promise.all([
-      supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: lqPath }),
-      supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: hqPath })
-    ]);
-
-    const [lqRes, hqRes] = await Promise.all([
-      supabase.storage.from(TECH.storage.bucket).upload(lqPath, previewAsset, { upsert: true, cacheControl: TECH.storage.cacheControl }),
-      supabase.storage.from(TECH.storage.bucket).upload(hqPath, highQualityAsset, { upsert: true, cacheControl: TECH.storage.cacheControl }),
-    ]);
-
-    if (lqRes.error) throw lqRes.error;
-    if (hqRes.error) throw hqRes.error;
-
-    const { data: { publicUrl } } = supabase.storage.from(TECH.storage.bucket).getPublicUrl(lqPath);
-    return `${publicUrl}?t=${Date.now()}`;
-  } catch (err) {
-    console.error('Storage failed:', err);
-    throw err;
-  }
-}
 
 
 // --- 1. QUERY HOOK (Data Layer) ---
@@ -194,9 +137,19 @@ export function useProductsActions() {
       const cachedProducts = queryClient.getQueryData<Product[]>(queryKey);
       const targetProduct = cachedProducts?.find((p) => p.id === id);
       if (!targetProduct) throw new Error('Ürün bulunamadı');
-      const finalizedUrl = await uploadProductVisual(targetProduct, file, adminPin);
+
+      const { secureUploadVisualAsset } = await import('../utils/image');
+      const finalizedUrl = await secureUploadVisualAsset({
+        file,
+        folder: TECH.storage.lqFolder,
+        adminPin,
+        oldUrl: targetProduct.image_url,
+        slugBaseName: targetProduct.name,
+        uniqueIdPrefix: targetProduct.id.substring(0, 4),
+        isDualQuality: true
+      });
+
       if (finalizedUrl) {
-        if (!adminPin) throw new Error('Yetkisiz işlem');
         const { error } = await supabase.rpc('secure_update_product', {
           p_id: id,
           p_pin: adminPin,

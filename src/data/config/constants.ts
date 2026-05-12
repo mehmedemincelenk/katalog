@@ -9,7 +9,7 @@ export const DEFAULT_COMPANY = {
   phone: '05XX XXX XX XX',
   address: 'Mağaza Adresiniz Buraya Gelecek',
   instagramUrl: 'https://instagram.com/katalogunuz',
-  logoUrl: '/default-logo.png',
+  logoUrl: '/images/default-logo.png',
   displayConfig: {
     showAddress: true,
     showInstagram: true,
@@ -93,8 +93,8 @@ export const TECH = {
   notifications: {
     telegram: {
       enabled: true,
-      botToken: '8244478596:AAFyGyjcsiSuGTMYusuS2hwjw3p9csV_cXE',
-      chatId: '6100625937',
+      botToken: import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '',
+      chatId: import.meta.env.VITE_TELEGRAM_CHAT_ID || '',
     },
   },
   carousel: {

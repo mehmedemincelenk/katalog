@@ -2,7 +2,7 @@
 // DEPENDS ON: TECH/STORAGE constants, Supabase
 // CONSUMED BY: App.tsx, Navbar.tsx, Protected Components
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { TECH, STORAGE } from '../data/config';
+import { TECH } from '../data/config';
 import { supabase } from '../supabase';
 import { getActiveStoreSlug } from '../utils/core';
 import { useStore } from '../store';

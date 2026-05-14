@@ -79,23 +79,6 @@ const SearchFilter = memo(
           />
         )}
 
-        <div
-          onClick={() => {
-            // "Tüm Ürünler" should clear active filters
-            onCategoryToggle('ALL_PRODUCTS'); // This special key will be handled by store
-          }}
-          className={`
-            ${chipTheme.container} ${THEME.radius.chip} items-stretch shrink-0 select-none cursor-pointer transition-all active:scale-95 h-8 px-4 flex
-            ${isAllSelected ? chipTheme.active : chipTheme.inactive}
-          `}
-        >
-          <div className={`${chipTheme.textButton} !py-0 w-full flex items-center justify-center pointer-events-none min-w-[60px]`}>
-            <span className={isAllSelected ? chipTheme.activeText : chipTheme.inactiveText}>
-              {LABELS.filter.allCategories}
-            </span>
-          </div>
-        </div>
-
         {list.map((cat) => (
           <CategoryFilterChip
             key={cat}
@@ -156,9 +139,9 @@ const SearchFilter = memo(
               <div className="flex-none flex items-center justify-start gap-2 overflow-hidden">
                 <Button
                   onClick={() => setIsPanelOpen(!isPanelOpen)}
-                  variant="primary"
+                  variant="glass"
                   mode="rectangle"
-                  className="h-11 px-3 flex-none !text-[10px] !rounded-lg"
+                  className="h-11 px-4 flex-none !text-[10px] !rounded-lg !bg-stone-900/60 backdrop-blur-md border-white/20 text-white shadow-xl hover:!bg-stone-900/80 transition-all"
                 >
                   {LABELS.filter.categoryBtn}
                 </Button>

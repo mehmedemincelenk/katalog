@@ -388,15 +388,15 @@ const ProductCard = memo(
                 </select>
                 
                 <div className={`
-                  w-8 h-8 rounded-lg flex items-center justify-center transition-all
-                  ${isUpdatingOrder ? 'bg-stone-900' : showSuccess ? 'bg-emerald-500' : 'bg-stone-900/10 hover:bg-stone-900/20'}
+                  w-10 h-10 rounded-lg flex items-center justify-center transition-all border border-white/20 shadow-xl backdrop-blur-md
+                  ${isUpdatingOrder ? 'bg-stone-900' : showSuccess ? 'bg-emerald-500' : 'bg-stone-900/60 hover:bg-stone-900/80'}
                 `}>
                   {isUpdatingOrder ? (
-                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : showSuccess ? (
-                    <Lucide.Check size={14} className="text-white" strokeWidth={4} />
+                    <Lucide.Check size={16} className="text-white" strokeWidth={4} />
                   ) : (
-                    <Lucide.ArrowUpDown size={14} className="text-stone-600 group-hover:text-stone-900" />
+                    <span className="text-white text-[13px] font-black">{orderIndex}.</span>
                   )}
                 </div>
               </div>

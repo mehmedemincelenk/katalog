@@ -37,9 +37,9 @@ const PlusPlaceholder = memo(
       },
       CATEGORY: {
         aria: 'Add category',
-        wrapperClass: `px-3 !py-0 !border-2 !border-dashed !border-stone-300 text-stone-400 font-black uppercase tracking-widest hover:!border-stone-900 hover:!text-stone-900 !rounded-full bg-stone-50/30 flex items-center justify-center h-8 !shadow-none`,
+        wrapperClass: `w-8 h-8 !p-0 !border-white/20 text-white font-black hover:!bg-stone-900/80 !rounded-lg bg-stone-900/60 backdrop-blur-md flex items-center justify-center shadow-xl transition-all`,
         iconSize: 'w-4 h-4',
-        label: <span className="ml-2 text-[0.5rem]">{label || 'KATEGORİ EKLE'}</span>,
+        label: null,
         showCorners: false,
       },
       REFERENCE: {
@@ -93,7 +93,7 @@ const PlusPlaceholder = memo(
           className={`flex ${type === 'CAROUSEL' || type === 'CATEGORY' ? 'flex-row' : 'flex-col'} items-center justify-center ${type === 'CATEGORY' ? 'p-0' : 'p-6'} text-center transform transition-transform group-hover/plus:scale-110`}
         >
           <div
-            className={`${config.iconSize} flex items-center justify-center text-stone-400 group-hover/plus:text-stone-900 transition-colors`}
+            className={`${config.iconSize} flex items-center justify-center ${type === 'CATEGORY' ? 'text-white' : 'text-stone-400 group-hover/plus:text-stone-900'} transition-colors`}
           >
             <div className={`${type === 'PRODUCT' ? 'w-6 h-6' : 'w-4 h-4'}`}>
               {globalIcons.plus}

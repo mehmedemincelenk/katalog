@@ -93,13 +93,13 @@ const CarouselSlideUnit = memo(
                   ))}
                 </select>
                 {isUpdatingOrder ? (
-                  <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : showSuccess ? (
                   <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex items-center justify-center">
-                    <Lucide.Check size={14} className="text-emerald-400" strokeWidth={4} />
+                    <Lucide.Check size={16} className="text-emerald-400" strokeWidth={4} />
                   </motion.div>
                 ) : (
-                  <span className="text-white text-[12px] font-black">{currentIndex + 1}.</span>
+                  <span className="text-white text-[13px] font-black">{currentIndex + 1}.</span>
                 )}
               </div>
 
@@ -116,8 +116,8 @@ const CarouselSlideUnit = memo(
                     onDeleteTrigger?.(slideData.id);
                   }}
                   variant="glass"
-                  mode="rectangle"
-                  className="w-10 h-10 shadow-xl border border-white/20 !rounded-lg !bg-stone-900/60 backdrop-blur-md"
+                  mode="square"
+                  className="w-10 h-10 shadow-xl border border-white/20 !rounded-lg !bg-stone-900/60 backdrop-blur-md !p-0"
                   icon={<div className="w-4 h-4 text-white hover:text-red-400 transition-colors">{globalIcons.trash}</div>}
                   title="AFİŞİ SİL"
                 />

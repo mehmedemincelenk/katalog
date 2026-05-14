@@ -231,8 +231,8 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
             <div className="absolute inset-y-0 left-2 z-50 flex items-center">
               <Button
                 variant="glass"
-                mode="circle"
-                className="!w-10 !h-10 !bg-stone-900/60 backdrop-blur-md border-white/20 hover:!bg-stone-900/80 text-white shadow-2xl transition-all active:scale-90"
+                mode="square"
+                className="!w-10 !h-10 !bg-stone-900/60 backdrop-blur-md border-white/20 hover:!bg-stone-900/80 text-white shadow-2xl transition-all active:scale-90 !rounded-lg"
                 icon={<Lucide.ChevronLeft size={24} strokeWidth={2.5} />}
                 onClick={handlePrev}
               />
@@ -240,8 +240,8 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
             <div className="absolute inset-y-0 right-2 z-50 flex items-center">
               <Button
                 variant="glass"
-                mode="circle"
-                className="!w-10 !h-10 !bg-stone-900/60 backdrop-blur-md border-white/20 hover:!bg-stone-900/80 text-white shadow-2xl transition-all active:scale-90"
+                mode="square"
+                className="!w-10 !h-10 !bg-stone-900/60 backdrop-blur-md border-white/20 hover:!bg-stone-900/80 text-white shadow-2xl transition-all active:scale-90 !rounded-lg"
                 icon={<Lucide.ChevronRight size={24} strokeWidth={2.5} />}
                 onClick={handleNext}
               />
@@ -254,12 +254,10 @@ export default function HeroCarousel({ isAdminModeActive }: HeroCarouselProps) {
                   <div className="relative group/add">
                     <Button 
                       variant="glass" 
-                      mode="rectangle" 
-                      className="h-10 px-4 shadow-2xl border border-white/20 !bg-stone-900/60 backdrop-blur-xl gap-2 min-w-[120px] !rounded-lg"
-                      icon={<Lucide.Plus size={16} strokeWidth={3} className="text-white" />}
-                    >
-                      <span className="text-[10px] font-black text-white tracking-widest uppercase whitespace-nowrap">AFİŞ EKLE</span>
-                    </Button>
+                      mode="square" 
+                      className="w-10 h-10 shadow-2xl border border-white/20 !bg-stone-900/60 backdrop-blur-xl !p-0 !rounded-lg"
+                      icon={<Lucide.Plus size={20} strokeWidth={3} className="text-white" />}
+                    />
                     <input 
                       type="file" 
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 

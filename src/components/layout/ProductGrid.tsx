@@ -90,13 +90,6 @@ const ProductGrid = memo(
 
               {categoryProducts.length > 0 || isAdmin ? (
                 <div className="grid grid-cols-2 gap-x-3 gap-y-6">
-                  {isAdmin && (
-                    <PlusPlaceholder
-                      type="PRODUCT"
-                      category={category}
-                      onClick={(cat) => onAddClick?.(cat)}
-                    />
-                  )}
                   {categoryProducts.map((product, index) => {
                     const isPriority = priorityCounter < 4;
                     priorityCounter++;
@@ -129,21 +122,11 @@ const ProductGrid = memo(
                 </div>
               ) : (
                 <div className="py-16 border-2 border-dashed border-stone-100 rounded-2xl flex flex-col items-center justify-center bg-stone-50/30">
-                  <p className="text-stone-400 text-xs font-medium italic mb-4">
+                  <p className="text-stone-400 text-xs font-medium italic">
                     {isAdmin
                       ? 'Bu kategori henüz boş.'
                       : 'Bu kategoride henüz ürün bulunmuyor.'}
                   </p>
-                  {isAdmin && (
-                    <Button
-                      onClick={() => onAddClick?.()}
-                      variant="secondary"
-                      mode="rectangle"
-                      className="!px-6 !py-2 !rounded-full !text-[10px]"
-                    >
-                      + BU KATEGORİYE ÜRÜN EKLE
-                    </Button>
-                  )}
                 </div>
               )}
             </section>

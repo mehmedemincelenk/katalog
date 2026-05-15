@@ -79,16 +79,6 @@ const SearchFilter = memo(
         {/* ADMIN: KATEGORİ YÖNETİM GRUBU */}
         {isAdmin && (
           <div className="flex items-center gap-1 shrink-0">
-            {/* EKLE (+) */}
-            <PlusPlaceholder
-              type="CATEGORY"
-              onClick={() => {
-                setAdminAction('IDLE');
-                setIsAddingCategory(true);
-              }}
-              className="!py-0"
-            />
-            
             {/* DÜZENLE (Pencil) */}
             <Button
               variant="glass"

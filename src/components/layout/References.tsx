@@ -161,13 +161,6 @@ export default function References({
             />
           ))}
 
-          {isAdmin && (
-            <PlusPlaceholder
-              type="REFERENCE"
-              onClick={() => setActiveQuickEdit({ id: 0, name: '', isNew: true })}
-            />
-          )}
-
           {isAdmin && activeReferences.length === 0 && (
             <div className="col-span-full border-2 border-dashed border-stone-100 rounded-xl py-16 flex flex-col items-center justify-center gap-3 text-stone-300 bg-stone-50/50">
               <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm border border-stone-100 mb-2">

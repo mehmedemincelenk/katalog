@@ -46,7 +46,7 @@ const CategoryFilterChip = memo(
     return (
       <div
         className={`
-        ${chipTheme.container} ${THEME.radius.chip} items-stretch shrink-0 select-none cursor-pointer transition-all overflow-hidden relative h-8 flex
+        ${chipTheme.container} ${THEME.radius.chip} items-stretch shrink-0 select-none cursor-pointer transition-all overflow-hidden relative h-10 flex
         ${adminActionOverride === 'EDIT' ? 'ring-2 ring-amber-400 border-amber-500' : ''}
         ${adminActionOverride === 'DELETE' ? 'ring-2 ring-red-400 border-red-500 opacity-80 hover:opacity-100' : ''}
         ${adminActionOverride === 'IDLE' ? (isItemSelected ? chipTheme.active : chipTheme.inactive) : ''}
@@ -110,7 +110,7 @@ const CategoryFilterChip = memo(
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className={`${chipTheme.counter.base} ${isItemSelected ? chipTheme.counter.active : chipTheme.counter.inactive} h-full`}
+                className={`${chipTheme.counter.base} ${isItemSelected ? chipTheme.counter.active : chipTheme.counter.inactive} h-full !text-[11px] !font-black`}
               >
                 {productCount}
               </motion.span>
@@ -118,12 +118,10 @@ const CategoryFilterChip = memo(
           </AnimatePresence>
         </div>
         <div
-          className={`${chipTheme.textButton} flex-1 flex items-center pointer-events-none px-4 active:scale-95 transition-transform`}
+          className={`${chipTheme.textButton} flex-1 flex items-center pointer-events-none px-4 active:scale-95 transition-transform !text-[13px]`}
         >
           <span
-            className={
-              isItemSelected ? chipTheme.activeText : chipTheme.inactiveText
-            }
+            className={`${isItemSelected ? chipTheme.activeText : chipTheme.inactiveText} font-bold whitespace-nowrap`}
           >
             {categoryName}
           </span>

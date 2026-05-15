@@ -279,19 +279,19 @@ export const THEME = {
     categoryList: {
       wrapper: 'flex flex-wrap gap-2 items-center flex-1 transition-all w-full',
       chip: {
-        container: `flex items-stretch overflow-hidden border transition-all duration-300 ${BR.full}`,
+        container: `flex items-stretch overflow-hidden border transition-all duration-300 ${BR.full} h-10`,
         active: 'bg-stone-900 text-white border-stone-900 shadow-md scale-102',
         activeText: 'text-white',
         inactive:
           'bg-white text-stone-600 border-stone-200 hover:border-stone-400 active:scale-98',
         inactiveText: 'text-stone-600',
         counter: {
-          base: `${FS.xs} font-black w-7 h-7 flex items-center justify-center shrink-0 transition-colors`,
+          base: `${FS.xs} font-black w-9 h-full flex items-center justify-center shrink-0 transition-colors`,
           active: 'bg-white/20 text-white',
           inactive: 'bg-stone-50 text-stone-400 border-r border-stone-100',
         },
         adminSelectWrapper:
-          'relative w-8 h-full bg-stone-50/80 flex items-center justify-center overflow-hidden border-r border-stone-100',
+          'relative w-9 h-full bg-stone-50/80 flex items-center justify-center overflow-hidden border-r border-stone-100',
         adminSelect: `absolute inset-0 w-full h-full bg-transparent text-stone-900 text-[11px] font-black appearance-none text-center m-0 p-0 border-none outline-none cursor-pointer z-10`,
         textButton: `py-0 ${FS.xs} font-black whitespace-nowrap flex items-center gap-1.5 px-3`,
         deleteIcon:
@@ -379,13 +379,13 @@ export const THEME = {
       cursorAdmin: 'cursor-pointer',
     },
     typography: {
-      name: `${FS.base} text-stone-900 leading-tight tracking-tight`,
+      name: `!text-sm text-stone-900 leading-tight tracking-tight font-black uppercase`,
       nameOutOfStock: 'opacity-40 text-stone-400',
       nameTransition: 'transition-standard',
-      description: `${FS.xs} text-stone-600 leading-snug font-bold normal-case`,
+      description: `!text-[12px] text-stone-600 leading-snug font-bold normal-case`,
       descriptionClamp: 'line-clamp-2',
       descriptionFull: 'w-full',
-      price: ` font-black tracking-tight transition-smooth`,
+      price: `!text-lg font-black tracking-tight transition-smooth text-stone-900`,
       priceOutOfStock:
         'line-through opacity-30 text-stone-400 scale-95 origin-left',
       discountPrice: 'text-kraft-600',

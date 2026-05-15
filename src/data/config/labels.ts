@@ -44,7 +44,7 @@ export const LABELS = {
     showLess: 'Daha Az Göster',
     showMore: (count: number) => `+${count} Daha`,
     newCategoryPrompt: 'Yeni kategori adını girin:',
-    searchPlaceholder: 'Ürün veya kategori ara...',
+    searchPlaceholder: 'Ara...',
     allCategories: 'Tüm Ürünler',
   },
   form: {

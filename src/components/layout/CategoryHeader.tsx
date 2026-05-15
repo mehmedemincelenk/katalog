@@ -46,7 +46,7 @@ const CategoryHeader = memo(
         onPointerLeave={handlePointerUp}
       >
         <div className="flex items-center gap-3 shrink-0">
-          <h2 className={`${theme.title} ${isAdmin ? 'cursor-edit' : ''}`}>
+          <h2 className={`${theme.title} ${isAdmin ? 'cursor-edit' : ''} !text-lg`}>
             {isAdmin && currentOrder !== undefined && (
               <span className="opacity-30 mr-1">{currentOrder}.</span>
             )}
@@ -54,9 +54,9 @@ const CategoryHeader = memo(
           </h2>
         </div>
 
-        <div className={theme.line}></div>
+        <div className="flex-1 h-px border-t border-dashed border-stone-300 mx-2"></div>
 
-        <span className={theme.count}>
+        <span className={`${theme.count} !text-sm`}>
           {productCount} {LABELS.productCountSuffix}
         </span>
 

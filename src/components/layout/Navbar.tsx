@@ -335,7 +335,7 @@ const Navbar = memo(
                       onClick={() =>
                         handleTextEdit('address', settings.address, 'Adres')
                       }
-                      className={`order-2 !text-[0.55rem] text-stone-600 hover:text-stone-900 transition-colors font-bold text-right leading-tight px-1 ${editStyle}`}
+                      className={`order-2 !text-[0.7rem] text-stone-600 hover:text-stone-900 transition-colors font-bold text-right leading-tight px-1 ${editStyle}`}
                     >
                       {settings.address}
                     </div>

@@ -12,7 +12,7 @@ export const LABELS = {
   noProductsFound: 'Aradığınız kriterlerde ürün bulunamadı.',
   noProductsAdmin:
     'Mağazada henüz ürün yok. Hemen yeni bir ürün ekleyerek başlayın!',
-  productCountSuffix: 'ÜRÜN',
+  productCountSuffix: 'ürün',
   referencesTitle: 'GÜVENİLİR İŞ ORTAKLARIMIZ',
   catDeleteConfirm: (cat: string) =>
     `"${cat}" kategorisini silmek istediğinize emin misiniz? Bu işlem ürünleri silmez, sadece bu kategoriyi kaldırır.`,

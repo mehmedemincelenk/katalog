@@ -110,7 +110,7 @@ const CategoryFilterChip = memo(
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className={`${chipTheme.counter.base} ${isItemSelected ? chipTheme.counter.active : chipTheme.counter.inactive} h-full !text-[11px] !font-black`}
+                className={`${chipTheme.counter.base} ${isItemSelected ? chipTheme.counter.active : chipTheme.counter.inactive} h-full !text-[10px] !font-black`}
               >
                 {productCount}
               </motion.span>
@@ -118,7 +118,7 @@ const CategoryFilterChip = memo(
           </AnimatePresence>
         </div>
         <div
-          className={`${chipTheme.textButton} flex-1 flex items-center pointer-events-none px-4 active:scale-95 transition-transform !text-[13px]`}
+          className={`${chipTheme.textButton} flex-1 flex items-center pointer-events-none px-4 active:scale-95 transition-transform !text-[10px]`}
         >
           <span
             className={`${isItemSelected ? chipTheme.activeText : chipTheme.inactiveText} font-bold whitespace-nowrap`}

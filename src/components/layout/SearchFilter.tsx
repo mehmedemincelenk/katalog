@@ -172,7 +172,7 @@ const SearchFilter = memo(
           <div className="flex flex-row items-center gap-2 w-full">
             {displayConfig.showSearch && (
               <div
-                className={`${filterTheme.searchArea.inputWrapper} ${THEME.radius.input} flex-1 h-14 !max-w-none w-full flex items-center border-2 border-stone-200 bg-white focus-within:border-stone-900 transition-all`}
+                className={`${filterTheme.searchArea.inputWrapper} ${THEME.radius.input} flex-1 h-11 !max-w-none w-full flex items-center border-2 border-stone-200 bg-white focus-within:border-stone-900 transition-all`}
               >
                 <div className={filterTheme.searchArea.iconSize}>
                   {globalIcons.search}
@@ -195,7 +195,7 @@ const SearchFilter = memo(
                   onClick={() => setIsPanelOpen(!isPanelOpen)}
                   variant="glass"
                   mode="rectangle"
-                  className="h-14 px-4 flex-none !text-[10px] !rounded-lg !bg-stone-900/60 backdrop-blur-md border-white/20 text-white shadow-xl hover:!bg-stone-900/80 transition-all"
+                  className="h-11 px-4 flex-none !text-[10px] !rounded-lg !bg-stone-900/60 backdrop-blur-md border-white/20 text-white shadow-xl hover:!bg-stone-900/80 transition-all"
                 >
                   {LABELS.filter.categoryBtn}
                 </Button>

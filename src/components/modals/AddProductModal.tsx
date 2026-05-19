@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { LABELS, THEME } from '../../data/config';
+import React, { useRef } from 'react';
+import { THEME } from '../../data/config';
 import Button from '../ui/Button';
 import BaseModal from './BaseModal';
 import * as Lucide from 'lucide-react';

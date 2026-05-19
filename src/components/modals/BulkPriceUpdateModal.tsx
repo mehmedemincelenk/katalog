@@ -1,4 +1,4 @@
-import { useState, useMemo, memo } from 'react';
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import Button from '../ui/Button';
 import BaseModal from './BaseModal';

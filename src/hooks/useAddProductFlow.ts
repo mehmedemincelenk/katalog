@@ -17,7 +17,7 @@ export function useAddProductFlow(
   isModalOpen: boolean,
   initialCategory?: string,
   initialStep?: number,
-  onProductAddition?: (product: any, file?: File) => Promise<void>,
+  onProductAddition?: (product: any, file?: File) => Promise<any> | void,
   onModalClose?: () => void
 ) {
   const { settings } = useStore();

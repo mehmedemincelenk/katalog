@@ -1,7 +1,7 @@
 // FILE ROLE: Story-mode Price List Generator (Social Media Export)
 // DEPENDS ON: Product Logic, html2canvas
 // CONSUMED BY: FloatingGuestMenu.tsx
-import { Product } from '../../types';
+
 import Button from '../ui/Button';
 import BaseModal from './BaseModal';
 import * as Lucide from 'lucide-react';

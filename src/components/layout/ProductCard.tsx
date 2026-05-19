@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import Loading from '../ui/Loading';
 import Badge from '../ui/Badge';
 import { LABELS, THEME } from '../../data/config';
-import { Product } from '../../types';
+import { ProductCardProps } from '../../types';
 import { standardizePriceInput } from '../../utils/core';
 import SmartImage from '../ui/SmartImage';
 import { MarqueeText } from '../ui/MarqueeText';
@@ -20,7 +20,6 @@ import { useProductCardFlow } from '../../hooks/useProductCardFlow';
  * Managed via central THEME config. Orchestrates sub-components.
  */
 
-import { ProductCardProps } from '../../types';
 import * as Lucide from 'lucide-react';
 
 const ProductCard = memo(

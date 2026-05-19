@@ -1,13 +1,10 @@
-import { useStore } from '../../store';
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import Button from '../ui/Button';
 import BaseModal from './BaseModal';
 import StatusToggle from '../ui/StatusToggle';
 import Loading from '../ui/Loading';
-import { DisplaySettingsModalProps, DisplayConfig } from '../../types';
-
+import { DisplaySettingsModalProps } from '../../types';
 import { THEME } from '../../data/config';
-import { storage } from '../../utils/storage';
 import { QuickEditModal } from './UtilityModals';
 import * as Lucide from 'lucide-react';
 import { useDisplaySettingsFlow } from '../../hooks/useDisplaySettingsFlow';

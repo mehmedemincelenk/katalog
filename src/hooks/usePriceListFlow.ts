@@ -8,8 +8,8 @@ export function usePriceListFlow(
   isOpen: boolean,
   products: Product[],
   categories: string[],
-  visitorCurrency: string,
-  exchangeRates: Record<string, number> | null,
+  visitorCurrency: any,
+  exchangeRates: Record<string, number> | null | undefined,
   activeDiscount: any,
   storeName: string,
   storeSlug?: string,
@@ -80,9 +80,9 @@ export function usePriceListFlow(
       (!activeDiscount.category || activeDiscount.category === product.category);
     const baseMathPrice = transformCurrencyStringToNumber(product.price);
     if (isPromotionActive && baseMathPrice > 0) {
-      return formatNumberToCurrency(baseMathPrice * (1 - activeDiscount.rate), visitorCurrency, exchangeRates);
+      return formatNumberToCurrency(baseMathPrice * (1 - activeDiscount.rate), visitorCurrency, exchangeRates as any);
     }
-    return formatNumberToCurrency(baseMathPrice, visitorCurrency, exchangeRates);
+    return formatNumberToCurrency(baseMathPrice, visitorCurrency, exchangeRates as any);
   };
 
   const downloadStories = async () => {

@@ -6,7 +6,7 @@ import { DisplayConfig } from '../types';
 export function useDisplaySettingsFlow(
   isOpen: boolean,
   settings: any,
-  updateSetting: (key: string, value: any) => Promise<void>,
+  updateSetting: any,
   isInlineEnabled: boolean,
   onToggleInline: () => void
 ) {
@@ -118,7 +118,7 @@ export function useDisplaySettingsFlow(
     setHelpId(null);
   };
 
-  const handleIdentityClick = (option: any, fileInputRef: React.RefObject<HTMLInputElement>) => {
+  const handleIdentityClick = (option: any, fileInputRef: React.RefObject<HTMLInputElement | null>) => {
     if (option.isLogo) {
       fileInputRef.current?.click();
       return;

@@ -69,7 +69,8 @@ export const calculatePromotionalPrice = (
   originalPriceString: string,
   discountRate: number,
 ): string => {
-  const mathematicalBasePrice = transformCurrencyStringToNumber(originalPriceString);
+  const mathematicalBasePrice =
+    transformCurrencyStringToNumber(originalPriceString);
   if (mathematicalBasePrice === 0) return originalPriceString;
   const finalizedDiscountedPrice = mathematicalBasePrice * (1 - discountRate);
   return formatNumberToCurrency(finalizedDiscountedPrice);
@@ -81,7 +82,10 @@ export const calculatePromotionalPrice = (
 export const standardizePriceInput = (input: string): string => {
   let cleanValue = (input || '').trim();
   if (!cleanValue) return '';
-  if (!cleanValue.startsWith('₺') && !isNaN(transformCurrencyStringToNumber(cleanValue))) {
+  if (
+    !cleanValue.startsWith('₺') &&
+    !isNaN(transformCurrencyStringToNumber(cleanValue))
+  ) {
     cleanValue = '₺' + cleanValue;
   }
   return cleanValue;
@@ -89,7 +93,9 @@ export const standardizePriceInput = (input: string): string => {
 /**
  * getNextCurrency: Rotates currency between TRY, USD, and EUR.
  */
-export const getNextCurrency = (current: 'TRY' | 'USD' | 'EUR'): 'TRY' | 'USD' | 'EUR' => {
+export const getNextCurrency = (
+  current: 'TRY' | 'USD' | 'EUR',
+): 'TRY' | 'USD' | 'EUR' => {
   const cycle: Record<string, 'TRY' | 'USD' | 'EUR'> = {
     TRY: 'USD',
     USD: 'EUR',

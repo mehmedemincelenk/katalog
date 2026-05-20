@@ -17,14 +17,24 @@ import StatusOverlay from './components/ui/StatusOverlay';
  * Bütün uygulama boyunca gösterilen başarı/hata bildirim katmanı.
  */
 function GlobalFeedbackOverlay() {
-  const { feedbackStatus: status, feedbackMessage: message, hideFeedback } = useStore();
-  return <StatusOverlay status={status as any} message={message} onClose={hideFeedback} />;
+  const {
+    feedbackStatus: status,
+    feedbackMessage: message,
+    hideFeedback,
+  } = useStore();
+  return (
+    <StatusOverlay
+      status={status as any}
+      message={message}
+      onClose={hideFeedback}
+    />
+  );
 }
 
 /**
  * APP ROOT (Diamond Router)
  * -----------------------------------------------------------
- * Uygulamanın ana giriş noktası. 
+ * Uygulamanın ana giriş noktası.
  * Mağaza slug'ına göre Landing Page veya Catalog Page arasında geçiş yapar.
  */
 export default function App() {

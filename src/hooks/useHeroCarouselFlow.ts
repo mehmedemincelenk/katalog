@@ -6,12 +6,17 @@ import { CarouselSlide } from '../types';
 import { CAROUSEL, TECH } from '../data/config';
 import { PanInfo } from 'framer-motion';
 
+import { useSettings } from './useSettingsHub';
+
 const INTERVAL_MS = 6000;
 const SWIPE_THRESHOLD = 50;
 
 export function useHeroCarouselFlow(isAdminModeActive: boolean) {
-  const { showFeedback } = useStore();
-  const [marketingSlides, setMarketingSlides] = useState<CarouselSlide[]>(CAROUSEL.slides);
+  const { showFeedback, adminPin } = useStore();
+  const { updateSetting } = useSettings(isAdminModeActive);
+  const [marketingSlides, setMarketingSlides] = useState<CarouselSlide[]>(
+    CAROUSEL.slides,
+  );
   const [loading, setLoading] = useState(true);
   const activeStoreSlug = getActiveStoreSlug();
 
@@ -19,34 +24,43 @@ export function useHeroCarouselFlow(isAdminModeActive: boolean) {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isAssetUploading, setIsAssetUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [activeEditingSlideId, setActiveEditingSlideId] = useState<number | null>(null);
+  const [activeEditingSlideId, setActiveEditingSlideId] = useState<
+    number | null
+  >(null);
 
-  const persistCarouselData = useCallback(async (updatedSlides: CarouselSlide[]) => {
-    if (!isAdminModeActive) return;
-    try {
-      const { error } = await supabase.from('stores').update({
-        carousel_data: { slides: updatedSlides },
-      }).eq('slug', activeStoreSlug);
-      if (error) throw error;
-    } catch (err) {
-      console.error('Carousel sync failed:', err);
-    }
-  }, [isAdminModeActive, activeStoreSlug]);
+  const persistCarouselData = useCallback(
+    async (updatedSlides: CarouselSlide[]) => {
+      if (!isAdminModeActive) return;
+      try {
+        await updateSetting('carouselData', { slides: updatedSlides });
+      } catch (err) {
+        console.error('Carousel sync failed:', err);
+      }
+    },
+    [isAdminModeActive, updateSetting],
+  );
 
-  const reorderSlides = useCallback(async (slideId: number, newPosition: number) => {
-    setMarketingSlides((prev) => {
-      const oldIndex = prev.findIndex((s) => s.id === slideId);
-      if (oldIndex === -1) return prev;
-      const updated = reorderArray(prev, oldIndex, newPosition);
-      persistCarouselData(updated);
-      return updated;
-    });
-    setTimeout(() => setCurrentIndex(newPosition), 100);
-  }, [persistCarouselData]);
+  const reorderSlides = useCallback(
+    async (slideId: number, newPosition: number) => {
+      setMarketingSlides((prev) => {
+        const oldIndex = prev.findIndex((s) => s.id === slideId);
+        if (oldIndex === -1) return prev;
+        const updated = reorderArray(prev, oldIndex, newPosition);
+        persistCarouselData(updated);
+        return updated;
+      });
+      setTimeout(() => setCurrentIndex(newPosition), 100);
+    },
+    [persistCarouselData],
+  );
 
   const synchronizeCarouselSlides = useCallback(async () => {
     setLoading(true);
-    const { data: storeData, error: fetchError } = await supabase.from('stores').select('carousel_data').eq('slug', activeStoreSlug).single();
+    const { data: storeData, error: fetchError } = await supabase
+      .from('stores')
+      .select('carousel_data')
+      .eq('slug', activeStoreSlug)
+      .single();
     if (storeData && !fetchError && storeData.carousel_data?.slides) {
       setMarketingSlides(storeData.carousel_data.slides);
     }
@@ -57,42 +71,64 @@ export function useHeroCarouselFlow(isAdminModeActive: boolean) {
     synchronizeCarouselSlides();
   }, [synchronizeCarouselSlides]);
 
-  const modifySlideContent = useCallback(async (slideId: number, contentChanges: Partial<CarouselSlide>) => {
-    setMarketingSlides((prev) => {
-      const updated = prev.map((s) => s.id === slideId ? { ...s, ...contentChanges } : s);
-      persistCarouselData(updated);
-      return updated;
-    });
-  }, [persistCarouselData]);
+  const modifySlideContent = useCallback(
+    async (slideId: number, contentChanges: Partial<CarouselSlide>) => {
+      setMarketingSlides((prev) => {
+        const updated = prev.map((s) =>
+          s.id === slideId ? { ...s, ...contentChanges } : s,
+        );
+        persistCarouselData(updated);
+        return updated;
+      });
+    },
+    [persistCarouselData],
+  );
 
-  const uploadHeroImage = useCallback(async (slideId: number, visualFile: File) => {
-    try {
-      const { processDualQualityVisuals } = await import('../utils/image');
-      const { hq: optimizedVisual } = await processDualQualityVisuals(visualFile, TECH.storage.heroWidth);
-      const visualFileName = `hero-${activeStoreSlug}-${slideId === -1 ? 'new' : slideId}-${Date.now()}.jpg`;
-      const storagePath = `${TECH.storage.heroFolder}/${visualFileName}`;
-      const { error } = await supabase.storage.from(TECH.storage.bucket).upload(storagePath, optimizedVisual, { upsert: true, cacheControl: TECH.storage.cacheControl });
-      if (error) throw error;
-      const { data: { publicUrl } } = supabase.storage.from(TECH.storage.bucket).getPublicUrl(storagePath);
-      const finalizedUrl = `${publicUrl}?t=${Date.now()}`;
-      
-      if (slideId !== -1) {
-        await modifySlideContent(slideId, { src: finalizedUrl });
+  const uploadHeroImage = useCallback(
+    async (slideId: number, visualFile: File) => {
+      if (!adminPin)
+        throw new Error('Security Error: PIN required for storage operations.');
+      try {
+        const { secureUploadVisualAsset } = await import('../utils/image');
+        const oldSlide =
+          slideId !== -1
+            ? marketingSlides.find((slide) => slide.id === slideId)
+            : null;
+        const oldUrl = oldSlide?.src;
+
+        const finalizedUrl = await secureUploadVisualAsset({
+          file: visualFile,
+          folder: TECH.storage.heroFolder,
+          adminPin,
+          oldUrl,
+          slugBaseName: `hero-${activeStoreSlug}`,
+          uniqueIdPrefix: slideId === -1 ? 'new' : String(slideId),
+          isDualQuality: false,
+          maxDimension: TECH.storage.heroWidth,
+        });
+
+        if (slideId !== -1) {
+          await modifySlideContent(slideId, { src: finalizedUrl });
+        }
+        return finalizedUrl;
+      } catch (err) {
+        console.error('Hero upload failed:', err);
+        throw err;
       }
-      return finalizedUrl;
-    } catch (err) {
-      console.error('Hero upload failed:', err);
-      throw err;
-    }
-  }, [activeStoreSlug, modifySlideContent]);
+    },
+    [adminPin, activeStoreSlug, marketingSlides, modifySlideContent],
+  );
 
-  const deleteSlide = useCallback(async (slideId: number) => {
-    setMarketingSlides((prev) => {
-      const updated = prev.filter((s) => s.id !== slideId);
-      persistCarouselData(updated);
-      return updated;
-    });
-  }, [persistCarouselData]);
+  const deleteSlide = useCallback(
+    async (slideId: number) => {
+      setMarketingSlides((prev) => {
+        const updated = prev.filter((s) => s.id !== slideId);
+        persistCarouselData(updated);
+        return updated;
+      });
+    },
+    [persistCarouselData],
+  );
 
   const handleNext = useCallback(() => {
     if (marketingSlides.length <= 1) return;
@@ -103,33 +139,49 @@ export function useHeroCarouselFlow(isAdminModeActive: boolean) {
   const handlePrev = useCallback(() => {
     if (marketingSlides.length <= 1) return;
     setIsTransitioning(true);
-    setCurrentIndex((prev) => (prev - 1 + marketingSlides.length) % marketingSlides.length);
+    setCurrentIndex(
+      (prev) => (prev - 1 + marketingSlides.length) % marketingSlides.length,
+    );
   }, [marketingSlides.length]);
 
   // Auto-scroll effect
   useEffect(() => {
-    if (isAdminModeActive || isAssetUploading || marketingSlides.length <= 1) return;
+    if (isAdminModeActive || isAssetUploading || marketingSlides.length <= 1)
+      return;
     const scrollTimer = setInterval(handleNext, INTERVAL_MS);
     return () => clearInterval(scrollTimer);
   }, [handleNext, isAdminModeActive, isAssetUploading, marketingSlides.length]);
 
-  const handleFileUploadAction = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUploadAction = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (!file || activeEditingSlideId === null) return;
-    
+
     try {
       setIsAssetUploading(true);
-      
+
       if (activeEditingSlideId === -1) {
         const uploadedUrl = await uploadHeroImage(-1, file);
-        
+
         setMarketingSlides((prev) => {
-          const currentRealSlides = (prev || []).filter(s => s && s.src && s.src !== '');
-          const nextId = currentRealSlides.length > 0 ? Math.max(...currentRealSlides.map((s) => s.id)) + 1 : 1;
-          const newSlide: CarouselSlide = { id: nextId, src: uploadedUrl, bg: 'bg-stone-200', label: 'Yeni Afiş', sub: 'Düzenlemek için tıklayın.' };
+          const currentRealSlides = (prev || []).filter(
+            (s) => s && s.src && s.src !== '',
+          );
+          const nextId =
+            currentRealSlides.length > 0
+              ? Math.max(...currentRealSlides.map((s) => s.id)) + 1
+              : 1;
+          const newSlide: CarouselSlide = {
+            id: nextId,
+            src: uploadedUrl,
+            bg: 'bg-stone-200',
+            label: 'Yeni Afiş',
+            sub: 'Düzenlemek için tıklayın.',
+          };
           const updatedSlides = [...currentRealSlides, newSlide];
           persistCarouselData(updatedSlides);
-          
+
           setTimeout(() => setCurrentIndex(updatedSlides.length - 1), 50);
           return updatedSlides;
         });

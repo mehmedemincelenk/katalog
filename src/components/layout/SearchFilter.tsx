@@ -38,10 +38,11 @@ const SearchFilter = memo(
     // Diamond Logic: Always follow mobile interaction rules.
     const mobileInitialLimit = 5;
     const hasMoreThanLimit = sortedList.length > mobileInitialLimit;
-    
-    const visibleList = (flow.isPanelOpen || !hasMoreThanLimit) 
-      ? sortedList 
-      : sortedList.slice(0, mobileInitialLimit);
+
+    const visibleList =
+      flow.isPanelOpen || !hasMoreThanLimit
+        ? sortedList
+        : sortedList.slice(0, mobileInitialLimit);
 
     const renderCategoryList = (list: string[]) => (
       <>
@@ -54,7 +55,11 @@ const SearchFilter = memo(
               mode="square"
               className={`w-8 h-8 !bg-stone-900/60 backdrop-blur-md border border-white/20 text-white shadow-xl !rounded-lg !p-0 transition-all ${flow.adminAction === 'EDIT' ? '!bg-amber-500 ring-2 ring-amber-400' : ''}`}
               icon={<Lucide.Pencil size={14} strokeWidth={3} />}
-              onClick={() => flow.setAdminAction(prev => prev === 'EDIT' ? 'IDLE' : 'EDIT')}
+              onClick={() =>
+                flow.setAdminAction((prev) =>
+                  prev === 'EDIT' ? 'IDLE' : 'EDIT',
+                )
+              }
               title="Kategoriyi Düzenle (Tıkla ve Chip'e Bas)"
             />
 
@@ -64,7 +69,11 @@ const SearchFilter = memo(
               mode="square"
               className={`w-8 h-8 !bg-stone-900/60 backdrop-blur-md border border-white/20 text-white shadow-xl !rounded-lg !p-0 transition-all ${flow.adminAction === 'DELETE' ? '!bg-red-600 ring-2 ring-red-500' : ''}`}
               icon={<Lucide.Trash2 size={14} strokeWidth={3} />}
-              onClick={() => flow.setAdminAction(prev => prev === 'DELETE' ? 'IDLE' : 'DELETE')}
+              onClick={() =>
+                flow.setAdminAction((prev) =>
+                  prev === 'DELETE' ? 'IDLE' : 'DELETE',
+                )
+              }
               title="Kategoriyi Sil (Tıkla ve Chip'e Bas)"
             />
           </div>
@@ -86,7 +95,7 @@ const SearchFilter = memo(
             onDelete={flow.handleDeleteCategory}
           />
         ))}
-        
+
         {/* MOBILE "MORE" CHIP */}
         {!flow.isPanelOpen && hasMoreThanLimit && (
           <Button
@@ -119,7 +128,9 @@ const SearchFilter = memo(
                   id="mobile-search-input"
                   type="text"
                   value={flow.internalSearch}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => flow.setInternalSearch(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    flow.setInternalSearch(e.target.value)
+                  }
                   placeholder={LABELS.filter.searchPlaceholder}
                   className="!pl-9 !border-none !bg-transparent !h-full !text-base font-bold placeholder:text-stone-400"
                   containerClassName="flex-1 h-full"

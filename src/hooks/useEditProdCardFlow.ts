@@ -13,7 +13,9 @@ export function useEditProdCardFlow(
   initialStep?: number,
 ) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<'PRODUCT' | 'IMAGE' | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<'PRODUCT' | 'IMAGE' | null>(
+    null,
+  );
   const [isUploading, setIsUploading] = useState(false);
 
   // Sync scroll lock

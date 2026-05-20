@@ -56,19 +56,19 @@ export const generateVCard = (settings: CompanySettings) => {
     `ADR;TYPE=WORK:;;${settings.address || ''};;;;`,
     `ORG:${settings.name}`,
     `TITLE:${settings.subtitle || ''}`,
-    'END:VCARD'
+    'END:VCARD',
   ];
 
   const vCardData = vCardLines.join('\n');
   const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8' });
   const url = window.URL.createObjectURL(blob);
-  
+
   const link = document.createElement('a');
   link.href = url;
   link.setAttribute('download', `${settings.name.replace(/\s+/g, '_')}.vcf`);
   document.body.appendChild(link);
   link.click();
-  
+
   // Cleanup
   setTimeout(() => {
     document.body.removeChild(link);

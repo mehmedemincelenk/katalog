@@ -16,8 +16,10 @@ export const useStore = create<StoreState>((set) => ({
   isAdmin: false,
   setIsAdmin: (status: boolean) => set({ isAdmin: status }),
 
-  adminPin: typeof window !== 'undefined' ? 
-    sessionStorage.getItem('ekatalog_admin_pin') : null,
+  adminPin:
+    typeof window !== 'undefined'
+      ? sessionStorage.getItem('ekatalog_admin_pin')
+      : null,
   setAdminPin: (pin: string | null) => {
     if (pin) sessionStorage.setItem('ekatalog_admin_pin', pin);
     else sessionStorage.removeItem('ekatalog_admin_pin');
@@ -27,7 +29,10 @@ export const useStore = create<StoreState>((set) => ({
   // Dükkan Ayarları
   settings: null,
   setSettings: (settings: CompanySettings) => set({ settings }),
-  updateSetting: <K extends keyof CompanySettings>(key: K, value: CompanySettings[K]) =>
+  updateSetting: <K extends keyof CompanySettings>(
+    key: K,
+    value: CompanySettings[K],
+  ) =>
     set((state: StoreState) => ({
       settings: state.settings
         ? ({ ...state.settings, [key]: value } as CompanySettings)
@@ -45,7 +50,7 @@ export const useStore = create<StoreState>((set) => ({
       if (category === 'ALL_PRODUCTS') {
         return { activeCategories: [] };
       }
-      
+
       return {
         activeCategories: state.activeCategories.includes(category)
           ? state.activeCategories.filter((c: string) => c !== category)
@@ -72,12 +77,14 @@ export const useStore = create<StoreState>((set) => ({
     }),
 
   exchangeRates: null,
-  setExchangeRates: (rates: { usd: number; eur: number }) => set({ exchangeRates: rates }),
+  setExchangeRates: (rates: { usd: number; eur: number }) =>
+    set({ exchangeRates: rates }),
 
   // Promosyonlar
   activeDiscount: null,
-  setActiveDiscount: (discount: { code: string; rate: number; category?: string } | null) =>
-    set({ activeDiscount: discount }),
+  setActiveDiscount: (
+    discount: { code: string; rate: number; category?: string } | null,
+  ) => set({ activeDiscount: discount }),
   discountError: null,
   applyDiscountCode: (rawInput: string) => {
     const sanitizedCode = rawInput.toUpperCase().trim();
@@ -97,22 +104,34 @@ export const useStore = create<StoreState>((set) => ({
           discountError: null,
         });
       } else {
-        set({ activeDiscount: null, discountError: LABELS.discount.invalidRate });
-        errorTimer = setTimeout(() => set({ discountError: null }), TECH.discount.errorResetMs);
+        set({
+          activeDiscount: null,
+          discountError: LABELS.discount.invalidRate,
+        });
+        errorTimer = setTimeout(
+          () => set({ discountError: null }),
+          TECH.discount.errorResetMs,
+        );
       }
     } else {
       set({ activeDiscount: null, discountError: LABELS.discount.invalidCode });
-      errorTimer = setTimeout(() => set({ discountError: null }), TECH.discount.errorResetMs);
+      errorTimer = setTimeout(
+        () => set({ discountError: null }),
+        TECH.discount.errorResetMs,
+      );
     }
   },
-  
-  isInlineEnabled: typeof window !== 'undefined' ? 
-    (localStorage.getItem('ekatalog_inline_edit_v1') !== 'false') : true,
-  toggleInlineEdit: () => set((state) => {
-    const next = !state.isInlineEnabled;
-    localStorage.setItem('ekatalog_inline_edit_v1', String(next));
-    return { isInlineEnabled: next };
-  }),
+
+  isInlineEnabled:
+    typeof window !== 'undefined'
+      ? localStorage.getItem('ekatalog_inline_edit_v1') !== 'false'
+      : true,
+  toggleInlineEdit: () =>
+    set((state) => {
+      const next = !state.isInlineEnabled;
+      localStorage.setItem('ekatalog_inline_edit_v1', String(next));
+      return { isInlineEnabled: next };
+    }),
 
   // UI / Modal Management
   activeModal: null,
@@ -122,7 +141,8 @@ export const useStore = create<StoreState>((set) => ({
 
   // Workspace
   isWorkspaceOpen: false,
-  toggleWorkspace: () => set((state) => ({ isWorkspaceOpen: !state.isWorkspaceOpen })),
+  toggleWorkspace: () =>
+    set((state) => ({ isWorkspaceOpen: !state.isWorkspaceOpen })),
 
   // Global Feedback
   feedbackStatus: 'idle',

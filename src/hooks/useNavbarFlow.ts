@@ -8,7 +8,7 @@ import { openInstagram } from '../utils/contact';
 export function useNavbarFlow(
   onLogoPointerDown: () => void,
   onLogoPointerUp: () => void,
-  isInlineEnabled: boolean
+  isInlineEnabled: boolean,
 ) {
   const {
     isAdmin,
@@ -53,7 +53,7 @@ export function useNavbarFlow(
     setIsLogoPressed(false);
     const holdDuration = Date.now() - logoPressStartTimeRef.current;
     onLogoPointerUp();
-    
+
     // Short click in Admin Mode -> Trigger Upload
     if (isAdmin && holdDuration < 300) {
       document.getElementById('logo-upload-input')?.click();
@@ -141,6 +141,6 @@ export function useNavbarFlow(
     handleInstagramAction,
     handleTextEdit,
     handleQuickSave,
-    handleAnnouncementBlur
+    handleAnnouncementBlur,
   };
 }

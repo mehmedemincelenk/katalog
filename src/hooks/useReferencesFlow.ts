@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { REFERENCES } from '../data/config';
 import { useSettings } from './useSettingsHub';
 
-
 export function useReferencesFlow(isAdmin: boolean = false) {
   const { settings, updateSetting } = useSettings(isAdmin);
 

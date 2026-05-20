@@ -20,7 +20,11 @@ import { NavbarProps } from '../../types';
 
 const Navbar = memo(
   ({ onLogoPointerDown, onLogoPointerUp, isInlineEnabled }: NavbarProps) => {
-    const flow = useNavbarFlow(onLogoPointerDown, onLogoPointerUp, isInlineEnabled);
+    const flow = useNavbarFlow(
+      onLogoPointerDown,
+      onLogoPointerUp,
+      isInlineEnabled,
+    );
 
     const theme = THEME.navbar;
     const globalIcons = THEME.icons;
@@ -48,7 +52,8 @@ const Navbar = memo(
     return (
       <>
         {/* ANNOUNCEMENT BAR */}
-        {(showAnnouncementBar || (flow.isAdmin && announcementConfig.enabled)) && (
+        {(showAnnouncementBar ||
+          (flow.isAdmin && announcementConfig.enabled)) && (
           <div className={announcementBarTheme.wrapper}>
             <span
               className={`${announcementBarTheme.text} ${flow.isAdmin && isInlineEnabled ? announcementBarTheme.adminEditStyle : ''}`}
@@ -140,11 +145,19 @@ const Navbar = memo(
                         onClick={(e) => {
                           if (!flow.isAdmin) return;
                           e.stopPropagation();
-                          flow.handleTextEdit('title', flow.settings!.title || flow.settings!.name || DEFAULT_COMPANY.name, 'Mağaza Adı');
+                          flow.handleTextEdit(
+                            'title',
+                            flow.settings!.title ||
+                              flow.settings!.name ||
+                              DEFAULT_COMPANY.name,
+                            'Mağaza Adı',
+                          );
                         }}
                         className={`!text-[0.85rem] font-black tracking-tighter text-stone-900 ${editStyle} ${flow.isAdmin ? 'pointer-events-auto' : ''}`}
                       >
-                        {flow.settings.title || flow.settings.name || DEFAULT_COMPANY.name}
+                        {flow.settings.title ||
+                          flow.settings.name ||
+                          DEFAULT_COMPANY.name}
                       </span>
                     </div>
                     {flow.settings.displayConfig.showSubtitle && (
@@ -217,7 +230,11 @@ const Navbar = memo(
                         (e.preventDefault(), e.currentTarget.blur())
                       }
                       onClick={() =>
-                        flow.handleTextEdit('address', flow.settings!.address, 'Adres')
+                        flow.handleTextEdit(
+                          'address',
+                          flow.settings!.address,
+                          'Adres',
+                        )
                       }
                       className={`order-2 !text-[0.7rem] text-stone-600 hover:text-stone-900 transition-colors font-bold text-right leading-tight px-1 ${editStyle}`}
                     >
@@ -275,8 +292,25 @@ const Navbar = memo(
                           >
                             {flow.settings.whatsapp || 'SİPARİŞ VER'}
                           </span>
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-white opacity-60">
-                            <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="w-3 h-3 text-white opacity-60"
+                          >
+                            <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
+                            <path d="M14 13.12c0 2.38 0 6.38-1 8.88" />
+                            <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" />
+                            <path d="M2 12a10 10 0 0 1 18-6" />
+                            <path d="M2 16h.01" />
+                            <path d="M21.8 16c.2-2 .131-5.354 0-6" />
+                            <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2" />
+                            <path d="M8.65 22c.21-.66.45-1.32.57-2" />
+                            <path d="M9 6.8a6 6 0 0 1 9 5.2v2" />
                           </svg>
                         </div>
                       </Button>

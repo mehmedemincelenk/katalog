@@ -12,9 +12,7 @@ import * as Lucide from 'lucide-react';
  * Renders a single banner slide with administrative overlays.
  */
 
-import {
-  CarouselSlide,
-} from '../../types';
+import { CarouselSlide } from '../../types';
 
 const CarouselSlideUnit = memo(
   ({
@@ -47,7 +45,9 @@ const CarouselSlideUnit = memo(
     const globalIcons = THEME.icons;
 
     return (
-      <div className={`${carouselTheme.slide.base} overflow-hidden rounded-none relative`}>
+      <div
+        className={`${carouselTheme.slide.base} overflow-hidden rounded-none relative`}
+      >
         {/* VISUAL ASSET LAYER */}
         <div className="relative w-full h-full">
           <SmartImage
@@ -64,9 +64,11 @@ const CarouselSlideUnit = memo(
 
         <AnimatePresence>
           {isAdmin && (
-            <div className={`absolute top-4 right-4 flex items-center gap-2 z-[1000] transition-opacity duration-500 ${isCurrentlyActive ? 'opacity-100' : 'opacity-40'}`}>
+            <div
+              className={`absolute top-4 right-4 flex items-center gap-2 z-[1000] transition-opacity duration-500 ${isCurrentlyActive ? 'opacity-100' : 'opacity-40'}`}
+            >
               {/* INTERACTIVE SEQUENCE BADGE */}
-              <div 
+              <div
                 className={`${carouselTheme.slide.changeBadge} !static !pointer-events-auto flex items-center relative w-10 h-10 justify-center !rounded-lg border border-white/20 shadow-xl bg-stone-900/60 backdrop-blur-md`}
                 onClick={(e) => e.stopPropagation()}
               >
@@ -89,17 +91,29 @@ const CarouselSlideUnit = memo(
                   className={`absolute inset-0 cursor-pointer z-10 ${isUpdatingOrder || showSuccess ? 'opacity-0' : 'opacity-0'}`}
                 >
                   {Array.from({ length: totalSlides }).map((_, i) => (
-                    <option key={i} value={i}>{i + 1}.</option>
+                    <option key={i} value={i}>
+                      {i + 1}.
+                    </option>
                   ))}
                 </select>
                 {isUpdatingOrder ? (
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : showSuccess ? (
-                  <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex items-center justify-center">
-                    <Lucide.Check size={16} className="text-emerald-400" strokeWidth={4} />
+                  <motion.div
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="flex items-center justify-center"
+                  >
+                    <Lucide.Check
+                      size={16}
+                      className="text-emerald-400"
+                      strokeWidth={4}
+                    />
                   </motion.div>
                 ) : (
-                  <span className="text-white text-[13px] font-black">{currentIndex + 1}.</span>
+                  <span className="text-white text-[13px] font-black">
+                    {currentIndex + 1}.
+                  </span>
                 )}
               </div>
 
@@ -118,7 +132,11 @@ const CarouselSlideUnit = memo(
                   variant="glass"
                   mode="square"
                   className="w-10 h-10 shadow-xl border border-white/20 !rounded-lg !bg-stone-900/60 backdrop-blur-md !p-0"
-                  icon={<div className="w-4 h-4 text-white hover:text-red-400 transition-colors">{globalIcons.trash}</div>}
+                  icon={
+                    <div className="w-4 h-4 text-white hover:text-red-400 transition-colors">
+                      {globalIcons.trash}
+                    </div>
+                  }
                   title="AFİŞİ SİL"
                 />
               </motion.div>
@@ -138,19 +156,21 @@ const CarouselSlideUnit = memo(
               }}
               onClick={(e) => e.stopPropagation()}
             />
-            
+
             {/* LOCAL LOADING SPINNER WITHIN IMAGE BOUNDS */}
             {isCurrentlyUploading && editingTargetSlideId === slideData.id && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-stone-900/10 backdrop-blur-[2px] transition-all duration-500 z-40">
                 <div className={carouselTheme.slide.loadingSpinner} />
-                <span className="mt-4 text-[10px] font-black text-white tracking-[0.2em] animate-pulse">LÜTFEN BEKLEYİN...</span>
+                <span className="mt-4 text-[10px] font-black text-white tracking-[0.2em] animate-pulse">
+                  LÜTFEN BEKLEYİN...
+                </span>
               </div>
             )}
           </div>
         )}
       </div>
     );
-  }
+  },
 );
 
 CarouselSlideUnit.displayName = 'CarouselSlideUnit';

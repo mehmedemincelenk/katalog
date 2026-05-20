@@ -142,4 +142,3 @@ export const STORAGE = {
   carouselSlides: 'ekatalog_branding_assets',
   adminSession: 'ekatalog_secure_session_lock',
 };
-

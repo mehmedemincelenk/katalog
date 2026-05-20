@@ -10,7 +10,10 @@ import { MaintenancePageProps } from '../types';
  * -----------------------------------------------------------
  * A professional downtime interface with lead capture and hidden admin access.
  */
-export default function MaintenancePage({ onLogoPointerDown, onLogoPointerUp }: MaintenancePageProps) {
+export default function MaintenancePage({
+  onLogoPointerDown,
+  onLogoPointerUp,
+}: MaintenancePageProps) {
   const [isSuccess, setIsSuccess] = useState(false);
   const { settings, addVisitorLead } = useSettings(false);
   const [isLogoPressed, setIsLogoPressed] = useState(false);
@@ -38,19 +41,23 @@ export default function MaintenancePage({ onLogoPointerDown, onLogoPointerUp }: 
     <div className="min-h-screen bg-stone-50/50 flex flex-col items-center justify-center p-6 text-center select-none overflow-hidden relative">
       <div className="max-w-md w-full space-y-16 relative z-10">
         {/* BRANDING (HIDDEN ADMIN ACCESS) */}
-        <div 
+        <div
           className={`flex flex-col items-center space-y-6 transition-all duration-300 cursor-pointer touch-none ${isLogoPressed ? 'scale-95 opacity-50' : 'scale-100'}`}
           onPointerDown={handlePressStart}
           onPointerUp={handlePressEnd}
           onPointerLeave={handlePressEnd}
           onContextMenu={(e) => e.preventDefault()}
-          style={{ userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'none' }}
+          style={{
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+            touchAction: 'none',
+          }}
         >
           {settings?.logoUrl ? (
-            <img 
-              src={settings.logoUrl} 
-              alt={settings.title} 
-              className="h-24 w-auto object-contain pointer-events-none drop-shadow-sm" 
+            <img
+              src={settings.logoUrl}
+              alt={settings.title}
+              className="h-24 w-auto object-contain pointer-events-none drop-shadow-sm"
             />
           ) : (
             <div className="w-16 h-16 bg-stone-900 rounded-3xl flex items-center justify-center text-white text-2xl font-black shadow-xl">
@@ -58,7 +65,9 @@ export default function MaintenancePage({ onLogoPointerDown, onLogoPointerUp }: 
             </div>
           )}
           <div className="space-y-3">
-            <h1 className="text-sm font-black text-stone-400 tracking-[0.5em] uppercase">{settings?.title || 'KATALOG'}</h1>
+            <h1 className="text-sm font-black text-stone-400 tracking-[0.5em] uppercase">
+              {settings?.title || 'KATALOG'}
+            </h1>
             <div className="h-0.5 w-8 bg-stone-900/5 mx-auto rounded-full" />
           </div>
         </div>
@@ -66,7 +75,7 @@ export default function MaintenancePage({ onLogoPointerDown, onLogoPointerUp }: 
         <div className="relative">
           {/* SUCCESS STATE */}
           {isSuccess ? (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-center space-y-4"
@@ -74,7 +83,9 @@ export default function MaintenancePage({ onLogoPointerDown, onLogoPointerUp }: 
               <div className="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/10">
                 <Lucide.Check size={24} strokeWidth={3} />
               </div>
-              <p className="text-stone-400 text-[10px] font-black uppercase tracking-[0.2em]">KAYDINIZ ALINDI, GÖRÜŞMEK ÜZERE.</p>
+              <p className="text-stone-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                KAYDINIZ ALINDI, GÖRÜŞMEK ÜZERE.
+              </p>
             </motion.div>
           ) : (
             <div className="space-y-12">
@@ -87,10 +98,14 @@ export default function MaintenancePage({ onLogoPointerDown, onLogoPointerUp }: 
               {/* LEAD CAPTURE SECTION - MINIMALIST */}
               <div className="space-y-8">
                 <div className="text-center">
-                  <p className="text-base font-black text-stone-800 tracking-tight uppercase">Sizi Arayalım</p>
-                  <p className="text-[10px] text-stone-400 font-bold uppercase mt-1 opacity-60">Açılışta haber vermek için numaranızı bırakın</p>
+                  <p className="text-base font-black text-stone-800 tracking-tight uppercase">
+                    Sizi Arayalım
+                  </p>
+                  <p className="text-[10px] text-stone-400 font-bold uppercase mt-1 opacity-60">
+                    Açılışta haber vermek için numaranızı bırakın
+                  </p>
                 </div>
-                
+
                 <div className="max-w-[280px] mx-auto bg-white rounded-3xl p-6 shadow-xl shadow-stone-200/20 border border-stone-100">
                   <Numpad onSubmit={handleLeadSubmit} maxDigits={10} />
                 </div>

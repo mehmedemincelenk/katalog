@@ -2,10 +2,9 @@ import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supabase';
 import { Product, NewProductPayload, CompanySettings } from '../types';
-import { reorderArray, smartSearch } from '../utils/core';
+import { reorderArray, smartSearch, sortCategories } from '../utils/core';
 import { useStore } from '../store';
-import { TECH, sortCategories } from '../data/config';
-
+import { TECH } from '../data/config';
 
 /**
  * PRODUCTS & CATALOG HUB (DIAMOND EDITION)
@@ -16,9 +15,6 @@ import { TECH, sortCategories } from '../data/config';
  * 3. Catalog Engine (Grouping, Filtering, Sorting)
  * 4. Storage Service (Visual Asset Management)
  */
-
-
-
 
 // --- 1. QUERY HOOK (Data Layer) ---
 
@@ -50,12 +46,18 @@ export function useProductsActions() {
   const queryKey = ['products', settings?.id];
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, changes }: { id: string; changes: Partial<Product> }) => {
+    mutationFn: async ({
+      id,
+      changes,
+    }: {
+      id: string;
+      changes: Partial<Product>;
+    }) => {
       if (!adminPin) throw new Error('Yetkisiz işlem: PIN gerekli');
       const { error } = await supabase.rpc('secure_update_product', {
         p_id: id,
         p_pin: adminPin,
-        p_changes: changes
+        p_changes: changes,
       });
       if (error) throw error;
     },
@@ -67,7 +69,7 @@ export function useProductsActions() {
       if (!adminPin) throw new Error('Yetkisiz işlem: PIN gerekli');
       const { error } = await supabase.rpc('secure_delete_product', {
         p_id: id,
-        p_pin: adminPin
+        p_pin: adminPin,
       });
       if (error) throw error;
     },
@@ -80,7 +82,7 @@ export function useProductsActions() {
       const { error } = await supabase.rpc('secure_reorder_categories', {
         p_store_id: settings.id,
         p_pin: adminPin,
-        p_new_order: newOrder
+        p_new_order: newOrder,
       });
       if (error) throw error;
     },
@@ -88,13 +90,19 @@ export function useProductsActions() {
   });
 
   const renameCategoryMutation = useMutation({
-    mutationFn: async ({ oldName, newName }: { oldName: string; newName: string }) => {
+    mutationFn: async ({
+      oldName,
+      newName,
+    }: {
+      oldName: string;
+      newName: string;
+    }) => {
       if (!settings?.id || !adminPin) throw new Error('Yetkisiz işlem');
       const { error } = await supabase.rpc('secure_rename_category', {
         p_store_id: settings.id,
         p_pin: adminPin,
         p_old_name: oldName,
-        p_new_name: newName
+        p_new_name: newName,
       });
       if (error) throw error;
     },
@@ -102,12 +110,18 @@ export function useProductsActions() {
   });
 
   const reorderProductsMutation = useMutation({
-    mutationFn: async ({ id, newSortOrder }: { id: string; newSortOrder: number }) => {
+    mutationFn: async ({
+      id,
+      newSortOrder,
+    }: {
+      id: string;
+      newSortOrder: number;
+    }) => {
       if (!adminPin) throw new Error('Yetkisiz işlem');
       const { error } = await supabase.rpc('secure_update_product', {
         p_id: id,
         p_pin: adminPin,
-        p_changes: { sort_order: newSortOrder }
+        p_changes: { sort_order: newSortOrder },
       });
       if (error) throw error;
     },
@@ -121,15 +135,14 @@ export function useProductsActions() {
         p_pin: adminPin,
         p_payload: {
           ...newProduct,
-          store_id: settings.id
-        }
+          store_id: settings.id,
+        },
       });
       if (error) throw error;
       return data.id as string;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
   });
-
 
   const uploadImageMutation = useMutation({
     mutationFn: async ({ id, file }: { id: string; file: File }) => {
@@ -146,7 +159,7 @@ export function useProductsActions() {
         oldUrl: targetProduct.image_url,
         slugBaseName: targetProduct.name,
         uniqueIdPrefix: targetProduct.id.substring(0, 4),
-        isDualQuality: true
+        isDualQuality: true,
       });
 
       if (finalizedUrl) {
@@ -156,7 +169,7 @@ export function useProductsActions() {
           p_changes: {
             image_url: finalizedUrl,
             is_polished_pending: false,
-          }
+          },
         });
         if (error) throw error;
       }
@@ -181,18 +194,20 @@ export function useProductsActions() {
       if (!adminPin) throw new Error('Yetkisiz işlem: PIN gerekli');
 
       // Process actions to match RPC format (converting prices if needed)
-      const formattedActions = await Promise.all(actions.map(async (action) => {
-        const formatted: any = { ...action };
-        if (action.newPrice !== undefined) {
-          const { formatNumberToCurrency } = await import('../utils/core');
-          formatted.newPrice = formatNumberToCurrency(action.newPrice);
-        }
-        return formatted;
-      }));
+      const formattedActions = await Promise.all(
+        actions.map(async (action) => {
+          const formatted: any = { ...action };
+          if (action.newPrice !== undefined) {
+            const { formatNumberToCurrency } = await import('../utils/core');
+            formatted.newPrice = formatNumberToCurrency(action.newPrice);
+          }
+          return formatted;
+        }),
+      );
 
       const { error } = await supabase.rpc('secure_bulk_update_products', {
         p_pin: adminPin,
-        p_actions: formattedActions
+        p_actions: formattedActions,
       });
 
       if (error) throw error;
@@ -223,14 +238,22 @@ export function useProductsActions() {
 
 // --- 3. CATALOG ENGINE (Logic Layer) ---
 
-export function useCatalogEngine(products: Product[], categoryOrder: string[], activeCategories: string[], isAdmin: boolean) {
+export function useCatalogEngine(
+  products: Product[],
+  categoryOrder: string[],
+  activeCategories: string[],
+  isAdmin: boolean,
+) {
   const groupedProducts = useMemo(() => {
-    return products.reduce((acc, product) => {
-      const category = product.category || TECH.products.fallbackCategory;
-      if (!acc[category]) acc[category] = [];
-      acc[category].push(product);
-      return acc;
-    }, {} as Record<string, Product[]>);
+    return products.reduce(
+      (acc, product) => {
+        const category = product.category || TECH.products.fallbackCategory;
+        if (!acc[category]) acc[category] = [];
+        acc[category].push(product);
+        return acc;
+      },
+      {} as Record<string, Product[]>,
+    );
   }, [products]);
 
   const { sortedList, stats } = useMemo(() => {
@@ -252,10 +275,17 @@ export function useCatalogEngine(products: Product[], categoryOrder: string[], a
 
   const displayCategories = useMemo(() => {
     const allCategories = sortedList;
-    const filtered = activeCategories.length > 0 ? allCategories.filter(cat => activeCategories.includes(cat)) : allCategories;
-    
+    const filtered =
+      activeCategories.length > 0
+        ? allCategories.filter((cat) => activeCategories.includes(cat))
+        : allCategories;
+
     if (isAdmin) return filtered;
-    return filtered.filter(cat => (groupedProducts[cat] || []).length > 0 || activeCategories.includes(cat));
+    return filtered.filter(
+      (cat) =>
+        (groupedProducts[cat] || []).length > 0 ||
+        activeCategories.includes(cat),
+    );
   }, [groupedProducts, sortedList, activeCategories, isAdmin]);
 
   return { groupedProducts, displayCategories, sortedList, stats };
@@ -263,20 +293,35 @@ export function useCatalogEngine(products: Product[], categoryOrder: string[], a
 
 // --- 4. COORDINATOR HOOK (Main Entry) ---
 
-export function useProducts(searchQuery: string, activeCategories: string[], isAdmin: boolean, settings: CompanySettings | null) {
-  const { data: allProducts = [], isLoading: productsLoading } = useProductsQuery(settings?.id);
+export function useProducts(
+  searchQuery: string,
+  activeCategories: string[],
+  isAdmin: boolean,
+  settings: CompanySettings | null,
+) {
+  const { data: allProducts = [], isLoading: productsLoading } =
+    useProductsQuery(settings?.id);
   const actions = useProductsActions();
 
   const filteredProducts = useMemo(() => {
     let result = [...allProducts];
     if (!isAdmin) result = result.filter((p) => !p.is_archived);
-    if (activeCategories.length > 0) result = result.filter((p) => activeCategories.includes(p.category));
+    if (activeCategories.length > 0)
+      result = result.filter((p) => activeCategories.includes(p.category));
     if (searchQuery) result = smartSearch(searchQuery, result);
     return result;
   }, [allProducts, searchQuery, activeCategories, isAdmin]);
 
-  const categoryOrder = useMemo(() => settings?.categoryOrder || [], [settings?.categoryOrder]);
-  const { sortedList, stats } = useCatalogEngine(allProducts, categoryOrder, activeCategories, isAdmin);
+  const categoryOrder = useMemo(
+    () => settings?.categoryOrder || [],
+    [settings?.categoryOrder],
+  );
+  const { sortedList, stats } = useCatalogEngine(
+    allProducts,
+    categoryOrder,
+    activeCategories,
+    isAdmin,
+  );
 
   return {
     products: filteredProducts,
@@ -295,25 +340,33 @@ export function useProducts(searchQuery: string, activeCategories: string[], isA
     reorderCategory: async (categoryName: string, newPosition: number) => {
       const oldIndex = categoryOrder.indexOf(categoryName);
       if (oldIndex === -1) return;
-      const updatedOrder = reorderArray(categoryOrder, oldIndex, newPosition - 1);
+      const updatedOrder = reorderArray(
+        categoryOrder,
+        oldIndex,
+        newPosition - 1,
+      );
       await actions.reorderCategories(updatedOrder);
     },
     reorderProductsInCategory: async (id: string, newPosition: number) => {
-      const targetProduct = allProducts.find(p => p.id === id);
+      const targetProduct = allProducts.find((p) => p.id === id);
       if (!targetProduct) return;
 
       const categoryProducts = allProducts
-        .filter(p => p.category === targetProduct.category)
+        .filter((p) => p.category === targetProduct.category)
         .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
-      const oldIndex = categoryProducts.findIndex(p => p.id === id);
+      const oldIndex = categoryProducts.findIndex((p) => p.id === id);
       if (oldIndex === -1) return;
 
-      const reordered = reorderArray(categoryProducts, oldIndex, newPosition - 1);
-      
+      const reordered = reorderArray(
+        categoryProducts,
+        oldIndex,
+        newPosition - 1,
+      );
+
       const bulkActions = reordered.map((p, idx) => ({
         productId: p.id,
-        newSortOrder: idx + 1
+        newSortOrder: idx + 1,
       }));
 
       // Map to executeGranularBulkActions format
@@ -321,7 +374,7 @@ export function useProducts(searchQuery: string, activeCategories: string[], isA
     },
     addCategory: async (name: string) => {
       if (!settings?.id) return;
-      
+
       // 1. Create a placeholder product
       await actions.addProduct({
         name: 'Yeni Kategori Ürünü',

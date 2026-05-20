@@ -45,7 +45,13 @@ export default function BaseModal({
   const descId = React.useId();
 
   // 1. MODULAR ORCHESTRATION (Diamond UI Hooks)
-  useModalBehavior(isOpen, modalRef as React.RefObject<HTMLElement>, onClose, disableClickOutside, isStatic);
+  useModalBehavior(
+    isOpen,
+    modalRef as React.RefObject<HTMLElement>,
+    onClose,
+    disableClickOutside,
+    isStatic,
+  );
 
   const handleBackdropClick = () => {
     if (!disableClickOutside) {
@@ -58,7 +64,13 @@ export default function BaseModal({
   const content = (
     <AnimatePresence>
       {isOpen && (
-        <div className={isStatic ? "relative z-0" : `fixed inset-0 z-[200] flex ${position === 'bottom-right' ? 'items-end justify-end p-4' : 'items-start sm:items-center justify-center p-4 pt-16 sm:pt-4'} print:p-0 print:block print:relative print:z-auto`}>
+        <div
+          className={
+            isStatic
+              ? 'relative z-0'
+              : `fixed inset-0 z-[200] flex ${position === 'bottom-right' ? 'items-end justify-end p-4' : 'items-start sm:items-center justify-center p-4 pt-16 sm:pt-4'} print:p-0 print:block print:relative print:z-auto`
+          }
+        >
           {/* BACKDROP */}
           {!isStatic && (
             <motion.div
@@ -93,16 +105,24 @@ export default function BaseModal({
           >
             {/* NAVIGATION CONTROLS (Diamond Corner/Edge Positioning) */}
             {leftNav && (
-              <div className={`absolute z-[70] shrink-0 print:hidden -left-10 ${
-                navY === 'bottom' ? 'bottom-[3.2rem]' : 'top-1/2 -translate-y-1/2'
-              }`}>
+              <div
+                className={`absolute z-[70] shrink-0 print:hidden -left-10 ${
+                  navY === 'bottom'
+                    ? 'bottom-[3.2rem]'
+                    : 'top-1/2 -translate-y-1/2'
+                }`}
+              >
                 {leftNav}
               </div>
             )}
             {rightNav && (
-              <div className={`absolute z-[70] shrink-0 print:hidden -right-5 ${
-                navY === 'bottom' ? 'bottom-[3.2rem]' : 'top-1/2 -translate-y-1/2'
-              }`}>
+              <div
+                className={`absolute z-[70] shrink-0 print:hidden -right-5 ${
+                  navY === 'bottom'
+                    ? 'bottom-[3.2rem]'
+                    : 'top-1/2 -translate-y-1/2'
+                }`}
+              >
                 {rightNav}
               </div>
             )}
@@ -163,7 +183,9 @@ export default function BaseModal({
                           <div
                             key={stepNumber}
                             className={`h-1.5 rounded-full transition-all duration-300 ${
-                              isActive ? `${accentColor} w-6` : 'bg-stone-200 w-3'
+                              isActive
+                                ? `${accentColor} w-6`
+                                : 'bg-stone-200 w-3'
                             }`}
                           />
                         );
@@ -184,7 +206,9 @@ export default function BaseModal({
               )}
 
               {/* SCROLLABLE BODY */}
-              <div className={`flex-1 overflow-y-auto print:overflow-visible custom-scrollbar print:h-auto ${noPadding ? '' : 'px-6 py-6'}`}>
+              <div
+                className={`flex-1 overflow-y-auto print:overflow-visible custom-scrollbar print:h-auto ${noPadding ? '' : 'px-6 py-6'}`}
+              >
                 {children}
               </div>
 
@@ -201,6 +225,9 @@ export default function BaseModal({
     </AnimatePresence>
   );
 
-  const portalTarget = (typeof document !== 'undefined' && document.getElementById('mobile-viewport')) || document.body;
+  const portalTarget =
+    (typeof document !== 'undefined' &&
+      document.getElementById('mobile-viewport')) ||
+    document.body;
   return isStatic ? content : createPortal(content, portalTarget);
 }

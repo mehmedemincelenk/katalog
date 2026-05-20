@@ -255,7 +255,8 @@ export async function secureUploadVisualAsset({
   oldUrl,
   slugBaseName,
   uniqueIdPrefix = '',
-  isDualQuality = true
+  isDualQuality = true,
+  maxDimension = 400,
 }: {
   file: File;
   folder: string;
@@ -264,9 +265,11 @@ export async function secureUploadVisualAsset({
   slugBaseName: string;
   uniqueIdPrefix?: string;
   isDualQuality?: boolean;
+  maxDimension?: number;
 }): Promise<string> {
   // 1. Authorization
-  if (!adminPin) throw new Error('Security Error: PIN required for storage operations.');
+  if (!adminPin)
+    throw new Error('Security Error: PIN required for storage operations.');
 
   // 2. Hygiene: Cleanup old assets
   if (oldUrl) {
@@ -274,21 +277,34 @@ export async function secureUploadVisualAsset({
       const assetUrl = new URL(oldUrl);
       const fileName = assetUrl.pathname.split('/').pop();
       if (fileName && !fileName.includes('placeholder')) {
-        const pathsToDelete = isDualQuality 
-          ? [`${TECH.storage.lqFolder}/${fileName}`, `${TECH.storage.hqFolder}/${fileName}`]
+        const pathsToDelete = isDualQuality
+          ? [
+              `${TECH.storage.lqFolder}/${fileName}`,
+              `${TECH.storage.hqFolder}/${fileName}`,
+            ]
           : [`${folder}/${fileName}`];
 
         for (const path of pathsToDelete) {
-          await supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: path });
+          await supabase.rpc('authorize_storage_op', {
+            p_pin: adminPin,
+            p_file_path: path,
+          });
         }
         await supabase.storage.from(TECH.storage.bucket).remove(pathsToDelete);
       }
-    } catch { /* Silent fail for hygiene */ }
+    } catch {
+      /* Silent fail for hygiene */
+    }
   }
 
   // 3. Optimization
-  const sanitizedName = slugify(slugBaseName).substring(0, TECH.products.maxFileNameLength);
-  const uniqueSuffix = Math.random().toString(36).substring(2, 2 + TECH.products.uniqueIdSuffixLength);
+  const sanitizedName = slugify(slugBaseName).substring(
+    0,
+    TECH.products.maxFileNameLength,
+  );
+  const uniqueSuffix = Math.random()
+    .toString(36)
+    .substring(2, 2 + TECH.products.uniqueIdSuffixLength);
   const storageFileName = `${sanitizedName}-${uniqueIdPrefix ? `${uniqueIdPrefix}-` : ''}${uniqueSuffix}.jpg`;
 
   if (isDualQuality) {
@@ -297,31 +313,55 @@ export async function secureUploadVisualAsset({
     const hqPath = `${TECH.storage.hqFolder}/${storageFileName}`;
 
     await Promise.all([
-      supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: lqPath }),
-      supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: hqPath })
+      supabase.rpc('authorize_storage_op', {
+        p_pin: adminPin,
+        p_file_path: lqPath,
+      }),
+      supabase.rpc('authorize_storage_op', {
+        p_pin: adminPin,
+        p_file_path: hqPath,
+      }),
     ]);
 
     const [lqRes, hqRes] = await Promise.all([
-      supabase.storage.from(TECH.storage.bucket).upload(lqPath, lq, { upsert: true, cacheControl: TECH.storage.cacheControl }),
-      supabase.storage.from(TECH.storage.bucket).upload(hqPath, hq, { upsert: true, cacheControl: TECH.storage.cacheControl }),
+      supabase.storage.from(TECH.storage.bucket).upload(lqPath, lq, {
+        upsert: true,
+        cacheControl: TECH.storage.cacheControl,
+      }),
+      supabase.storage.from(TECH.storage.bucket).upload(hqPath, hq, {
+        upsert: true,
+        cacheControl: TECH.storage.cacheControl,
+      }),
     ]);
 
     if (lqRes.error) throw lqRes.error;
     if (hqRes.error) throw hqRes.error;
 
-    const { data: { publicUrl } } = supabase.storage.from(TECH.storage.bucket).getPublicUrl(lqPath);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from(TECH.storage.bucket).getPublicUrl(lqPath);
     return `${publicUrl}?t=${Date.now()}`;
   } else {
-    // Single quality upload (e.g. Logo)
-    const optimized = await compressVisualToDataUri(file, 400, 0.85);
+    // Single quality upload (e.g. Logo, Hero slide)
+    const optimized = await compressVisualToDataUri(file, maxDimension, 0.85);
     const blob = await (await fetch(optimized)).blob();
     const filePath = `${folder}/${storageFileName}`;
 
-    await supabase.rpc('authorize_storage_op', { p_pin: adminPin, p_file_path: filePath });
-    const { error } = await supabase.storage.from(TECH.storage.bucket).upload(filePath, blob, { upsert: true, cacheControl: TECH.storage.cacheControl });
+    await supabase.rpc('authorize_storage_op', {
+      p_pin: adminPin,
+      p_file_path: filePath,
+    });
+    const { error } = await supabase.storage
+      .from(TECH.storage.bucket)
+      .upload(filePath, blob, {
+        upsert: true,
+        cacheControl: TECH.storage.cacheControl,
+      });
     if (error) throw error;
 
-    const { data: { publicUrl } } = supabase.storage.from(TECH.storage.bucket).getPublicUrl(filePath);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from(TECH.storage.bucket).getPublicUrl(filePath);
     return `${publicUrl}?t=${Date.now()}`;
   }
 }

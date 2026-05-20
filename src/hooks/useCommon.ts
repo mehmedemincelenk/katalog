@@ -23,7 +23,10 @@ export function useDebounce<T>(value: T, delay: number): T {
 /**
  * useLocalStorage: Ensures seamless data retention across browser sessions.
  */
-export function useLocalStorage<T>(storageKey: string, initialValue: T): [T, (updateValue: T | ((val: T) => T)) => void] {
+export function useLocalStorage<T>(
+  storageKey: string,
+  initialValue: T,
+): [T, (updateValue: T | ((val: T) => T)) => void] {
   const [persistedData, setPersistedData] = useState<T>(() => {
     try {
       const serializedItem = window.localStorage.getItem(storageKey);
@@ -37,13 +40,20 @@ export function useLocalStorage<T>(storageKey: string, initialValue: T): [T, (up
   const updatePersistedData = useCallback(
     (updateValue: T | ((val: T) => T)) => {
       setPersistedData((previousData) => {
-        const finalizedData = updateValue instanceof Function ? updateValue(previousData) : updateValue;
+        const finalizedData =
+          updateValue instanceof Function
+            ? updateValue(previousData)
+            : updateValue;
         try {
-          window.localStorage.setItem(storageKey, JSON.stringify(finalizedData));
+          window.localStorage.setItem(
+            storageKey,
+            JSON.stringify(finalizedData),
+          );
         } catch (writeError) {
           if (
             writeError instanceof DOMException &&
-            (writeError.name === 'QuotaExceededError' || writeError.name === 'NS_ERROR_DOM_QUOTA_REACHED')
+            (writeError.name === 'QuotaExceededError' ||
+              writeError.name === 'NS_ERROR_DOM_QUOTA_REACHED')
           ) {
             console.error(LABELS.storage.quotaExceeded);
             alert(LABELS.storage.quotaAlert);
@@ -52,7 +62,7 @@ export function useLocalStorage<T>(storageKey: string, initialValue: T): [T, (up
         return finalizedData;
       });
     },
-    [storageKey]
+    [storageKey],
   );
 
   return [persistedData, updatePersistedData];
@@ -63,7 +73,8 @@ export function useLocalStorage<T>(storageKey: string, initialValue: T): [T, (up
  */
 export function useScrollLock(lock: boolean) {
   const lockScroll = useCallback(() => {
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const scrollbarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = 'hidden';
     if (scrollbarWidth > 0) {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
@@ -85,7 +96,11 @@ export function useScrollLock(lock: boolean) {
 /**
  * useKeyboard: Listens for specific keyboard events.
  */
-export function useKeyboard(key: string, callback: () => void, enabled: boolean = true) {
+export function useKeyboard(
+  key: string,
+  callback: () => void,
+  enabled: boolean = true,
+) {
   useEffect(() => {
     if (!enabled) return;
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -99,7 +114,10 @@ export function useKeyboard(key: string, callback: () => void, enabled: boolean 
 /**
  * useFocusTrap: Traps keyboard focus for accessibility.
  */
-export function useFocusTrap(containerRef: React.RefObject<HTMLElement>, active: boolean) {
+export function useFocusTrap(
+  containerRef: React.RefObject<HTMLElement>,
+  active: boolean,
+) {
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -112,7 +130,7 @@ export function useFocusTrap(containerRef: React.RefObject<HTMLElement>, active:
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Tab' || !containerRef.current) return;
       const focusable = containerRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
       if (focusable.length === 0) return;
       const first = focusable[0] as HTMLElement;
@@ -134,7 +152,7 @@ export function useFocusTrap(containerRef: React.RefObject<HTMLElement>, active:
     const focusTimeout = setTimeout(() => {
       if (containerRef.current) {
         const focusable = containerRef.current.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
         );
         if (focusable.length > 0) (focusable[0] as HTMLElement).focus();
       }
@@ -156,7 +174,7 @@ export function useModalBehavior(
   containerRef: React.RefObject<HTMLElement>,
   onClose: () => void,
   disableEsc: boolean = false,
-  isStatic: boolean = false
+  isStatic: boolean = false,
 ) {
   useScrollLock(isOpen && !isStatic);
   useKeyboard('Escape', onClose, isOpen && !disableEsc && !isStatic);
@@ -166,13 +184,17 @@ export function useModalBehavior(
 /**
  * useSyncMetadata: Synchronizes Browser Tab Title and Favicon.
  */
-export function useSyncMetadata(settings: CompanySettings | null, isAdmin: boolean) {
+export function useSyncMetadata(
+  settings: CompanySettings | null,
+  isAdmin: boolean,
+) {
   useEffect(() => {
     if (!settings || !settings.id) return;
     const baseTitle = settings.title || 'E-Katalog';
     document.title = isAdmin ? `[Admin] ${baseTitle}` : baseTitle;
 
-    let link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
+    let link: HTMLLinkElement | null =
+      document.querySelector("link[rel*='icon']");
     if (!link) {
       link = document.createElement('link');
       link.type = 'image/x-icon';
@@ -193,7 +215,7 @@ export function useResponsiveShadow(intensity = 30, baseOffset = 15) {
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth - 0.5) * intensity;
       const y = (e.clientY / window.innerHeight - 0.5) * intensity;
-      setShadowOffset({ x: -x, y: -y + baseOffset }); 
+      setShadowOffset({ x: -x, y: -y + baseOffset });
     };
 
     const handleDeviceOrientation = (e: DeviceOrientationEvent) => {

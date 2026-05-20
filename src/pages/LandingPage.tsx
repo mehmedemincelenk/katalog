@@ -35,7 +35,7 @@ const DOMAIN_EXTENSIONS = ['site', 'shop', 'co', 'cafe', 'me'];
 export default function LandingPage() {
   const [index, setIndex] = useState(0);
   const [domainIndex, setDomainIndex] = useState(0);
-  
+
   // Diamond Shadow Engine: Now powered by a reusable Hook! 🚀
   const shadowOffset = useResponsiveShadow(30, 15);
 
@@ -57,7 +57,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-stone-900 selection:text-white">
       {/* STICKY PROMO BAR */}
-      <div 
+      <div
         className="sticky top-0 z-[100] text-white py-3 px-4 text-center shadow-lg overflow-hidden"
         style={{ backgroundColor: THEME.colors.marketing.primary }}
       >
@@ -133,13 +133,11 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="space-y-1 p-2">
-                <div 
+                <div
                   className="w-8 h-8 rounded-xl flex items-center justify-center text-white mx-auto text-sm font-black shadow-lg shadow-green-500/20"
                   style={{ backgroundColor: THEME.colors.marketing.primary }}
                 >
-                  <div className="w-4 h-4">
-                    {THEME.icons.check}
-                  </div>
+                  <div className="w-4 h-4">{THEME.icons.check}</div>
                 </div>
                 <h3 className="text-[10px] font-black tracking-tight text-stone-900 leading-tight">
                   Siz Yönetin
@@ -155,14 +153,14 @@ export default function LandingPage() {
           <div className="text-center flex flex-col items-center pt-36">
             <div className="w-fit flex flex-col items-center relative">
               {/* CAMPAIGN CHIPS - Completely Static */}
-              <div 
+              <div
                 className="absolute -top-8 -left-1 text-white text-[9px] font-black px-3 py-1 rounded-lg -rotate-2 shadow-xl whitespace-nowrap z-40"
                 style={{ backgroundColor: THEME.colors.marketing.primary }}
               >
                 İLK AY BEDAVA 🎁
               </div>
 
-              <div 
+              <div
                 className="absolute -top-14 -left-14 text-white text-[9px] font-black px-3 py-1 rounded-lg -rotate-12 shadow-xl whitespace-nowrap z-30"
                 style={{ backgroundColor: THEME.colors.marketing.secondary }}
               >
@@ -203,7 +201,7 @@ export default function LandingPage() {
 
       {/* FINAL CTA */}
       <section className="pb-20 px-4 -mt-6">
-        <div 
+        <div
           className="max-w-2xl mx-auto rounded-[2.5rem] pt-8 pb-10 px-6 text-center space-y-8 shadow-3xl relative overflow-hidden w-full"
           style={{ backgroundColor: THEME.colors.marketing.brand }}
         >

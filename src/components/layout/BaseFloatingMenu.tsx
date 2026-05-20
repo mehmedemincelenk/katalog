@@ -4,7 +4,6 @@ import Button from '../ui/Button';
 import { MarqueeText } from '../ui/MarqueeText';
 import { X, LayoutGrid } from 'lucide-react';
 
-
 /**
  * BASE FLOATING MENU (DIAMOND FRAME)
  * -----------------------------------------------------------
@@ -19,7 +18,18 @@ export interface FloatingAction {
   label: string;
   primary?: boolean;
   className?: string;
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success' | 'glass' | 'whatsapp' | 'kraft' | 'instagram' | 'phone';
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'outline'
+    | 'ghost'
+    | 'danger'
+    | 'success'
+    | 'glass'
+    | 'whatsapp'
+    | 'kraft'
+    | 'instagram'
+    | 'phone';
   closeOnClick?: boolean; // Diamond logic: Some actions (like currency) shouldn't close the menu
 }
 
@@ -54,7 +64,7 @@ export default function BaseFloatingMenu({
   const handleAction = (btn: FloatingAction) => {
     clearTimer();
     btn.action();
-    
+
     // Diamond Standard: Persistent actions (like currency) stay open for UX flow
     if (btn.closeOnClick !== false) {
       setIsExpanded(false);
@@ -66,7 +76,10 @@ export default function BaseFloatingMenu({
 
   useEffect(() => {
     const handleClickOutside = (event: PointerEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setIsExpanded(false);
       }
     };
@@ -87,8 +100,12 @@ export default function BaseFloatingMenu({
   }, [isExpanded, autoCloseDelay, clearTimer]);
 
   return (
-    <div ref={containerRef} className="z-[100] origin-bottom-right" style={{ transform: 'scale(0.95)' }}>
-      <div 
+    <div
+      ref={containerRef}
+      className="z-[100] origin-bottom-right"
+      style={{ transform: 'scale(0.95)' }}
+    >
+      <div
         className={`
           flex flex-col items-center p-1 rounded-2xl transition-all duration-300 ease-in-out overflow-hidden w-[110px]
           bg-stone-900/60 backdrop-blur-xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)]
@@ -102,7 +119,7 @@ export default function BaseFloatingMenu({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
               className="w-full flex flex-col items-center overflow-hidden"
             >
               <motion.div
@@ -110,75 +127,85 @@ export default function BaseFloatingMenu({
                 animate="open"
                 exit="closed"
                 variants={{
-                  open: { transition: { staggerChildren: 0.04, delayChildren: 0.05 } },
-                  closed: { transition: { staggerChildren: 0.02, staggerDirection: -1 } }
+                  open: {
+                    transition: { staggerChildren: 0.04, delayChildren: 0.05 },
+                  },
+                  closed: {
+                    transition: { staggerChildren: 0.02, staggerDirection: -1 },
+                  },
                 }}
                 className="flex flex-col gap-1 items-center w-full py-1 px-0.5"
               >
                 {/* LABELED ACTIONS */}
                 <div className="flex flex-col gap-1 items-center w-full">
-                  {actions.filter(a => a.label).map((btn) => (
-                    <motion.div
-                      key={btn.id}
-                      variants={{
-                        open: { opacity: 1, y: 0, scale: 1 },
-                        closed: { opacity: 0, y: 10, scale: 0.8 }
-                      }}
-                      className="w-full"
-                    >
-                      <Button
-                        onClick={() => handleAction(btn)}
-                        icon={btn.icon}
-                        variant={btn.variant || 'secondary'}
-                        size="sm"
-                        mode="rectangle"
-                        className={`
+                  {actions
+                    .filter((a) => a.label)
+                    .map((btn) => (
+                      <motion.div
+                        key={btn.id}
+                        variants={{
+                          open: { opacity: 1, y: 0, scale: 1 },
+                          closed: { opacity: 0, y: 10, scale: 0.8 },
+                        }}
+                        className="w-full"
+                      >
+                        <Button
+                          onClick={() => handleAction(btn)}
+                          icon={btn.icon}
+                          variant={btn.variant || 'secondary'}
+                          size="sm"
+                          mode="rectangle"
+                          className={`
                           shrink-0 !rounded-lg ${btn.className || ''} w-full !justify-start px-2 gap-2 h-[40px] transition-all !text-white backdrop-blur-md !shadow-none
-                          ${(!btn.variant || btn.variant === 'secondary') 
-                            ? '!bg-white/10 !border-white/10 hover:!bg-white/20' 
-                            : ''
+                          ${
+                            !btn.variant || btn.variant === 'secondary'
+                              ? '!bg-white/10 !border-white/10 hover:!bg-white/20'
+                              : ''
                           }
                         `}
-                      >
-                        <div className="flex-1 min-w-0 overflow-hidden text-left">
-                          <MarqueeText
-                            text={btn.label}
-                            textClass="text-[8px] font-black uppercase tracking-tighter text-white"
-                            isAdmin={false}
-                          />
-                        </div>
-                      </Button>
-                    </motion.div>
-                  ))}
+                        >
+                          <div className="flex-1 min-w-0 overflow-hidden text-left">
+                            <MarqueeText
+                              text={btn.label}
+                              textClass="text-[8px] font-black uppercase tracking-tighter text-white"
+                              isAdmin={false}
+                            />
+                          </div>
+                        </Button>
+                      </motion.div>
+                    ))}
                 </div>
 
                 {/* ICON ACTIONS GRID */}
                 <div className="grid grid-cols-2 gap-1 justify-items-center w-full px-0.5">
-                  {actions.filter(a => !a.label).map((btn) => (
-                    <motion.div
-                      key={btn.id}
-                      variants={{
-                        open: { opacity: 1, y: 0, scale: 1 },
-                        closed: { opacity: 0, y: 10, scale: 0.8 }
-                      }}
-                      className="w-full"
-                    >
-                      <Button
-                        onClick={() => handleAction(btn)}
-                        icon={btn.icon}
-                        variant={btn.variant || 'secondary'}
-                        size="sm"
-                        mode="rectangle"
-                        className={`
+                  {actions
+                    .filter((a) => !a.label)
+                    .map((btn) => (
+                      <motion.div
+                        key={btn.id}
+                        variants={{
+                          open: { opacity: 1, y: 0, scale: 1 },
+                          closed: { opacity: 0, y: 10, scale: 0.8 },
+                        }}
+                        className="w-full"
+                      >
+                        <Button
+                          onClick={() => handleAction(btn)}
+                          icon={btn.icon}
+                          variant={btn.variant || 'secondary'}
+                          size="sm"
+                          mode="rectangle"
+                          className={`
                           shrink-0 !rounded-lg ${btn.className || ''} w-full h-[46px] !p-0 transition-all !text-white backdrop-blur-md !shadow-none
-                          ${(!btn.variant || btn.variant === 'secondary') 
-                            ? '!bg-white/10 !border-white/10 hover:!bg-white/20'
-                            : 'hover:scale-[1.05]'
+                          ${
+                            !btn.variant || btn.variant === 'secondary'
+                              ? '!bg-white/10 !border-white/10 hover:!bg-white/20'
+                              : 'hover:scale-[1.05]'
                           }
                         `}
-                      />
-                    </motion.div>
-                  ))}
+                        />
+                      </motion.div>
+                    ))}
                 </div>
               </motion.div>
             </motion.div>
@@ -197,9 +224,11 @@ export default function BaseFloatingMenu({
             mode="rectangle"
             className={`
               hover:scale-[1.02] active:scale-95 transition-all h-12 w-full shadow-lg !rounded-lg relative overflow-hidden backdrop-blur-md
-              ${isExpanded 
-                ? '!bg-white !text-stone-900 border-white/20' 
-                : '!bg-stone-900/60 !text-white border-white/10'}
+              ${
+                isExpanded
+                  ? '!bg-white !text-stone-900 border-white/20'
+                  : '!bg-stone-900/60 !text-white border-white/10'
+              }
             `}
             aria-label={isExpanded ? 'Menüyü Kapat' : 'Menüyü Aç'}
           >

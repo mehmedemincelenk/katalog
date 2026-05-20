@@ -7,10 +7,18 @@ export function usePinFlow(
   failedAttempts: number = 0,
   initialStep?: number,
 ) {
-  const [overrideIsLockedOut, setOverrideIsLockedOut] = useState<boolean | undefined>();
-  const [overrideFailedAttempts, setOverrideFailedAttempts] = useState<number | undefined>();
-  const activeIsLockedOut = overrideIsLockedOut !== undefined ? overrideIsLockedOut : isLockedOut;
-  const activeFailedAttempts = overrideFailedAttempts !== undefined ? overrideFailedAttempts : failedAttempts;
+  const [overrideIsLockedOut, setOverrideIsLockedOut] = useState<
+    boolean | undefined
+  >();
+  const [overrideFailedAttempts, setOverrideFailedAttempts] = useState<
+    number | undefined
+  >();
+  const activeIsLockedOut =
+    overrideIsLockedOut !== undefined ? overrideIsLockedOut : isLockedOut;
+  const activeFailedAttempts =
+    overrideFailedAttempts !== undefined
+      ? overrideFailedAttempts
+      : failedAttempts;
 
   const [currentPinAttempt, setCurrentPinAttempt] = useState('');
   const [hasAuthError, setHasAuthError] = useState(false);
@@ -18,7 +26,8 @@ export function usePinFlow(
   const [isRobotVerified, setIsRobotVerified] = useState(false);
 
   const requiresCaptcha = activeFailedAttempts >= 2;
-  const isInputDisabled = activeIsLockedOut || isVerifying || (requiresCaptcha && !isRobotVerified);
+  const isInputDisabled =
+    activeIsLockedOut || isVerifying || (requiresCaptcha && !isRobotVerified);
 
   const [prevInitialStep, setPrevInitialStep] = useState(initialStep);
   if (initialStep !== prevInitialStep) {

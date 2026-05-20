@@ -8,7 +8,7 @@ export function useDisplaySettingsFlow(
   settings: any,
   updateSetting: any,
   isInlineEnabled: boolean,
-  onToggleInline: () => void
+  onToggleInline: () => void,
 ) {
   const { showFeedback, adminPin } = useStore();
   const [isUploading, setIsUploading] = useState(false);
@@ -17,9 +17,15 @@ export function useDisplaySettingsFlow(
     return storage.get('ekatalog_hidden_help_ids', []);
   });
 
-  const [localConfig, setLocalConfig] = useState<DisplayConfig>(settings?.displayConfig || {});
-  const [localAnnouncement, setLocalAnnouncement] = useState(settings?.announcementBar?.enabled || false);
-  const [localMaintenance, setLocalMaintenance] = useState(settings?.maintenanceMode?.enabled || false);
+  const [localConfig, setLocalConfig] = useState<DisplayConfig>(
+    settings?.displayConfig || {},
+  );
+  const [localAnnouncement, setLocalAnnouncement] = useState(
+    settings?.announcementBar?.enabled || false,
+  );
+  const [localMaintenance, setLocalMaintenance] = useState(
+    settings?.maintenanceMode?.enabled || false,
+  );
   const [localInline, setLocalInline] = useState(isInlineEnabled);
   const [quickEdit, setQuickEdit] = useState<{
     key: string;
@@ -50,7 +56,7 @@ export function useDisplaySettingsFlow(
   const toggleOption = async (key: keyof DisplayConfig) => {
     const currentVal = getOptionState(key);
     const newVal = !currentVal;
-    setLocalConfig(prev => ({ ...prev, [key]: newVal }));
+    setLocalConfig((prev) => ({ ...prev, [key]: newVal }));
     try {
       await updateSetting('displayConfig', {
         ...settings.displayConfig,
@@ -65,7 +71,10 @@ export function useDisplaySettingsFlow(
     const newVal = !localAnnouncement;
     setLocalAnnouncement(newVal);
     try {
-      await updateSetting('announcementBar', { ...settings.announcementBar, enabled: newVal });
+      await updateSetting('announcementBar', {
+        ...settings.announcementBar,
+        enabled: newVal,
+      });
     } catch (err) {
       setLocalAnnouncement(settings.announcementBar?.enabled || false);
     }
@@ -75,7 +84,10 @@ export function useDisplaySettingsFlow(
     const newVal = !localMaintenance;
     setLocalMaintenance(newVal);
     try {
-      await updateSetting('maintenanceMode', { ...settings.maintenanceMode, enabled: newVal });
+      await updateSetting('maintenanceMode', {
+        ...settings.maintenanceMode,
+        enabled: newVal,
+      });
     } catch (err) {
       setLocalMaintenance(settings.maintenanceMode?.enabled || false);
     }
@@ -99,9 +111,9 @@ export function useDisplaySettingsFlow(
         oldUrl: settings.logoUrl,
         slugBaseName: settings.name,
         uniqueIdPrefix: 'logo',
-        isDualQuality: false
+        isDualQuality: false,
       });
-      
+
       await updateSetting('logoUrl', finalizedUrl);
       showFeedback('success', 'Logo başarıyla güncellendi');
     } catch (err) {
@@ -118,7 +130,10 @@ export function useDisplaySettingsFlow(
     setHelpId(null);
   };
 
-  const handleIdentityClick = (option: any, fileInputRef: React.RefObject<HTMLInputElement | null>) => {
+  const handleIdentityClick = (
+    option: any,
+    fileInputRef: React.RefObject<HTMLInputElement | null>,
+  ) => {
     if (option.isLogo) {
       fileInputRef.current?.click();
       return;
@@ -126,7 +141,7 @@ export function useDisplaySettingsFlow(
     setQuickEdit({
       key: option.key,
       value: option.value,
-      title: option.label
+      title: option.label,
     });
   };
 
@@ -134,7 +149,10 @@ export function useDisplaySettingsFlow(
     if (!quickEdit) return;
     if (quickEdit.key === 'instagram') {
       const sanitized = newVal.trim().replace(/^@/, '');
-      updateSetting('instagram', sanitized ? `https://www.instagram.com/${sanitized}` : '');
+      updateSetting(
+        'instagram',
+        sanitized ? `https://www.instagram.com/${sanitized}` : '',
+      );
     } else {
       updateSetting(quickEdit.key as any, newVal);
     }

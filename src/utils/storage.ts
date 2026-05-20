@@ -64,6 +64,6 @@ export const storage = {
       } catch (error) {
         console.error(`Session storage error:`, error);
       }
-    }
-  }
+    },
+  },
 };

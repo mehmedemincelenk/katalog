@@ -12,83 +12,84 @@ import { ReferencesProps, Reference } from '../../types';
  * -----------------------------------------------------------
  * Internal sub-component to handle card-specific states like delete confirmation.
  */
-const ReferenceCard = memo(({ 
-  refData, 
-  isAdmin, 
-  isInlineEnabled, 
-  onDelete, 
-  onEdit 
-}: { 
-  refData: Reference; 
-  isAdmin: boolean; 
-  isInlineEnabled: boolean; 
-  onDelete: (id: number) => void; 
-  onEdit: (id: number, name: string) => void;
-}) => {
-  const [isDeleteConfirming, setIsDeleteConfirming] = useState(false);
-  const referencesTheme = THEME.references;
+const ReferenceCard = memo(
+  ({
+    refData,
+    isAdmin,
+    isInlineEnabled,
+    onDelete,
+    onEdit,
+  }: {
+    refData: Reference;
+    isAdmin: boolean;
+    isInlineEnabled: boolean;
+    onDelete: (id: number) => void;
+    onEdit: (id: number, name: string) => void;
+  }) => {
+    const [isDeleteConfirming, setIsDeleteConfirming] = useState(false);
+    const referencesTheme = THEME.references;
 
-  return (
-    <div
-      className={`${referencesTheme.card.base} relative group flex items-center justify-center p-4 text-center border-stone-100 bg-white shadow-[0_2px_15px_-5px_rgba(0,0,0,0.08)] hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 rounded-xl overflow-hidden`}
-    >
-      <span
-        contentEditable={isAdmin && isInlineEnabled}
-        suppressContentEditableWarning
-        onBlur={(e) => {
-          const newName = e.currentTarget.textContent || '';
-          onEdit(refData.id, newName);
-        }}
-        onKeyDown={(e) =>
-          e.key === 'Enter' &&
-          (e.preventDefault(), e.currentTarget.blur())
-        }
-        onClick={() => !isInlineEnabled && onEdit(refData.id, refData.name)}
-        className={`text-[12px] font-black uppercase tracking-[0.2em] text-stone-800 leading-tight outline-none ${isAdmin ? 'hover:bg-stone-50 focus:bg-stone-50 focus:ring-2 focus:ring-stone-900/10 px-3 py-1 -mx-3 rounded-xl transition-all cursor-text' : ''}`}
+    return (
+      <div
+        className={`${referencesTheme.card.base} relative group flex items-center justify-center p-4 text-center border-stone-100 bg-white shadow-[0_2px_15px_-5px_rgba(0,0,0,0.08)] hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 rounded-xl overflow-hidden`}
       >
-        {refData.name}
-      </span>
+        <span
+          contentEditable={isAdmin && isInlineEnabled}
+          suppressContentEditableWarning
+          onBlur={(e) => {
+            const newName = e.currentTarget.textContent || '';
+            onEdit(refData.id, newName);
+          }}
+          onKeyDown={(e) =>
+            e.key === 'Enter' && (e.preventDefault(), e.currentTarget.blur())
+          }
+          onClick={() => !isInlineEnabled && onEdit(refData.id, refData.name)}
+          className={`text-[12px] font-black uppercase tracking-[0.2em] text-stone-800 leading-tight outline-none ${isAdmin ? 'hover:bg-stone-50 focus:bg-stone-50 focus:ring-2 focus:ring-stone-900/10 px-3 py-1 -mx-3 rounded-xl transition-all cursor-text' : ''}`}
+        >
+          {refData.name}
+        </span>
 
-      {isAdmin && (
-        <>
-          {/* DELETE ACTIONS */}
-          <div className="absolute top-2 right-2 z-20 flex gap-1">
-            {!isDeleteConfirming ? (
-              <Button
-                onClick={() => setIsDeleteConfirming(true)}
-                variant="glass"
-                mode="square"
-                className="!w-8 !h-8 !bg-stone-900/60 backdrop-blur-md border border-white/20 text-white shadow-xl !rounded-lg !p-0 opacity-0 group-hover:opacity-100 transition-all"
-                icon={<Lucide.Trash2 size={14} strokeWidth={3} />}
-                title="Referansı Sil"
-              />
-            ) : (
-              <div className="flex gap-1 animate-in slide-in-from-right-2 duration-300">
+        {isAdmin && (
+          <>
+            {/* DELETE ACTIONS */}
+            <div className="absolute top-2 right-2 z-20 flex gap-1">
+              {!isDeleteConfirming ? (
                 <Button
-                  onClick={() => {
-                    onDelete(refData.id);
-                    setIsDeleteConfirming(false);
-                  }}
-                  variant="action"
-                  mode="square"
-                  className="!w-8 !h-8 !p-0 !rounded-lg shadow-xl"
-                  icon={<Lucide.Check size={14} strokeWidth={4} />}
-                />
-                <Button
-                  onClick={() => setIsDeleteConfirming(false)}
+                  onClick={() => setIsDeleteConfirming(true)}
                   variant="glass"
                   mode="square"
-                  className="!w-8 !h-8 !bg-stone-900/60 backdrop-blur-md border border-white/20 text-white shadow-xl !rounded-lg !p-0"
-                  icon={<Lucide.X size={14} strokeWidth={3} />}
+                  className="!w-8 !h-8 !bg-stone-900/60 backdrop-blur-md border border-white/20 text-white shadow-xl !rounded-lg !p-0 opacity-0 group-hover:opacity-100 transition-all"
+                  icon={<Lucide.Trash2 size={14} strokeWidth={3} />}
+                  title="Referansı Sil"
                 />
-              </div>
-            )}
-          </div>
-        </>
-      )}
-    </div>
-  );
-});
+              ) : (
+                <div className="flex gap-1 animate-in slide-in-from-right-2 duration-300">
+                  <Button
+                    onClick={() => {
+                      onDelete(refData.id);
+                      setIsDeleteConfirming(false);
+                    }}
+                    variant="action"
+                    mode="square"
+                    className="!w-8 !h-8 !p-0 !rounded-lg shadow-xl"
+                    icon={<Lucide.Check size={14} strokeWidth={4} />}
+                  />
+                  <Button
+                    onClick={() => setIsDeleteConfirming(false)}
+                    variant="glass"
+                    mode="square"
+                    className="!w-8 !h-8 !bg-stone-900/60 backdrop-blur-md border border-white/20 text-white shadow-xl !rounded-lg !p-0"
+                    icon={<Lucide.X size={14} strokeWidth={3} />}
+                  />
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    );
+  },
+);
 
 export default function References({
   isAdmin = false,

@@ -102,11 +102,8 @@ export function useProductCardFlow(
   // DISCOUNT & CURRENCY CALCULATION
   const isPromotionActive =
     activeDiscount &&
-    (!activeDiscount.category ||
-      activeDiscount.category === product.category);
-  const baseMathematicalPrice = transformCurrencyStringToNumber(
-    product.price,
-  );
+    (!activeDiscount.category || activeDiscount.category === product.category);
+  const baseMathematicalPrice = transformCurrencyStringToNumber(product.price);
 
   const originalPriceLabel = formatNumberToCurrency(
     baseMathematicalPrice,
@@ -125,12 +122,14 @@ export function useProductCardFlow(
 
   const primaryImageSource =
     (optimisticImagePreview ||
-    (product.image_url ? resolveVisualAssetUrl(product.image_url) : null)) ?? null;
-  const highDefinitionImageSource = (product.image_url
-    ? resolveVisualAssetUrl(
-        product.image_url.replace('/lq/', '/hq/').split('?')[0],
-      )
-    : null) ?? null;
+      (product.image_url ? resolveVisualAssetUrl(product.image_url) : null)) ??
+    null;
+  const highDefinitionImageSource =
+    (product.image_url
+      ? resolveVisualAssetUrl(
+          product.image_url.replace('/lq/', '/hq/').split('?')[0],
+        )
+      : null) ?? null;
 
   return {
     isUpdatingOrder,
@@ -150,6 +149,6 @@ export function useProductCardFlow(
     originalPriceLabel,
     discountedPriceLabel,
     primaryImageSource,
-    highDefinitionImageSource
+    highDefinitionImageSource,
   };
 }

@@ -1,6 +1,9 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
 import { Product } from '../types';
-import { transformCurrencyStringToNumber, formatNumberToCurrency } from '../utils/core';
+import {
+  transformCurrencyStringToNumber,
+  formatNumberToCurrency,
+} from '../utils/core';
 import { TECH } from '../data/config';
 import html2canvas from 'html2canvas';
 
@@ -13,9 +16,11 @@ export function usePriceListFlow(
   activeDiscount: any,
   storeName: string,
   storeSlug?: string,
-  initialStep?: number
+  initialStep?: number,
 ) {
-  const [step, setStep] = useState<1 | 2>((initialStep && initialStep >= 2 ? 2 : 1) as 1 | 2);
+  const [step, setStep] = useState<1 | 2>(
+    (initialStep && initialStep >= 2 ? 2 : 1) as 1 | 2,
+  );
   const [storyTheme, setStoryTheme] = useState<'LIGHT' | 'DARK'>('LIGHT');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isExporting, setIsExporting] = useState(false);
@@ -35,7 +40,7 @@ export function usePriceListFlow(
 
   const storyPages = useMemo(() => {
     const pages: { category: string; products: Product[] }[] = [];
-    selectedCategories.forEach(cat => {
+    selectedCategories.forEach((cat) => {
       const catProducts = groupedProducts[cat] || [];
       for (let i = 0; i < catProducts.length; i += 6) {
         pages.push({ category: cat, products: catProducts.slice(i, i + 6) });
@@ -77,12 +82,21 @@ export function usePriceListFlow(
   const calculateFinalPrice = (product: Product) => {
     const isPromotionActive =
       activeDiscount &&
-      (!activeDiscount.category || activeDiscount.category === product.category);
+      (!activeDiscount.category ||
+        activeDiscount.category === product.category);
     const baseMathPrice = transformCurrencyStringToNumber(product.price);
     if (isPromotionActive && baseMathPrice > 0) {
-      return formatNumberToCurrency(baseMathPrice * (1 - activeDiscount.rate), visitorCurrency, exchangeRates as any);
+      return formatNumberToCurrency(
+        baseMathPrice * (1 - activeDiscount.rate),
+        visitorCurrency,
+        exchangeRates as any,
+      );
     }
-    return formatNumberToCurrency(baseMathPrice, visitorCurrency, exchangeRates as any);
+    return formatNumberToCurrency(
+      baseMathPrice,
+      visitorCurrency,
+      exchangeRates as any,
+    );
   };
 
   const downloadStories = async () => {
@@ -99,28 +113,34 @@ export function usePriceListFlow(
               if (img.complete) return resolve();
               img.onload = () => resolve();
               img.onerror = () => resolve();
-            })
-        )
+            }),
+        ),
       );
 
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise((r) => setTimeout(r, 100));
 
-      const pages = storiesContainerRef.current.querySelectorAll('[data-story-page="true"]');
+      const pages = storiesContainerRef.current.querySelectorAll(
+        '[data-story-page="true"]',
+      );
       for (let i = 0; i < pages.length; i++) {
         const canvas = await html2canvas(pages[i] as HTMLElement, {
           scale: 2.5,
           useCORS: true,
           backgroundColor: storyTheme === 'DARK' ? '#1d1d1f' : '#f9fafb',
           logging: false,
-          scrollX: 0, scrollY: 0,
-          windowWidth: 360, windowHeight: 640,
+          scrollX: 0,
+          scrollY: 0,
+          windowWidth: 360,
+          windowHeight: 640,
           onclone: (clonedDoc) => {
-            clonedDoc.querySelectorAll('.story-text-container').forEach((el) => {
-              (el as HTMLElement).style.paddingTop = '10px';
-              (el as HTMLElement).style.letterSpacing = '0px';
-              (el as any).style.webkitFontSmoothing = 'antialiased';
-            });
-          }
+            clonedDoc
+              .querySelectorAll('.story-text-container')
+              .forEach((el) => {
+                (el as HTMLElement).style.paddingTop = '10px';
+                (el as HTMLElement).style.letterSpacing = '0px';
+                (el as any).style.webkitFontSmoothing = 'antialiased';
+              });
+          },
         });
         const link = document.createElement('a');
         link.href = canvas.toDataURL('image/jpeg', 0.9);
@@ -149,6 +169,6 @@ export function usePriceListFlow(
     handleToggleCategory,
     selectAllCategories,
     calculateFinalPrice,
-    downloadStories
+    downloadStories,
   };
 }

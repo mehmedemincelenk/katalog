@@ -30,7 +30,7 @@ export default function PriceListModal({
   initialStep,
 }: PriceListModalProps) {
   const { settings } = useStore();
-  
+
   const flow = usePriceListFlow(
     isOpen,
     products,
@@ -40,7 +40,7 @@ export default function PriceListModal({
     activeDiscount,
     storeName,
     settings?.slug,
-    initialStep
+    initialStep,
   );
 
   if (!isOpen) return null;
@@ -86,8 +86,18 @@ export default function PriceListModal({
           <Button
             variant="secondary"
             size="md"
-            icon={flow.storyTheme === 'LIGHT' ? <Lucide.Moon size={18} /> : <Lucide.Sun size={18} />}
-            onClick={() => flow.setStoryTheme(prev => prev === 'LIGHT' ? 'DARK' : 'LIGHT')}
+            icon={
+              flow.storyTheme === 'LIGHT' ? (
+                <Lucide.Moon size={18} />
+              ) : (
+                <Lucide.Sun size={18} />
+              )
+            }
+            onClick={() =>
+              flow.setStoryTheme((prev) =>
+                prev === 'LIGHT' ? 'DARK' : 'LIGHT',
+              )
+            }
             className="w-16 shrink-0 h-16 flex items-center justify-center p-0 !bg-stone-50 border-stone-100 shadow-sm"
             mode="rectangle"
           />
@@ -121,7 +131,8 @@ export default function PriceListModal({
               className="!flex !items-center !gap-1.5 !text-[9px] font-black !text-stone-900 hover:!text-stone-600 transition-colors !bg-stone-50 !px-4 !py-2 !rounded-xl whitespace-nowrap shrink-0 border border-stone-100 shadow-sm"
               showFingerprint={true}
               icon={
-                flow.selectedCategories.length === flow.populatedCategories.length ? (
+                flow.selectedCategories.length ===
+                flow.populatedCategories.length ? (
                   <Lucide.CheckSquare size={14} />
                 ) : (
                   <Lucide.Square size={14} />
@@ -136,7 +147,11 @@ export default function PriceListModal({
               <Button
                 key={cat}
                 onClick={() => flow.handleToggleCategory(cat)}
-                variant={flow.selectedCategories.includes(cat) ? 'primary' : 'secondary'}
+                variant={
+                  flow.selectedCategories.includes(cat)
+                    ? 'primary'
+                    : 'secondary'
+                }
                 mode="rectangle"
                 size="sm"
                 className="!text-[10px] !py-2 !px-4 !rounded-xl"
@@ -148,7 +163,9 @@ export default function PriceListModal({
           </div>
         </div>
       ) : (
-        <div className={`py-4 ${flow.storyTheme === 'DARK' ? 'bg-[#121212]' : 'bg-stone-50/30'}`}>
+        <div
+          className={`py-4 ${flow.storyTheme === 'DARK' ? 'bg-[#121212]' : 'bg-stone-50/30'}`}
+        >
           <div
             ref={flow.storiesContainerRef}
             className="flex flex-col items-center gap-4 overflow-y-auto"
@@ -163,7 +180,9 @@ export default function PriceListModal({
               >
                 {/* STORY HEADER */}
                 <div className="w-full flex items-center justify-end mb-4 shrink-0 px-1 py-1">
-                  <div className={`px-3 py-1.5 rounded-lg shadow-sm border ${flow.storyTheme === 'DARK' ? 'bg-stone-900/50 border-stone-800 text-white' : 'bg-stone-900 text-white border-stone-900'}`}>
+                  <div
+                    className={`px-3 py-1.5 rounded-lg shadow-sm border ${flow.storyTheme === 'DARK' ? 'bg-stone-900/50 border-stone-800 text-white' : 'bg-stone-900 text-white border-stone-900'}`}
+                  >
                     <h2 className="text-[9px] font-black uppercase tracking-tighter leading-none">
                       {page.category}
                     </h2>
@@ -179,7 +198,9 @@ export default function PriceListModal({
                         className={`w-full h-[64px] rounded-xl border flex items-center px-3 transition-all ${flow.storyTheme === 'DARK' ? 'bg-stone-900/40 border-stone-800/50' : 'bg-stone-50/50 border-stone-100 shadow-sm'}`}
                       >
                         {/* Image Cell */}
-                        <div className={`w-12 h-12 rounded-lg overflow-hidden border shadow-sm bg-white shrink-0 ${flow.storyTheme === 'DARK' ? 'border-stone-800' : 'border-white'}`}>
+                        <div
+                          className={`w-12 h-12 rounded-lg overflow-hidden border shadow-sm bg-white shrink-0 ${flow.storyTheme === 'DARK' ? 'border-stone-800' : 'border-white'}`}
+                        >
                           <img
                             src={resolveVisualAssetUrl(product.image_url) || ''}
                             alt={product.name}
@@ -191,20 +212,31 @@ export default function PriceListModal({
 
                         {/* Text & Price Group (Independent Blocks for html2canvas stability) */}
                         <div className="flex-1 flex items-center justify-between min-w-0 pl-3 gap-2">
-                           <div className="flex-1 min-w-0 story-text-container">
-                              <h4 className={`text-[10px] font-black m-0 p-0 overflow-hidden whitespace-nowrap ${flow.storyTheme === 'DARK' ? 'text-white' : 'text-stone-900'}`} style={{ lineHeight: '1.2' }}>
-                                 {product.name.toLocaleUpperCase('tr-TR')}
-                              </h4>
-                              <p className={`text-[8px] font-medium m-0 p-0 overflow-hidden whitespace-nowrap opacity-50 ${flow.storyTheme === 'DARK' ? 'text-stone-300' : 'text-stone-500'}`} style={{ lineHeight: '1.2', marginTop: '2px' }}>
-                                 {(product.description || 'Standart Ürün').toLocaleUpperCase('tr-TR')}
-                              </p>
-                           </div>
+                          <div className="flex-1 min-w-0 story-text-container">
+                            <h4
+                              className={`text-[10px] font-black m-0 p-0 overflow-hidden whitespace-nowrap ${flow.storyTheme === 'DARK' ? 'text-white' : 'text-stone-900'}`}
+                              style={{ lineHeight: '1.2' }}
+                            >
+                              {product.name.toLocaleUpperCase('tr-TR')}
+                            </h4>
+                            <p
+                              className={`text-[8px] font-medium m-0 p-0 overflow-hidden whitespace-nowrap opacity-50 ${flow.storyTheme === 'DARK' ? 'text-stone-300' : 'text-stone-500'}`}
+                              style={{ lineHeight: '1.2', marginTop: '2px' }}
+                            >
+                              {(
+                                product.description || 'Standart Ürün'
+                              ).toLocaleUpperCase('tr-TR')}
+                            </p>
+                          </div>
 
-                           <div className="shrink-0 text-right">
-                              <span className={`text-[11px] font-black ${flow.storyTheme === 'DARK' ? 'text-white' : 'text-stone-900'}`} style={{ lineHeight: '1', whiteSpace: 'nowrap' }}>
-                                 {flow.calculateFinalPrice(product)}
-                              </span>
-                           </div>
+                          <div className="shrink-0 text-right">
+                            <span
+                              className={`text-[11px] font-black ${flow.storyTheme === 'DARK' ? 'text-white' : 'text-stone-900'}`}
+                              style={{ lineHeight: '1', whiteSpace: 'nowrap' }}
+                            >
+                              {flow.calculateFinalPrice(product)}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     );
@@ -213,7 +245,9 @@ export default function PriceListModal({
 
                 {/* STORY FOOTER */}
                 <div className="mt-4 flex flex-col items-center gap-2 shrink-0">
-                  <p className={`text-[8px] font-black lowercase tracking-[0.2em] opacity-40 ${flow.storyTheme === 'DARK' ? 'text-white' : 'text-stone-900'}`}>
+                  <p
+                    className={`text-[8px] font-black lowercase tracking-[0.2em] opacity-40 ${flow.storyTheme === 'DARK' ? 'text-white' : 'text-stone-900'}`}
+                  >
                     {flow.storeUrl}
                   </p>
                   {settings?.logoUrl && (

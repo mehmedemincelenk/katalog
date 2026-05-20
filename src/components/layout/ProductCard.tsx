@@ -57,7 +57,7 @@ const ProductCard = memo(
       originalPriceLabel,
       discountedPriceLabel,
       primaryImageSource,
-      highDefinitionImageSource
+      highDefinitionImageSource,
     } = useProductCardFlow(
       product,
       isAdmin,
@@ -65,7 +65,7 @@ const ProductCard = memo(
       activeDiscount,
       onUpdate,
       onImageUpload,
-      setActiveAdminProductId
+      setActiveAdminProductId,
     );
 
     const theme = THEME.productCard;
@@ -78,10 +78,10 @@ const ProductCard = memo(
           layout
           layoutId={product.id}
           transition={{
-            type: "spring",
+            type: 'spring',
             stiffness: 400,
             damping: 40,
-            opacity: { duration: 0.2 }
+            opacity: { duration: 0.2 },
           }}
           data-product-id={product.id}
           className={`${theme.container} ${THEME.radius.card} h-fit flex-shrink-0 overflow-hidden ${product.out_of_stock ? theme.outOfStockBorder : theme.activeBorder} ${theme.shadow}`}
@@ -94,8 +94,7 @@ const ProductCard = memo(
               flexShrink: 0,
             }}
             onClick={() => {
-              if (isAdmin && !isUploadingImage)
-                setIsAdminMenuOpen(true);
+              if (isAdmin && !isUploadingImage) setIsAdminMenuOpen(true);
               else if (!isAdmin && primaryImageSource)
                 setIsZoomDetailOpen(true);
             }}
@@ -155,7 +154,7 @@ const ProductCard = memo(
                       className: `outline-none focus:ring-2 focus:ring-stone-900/10 rounded px-1 -mx-1 transition-all hover:bg-stone-100 focus:bg-stone-100 cursor-text`,
                     }
                   : {
-                      className: `cursor-pointer transition-all ${isAdmin ? 'hover:text-stone-950' : ''}`
+                      className: `cursor-pointer transition-all ${isAdmin ? 'hover:text-stone-950' : ''}`,
                     }
               }
             />
@@ -249,16 +248,28 @@ const ProductCard = memo(
           {/* STATUS BADGES */}
           <div className={theme.status.wrapper}>
             {product.out_of_stock && (
-              <Badge variant="primary" size="md" className="-translate-y-4 shadow-2xl">TÜKENDİ</Badge>
+              <Badge
+                variant="primary"
+                size="md"
+                className="-translate-y-4 shadow-2xl"
+              >
+                TÜKENDİ
+              </Badge>
             )}
             {product.is_archived && (
-              <Badge variant="primary" size="md" className="-translate-y-4 shadow-2xl">📦</Badge>
+              <Badge
+                variant="primary"
+                size="md"
+                className="-translate-y-4 shadow-2xl"
+              >
+                📦
+              </Badge>
             )}
           </div>
 
           {/* ABSOLUTE ORDER INDICATOR - HIDDEN PER REQUEST TO PREVENT DOUBLE NUMBERING */}
           {isAdmin && orderIndex !== undefined && (
-            <div 
+            <div
               className="absolute top-2 right-2 z-30 pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
@@ -282,20 +293,30 @@ const ProductCard = memo(
                   className="absolute inset-0 opacity-0 cursor-pointer z-10 w-8 h-8"
                 >
                   {Array.from({ length: itemsInCategory }).map((_, i) => (
-                    <option key={i + 1} value={i + 1}>{i + 1}.</option>
+                    <option key={i + 1} value={i + 1}>
+                      {i + 1}.
+                    </option>
                   ))}
                 </select>
-                
-                <div className={`
+
+                <div
+                  className={`
                   w-10 h-10 rounded-lg flex items-center justify-center transition-all border border-white/20 shadow-xl backdrop-blur-md
                   ${isUpdatingOrder ? 'bg-stone-900' : showSuccess ? 'bg-emerald-500' : 'bg-stone-900/60 hover:bg-stone-900/80'}
-                `}>
+                `}
+                >
                   {isUpdatingOrder ? (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : showSuccess ? (
-                    <Lucide.Check size={16} className="text-white" strokeWidth={4} />
+                    <Lucide.Check
+                      size={16}
+                      className="text-white"
+                      strokeWidth={4}
+                    />
                   ) : (
-                    <span className="text-white text-[13px] font-black">{orderIndex}.</span>
+                    <span className="text-white text-[13px] font-black">
+                      {orderIndex}.
+                    </span>
                   )}
                 </div>
               </div>
@@ -312,8 +333,6 @@ const ProductCard = memo(
           discountedPriceLabel={discountedPriceLabel || ''}
           highDefinitionImageSource={highDefinitionImageSource || ''}
         />
-
-
 
         <QuickEditModal
           isOpen={!!quickEdit}

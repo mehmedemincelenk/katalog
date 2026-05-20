@@ -6,7 +6,7 @@ export * from './price';
 /**
  * CORE UTILITIES (DIAMOND ENGINE)
  * -----------------------------------------------------------
- * The unified nerve center for UI merging, price logic, 
+ * The unified nerve center for UI merging, price logic,
  * store resolution, and text normalization.
  */
 
@@ -37,10 +37,14 @@ export const getActiveStoreSlug = (): string => {
   // 1. URL Path Overrides (Priority)
   if (pathname === '/landing') return 'landing';
   if (pathname === '/empty') return 'empty-state';
-  
+
   // Custom slug from path (e.g. /kayiambalaj)
   const pathSlug = pathname.split('/')[1];
-  if (pathSlug && pathSlug.length > 2 && !['showroom', 'maintenance', 'pages', 'assets'].includes(pathSlug)) {
+  if (
+    pathSlug &&
+    pathSlug.length > 2 &&
+    !['showroom', 'maintenance', 'pages', 'assets'].includes(pathSlug)
+  ) {
     return pathSlug;
   }
 
@@ -60,16 +64,25 @@ export const getActiveStoreSlug = (): string => {
     (import.meta.env && import.meta.env.DEV)
   ) {
     const envSlug = import.meta.env.VITE_STORE_SLUG;
-    if (envSlug && envSlug !== 'mainsite' && envSlug !== 'landing') return envSlug;
+    if (envSlug && envSlug !== 'mainsite' && envSlug !== 'landing')
+      return envSlug;
     return 'toptan-ambalajcim'; // Default Dev Shop
   }
 
   // 4. Subdomain Resolution (Production)
-  const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname.startsWith('192.168.');
+  const isLocal =
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname === '::1' ||
+    hostname.startsWith('192.168.');
   const parts = hostname.split('.');
 
   // If it's a real domain (not local) and has no subdomain, it's the landing page
-  if (!isLocal && (parts.length <= 2 || (parts.length === 3 && (parts[0] === 'www' || parts[0] === 'landing')))) {
+  if (
+    !isLocal &&
+    (parts.length <= 2 ||
+      (parts.length === 3 && (parts[0] === 'www' || parts[0] === 'landing')))
+  ) {
     return 'landing';
   }
 
@@ -80,8 +93,6 @@ export const getActiveStoreSlug = (): string => {
 
   return parts[0];
 };
-
-
 
 /**
  * reorderArray: Moves an item within an array (Immutable).
@@ -109,9 +120,11 @@ export async function fetchCurrentRates(): Promise<ExchangeRates | null> {
   const timeoutId = setTimeout(() => controller.abort(), 5000);
 
   try {
-    const response = await fetch(EXCHANGE_API_URL, { signal: controller.signal });
+    const response = await fetch(EXCHANGE_API_URL, {
+      signal: controller.signal,
+    });
     clearTimeout(timeoutId);
-    
+
     if (!response.ok) throw new Error('Currency API error');
     const data = await response.json();
     return {
@@ -135,8 +148,18 @@ export async function fetchCurrentRates(): Promise<ExchangeRates | null> {
  */
 export const slugify = (text: string): string => {
   const turkishCharMap: Record<string, string> = {
-    ç: 'c', ğ: 'g', ı: 'i', ö: 'o', ş: 's', ü: 'u',
-    Ç: 'C', Ğ: 'G', İ: 'I', Ö: 'O', Ş: 'S', Ü: 'U'
+    ç: 'c',
+    ğ: 'g',
+    ı: 'i',
+    ö: 'o',
+    ş: 's',
+    ü: 'u',
+    Ç: 'C',
+    Ğ: 'G',
+    İ: 'I',
+    Ö: 'O',
+    Ş: 'S',
+    Ü: 'U',
   };
   return (text || '')
     .replace(/[çğıöşüÇĞİÖŞÜ]/g, (c) => turkishCharMap[c])
@@ -146,7 +169,6 @@ export const slugify = (text: string): string => {
     .replace(/[^\w-]+/g, '')
     .replace(/--+/g, '-');
 };
-
 
 /**
  * normalizeText: Professional Turkish-aware text normalization.
@@ -171,20 +193,24 @@ export const smartSearch = (query: string, products: Product[]): Product[] => {
   const q = normalizeText(query);
   const words = q.split(/\s+/).filter(Boolean);
 
-  return products.map(p => {
-    const name = normalizeText(p.name || '');
-    const desc = normalizeText(p.description || '');
-    const cat = normalizeText(p.category || '');
-    let score = 0;
-    if (name === q) score += 1000;
-    if (name.startsWith(q)) score += 500;
-    words.forEach(w => {
-      if (name.includes(w)) score += 100;
-      if (desc.includes(w)) score += 20;
-      if (cat.includes(w)) score += 50;
-    });
-    return { p, score };
-  }).filter(i => i.score > 0).sort((a, b) => b.score - a.score).map(i => i.p);
+  return products
+    .map((p) => {
+      const name = normalizeText(p.name || '');
+      const desc = normalizeText(p.description || '');
+      const cat = normalizeText(p.category || '');
+      let score = 0;
+      if (name === q) score += 1000;
+      if (name.startsWith(q)) score += 500;
+      words.forEach((w) => {
+        if (name.includes(w)) score += 100;
+        if (desc.includes(w)) score += 20;
+        if (cat.includes(w)) score += 50;
+      });
+      return { p, score };
+    })
+    .filter((i) => i.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map((i) => i.p);
 };
 
 /**
@@ -199,3 +225,17 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * sortCategories: Sort categories based on a defined priority list, fallback to alphabetical.
+ */
+export const sortCategories = (categories: string[], order: string[]) => {
+  return [...categories].sort((a, b) => {
+    const indexA = order.indexOf(a);
+    const indexB = order.indexOf(b);
+    if (indexA === -1 && indexB === -1) return a.localeCompare(b);
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
+  });
+};

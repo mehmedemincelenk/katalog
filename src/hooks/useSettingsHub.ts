@@ -32,11 +32,11 @@ export function useSettingsQuery() {
           categoryOrder: [],
           carouselData: { slides: [] },
           referencesData: [],
-          displayConfig: { 
-            showLogo: true, 
-            showSearch: true, 
-            showAddress: true, 
-            showInstagram: true, 
+          displayConfig: {
+            showLogo: true,
+            showSearch: true,
+            showAddress: true,
+            showInstagram: true,
             showWhatsapp: true,
             showSubtitle: true,
             showReferences: true,
@@ -60,7 +60,11 @@ export function useSettingsQuery() {
 
       // Parallel execution: Settings + Currency Rates
       const [settingsRes, rates] = await Promise.all([
-        supabase.from('stores').select('*').eq('slug', STORE_SLUG).maybeSingle(),
+        supabase
+          .from('stores')
+          .select('*')
+          .eq('slug', STORE_SLUG)
+          .maybeSingle(),
         fetchCurrentRates(),
       ]);
 
@@ -80,11 +84,11 @@ export function useSettingsQuery() {
             categoryOrder: DEFAULT_ORDER,
             carouselData: { slides: [] },
             referencesData: [],
-            displayConfig: { 
-              showLogo: true, 
-              showSearch: true, 
-              showAddress: true, 
-              showInstagram: true, 
+            displayConfig: {
+              showLogo: true,
+              showSearch: true,
+              showAddress: true,
+              showInstagram: true,
               showWhatsapp: true,
               showReferences: true,
               showPrice: true,
@@ -116,7 +120,10 @@ export function useSettingsQuery() {
         carouselData: raw.carousel_data || { slides: [] },
         referencesData: raw.references_data || [],
         socialProofCards: raw.social_proof_cards || [],
-        maintenanceMode: raw.maintenance_mode || { enabled: false, message: '' },
+        maintenanceMode: raw.maintenance_mode || {
+          enabled: false,
+          message: '',
+        },
         exchangeRates: rates || { usd: 0, eur: 0 },
         whatsapp: raw.phone || '05XX XXX XX XX',
         address: raw.address || 'Adres Bilgisi Girilmemiş',
@@ -129,7 +136,7 @@ export function useSettingsQuery() {
           showAddress: true,
           showInstagram: true,
           showWhatsapp: true,
-          ...raw.display_config
+          ...raw.display_config,
         },
         announcementBar: raw.announcement_bar || { enabled: false, text: '' },
         visitor_leads: raw.visitor_leads || [],
@@ -186,7 +193,7 @@ export function useSettings(isAdmin: boolean) {
       const { error } = await supabase.rpc('secure_update_store', {
         p_id: settings.id,
         p_pin: adminPin,
-        p_changes: { [dbMap[key] || key]: value }
+        p_changes: { [dbMap[key] || key]: value },
       });
       if (error) throw error;
     },
@@ -208,12 +215,12 @@ export function useSettings(isAdmin: boolean) {
     isError,
     addVisitorLead: async (phone: string) => {
       if (!settings?.id) return;
-      
+
       const { error } = await supabase.rpc('add_visitor_lead', {
         p_store_id: settings.id,
-        p_phone: phone
+        p_phone: phone,
       });
-      
+
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['settings', STORE_SLUG] });
     },

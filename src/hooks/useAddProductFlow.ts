@@ -18,15 +18,19 @@ export function useAddProductFlow(
   initialCategory?: string,
   initialStep?: number,
   onProductAddition?: (product: any, file?: File) => Promise<any> | void,
-  onModalClose?: () => void
+  onModalClose?: () => void,
 ) {
   const { settings } = useStore();
   const [currentStep, setCurrentStep] = useState(initialStep || 1);
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
-  const [temporaryImagePreviewUrl, setTemporaryImagePreviewUrl] = useState<string | null>(null);
+  const [temporaryImagePreviewUrl, setTemporaryImagePreviewUrl] = useState<
+    string | null
+  >(null);
   const [formErrorMessage, setFormErrorMessage] = useState('');
   const [isSubmittingData, setIsSubmittingData] = useState(false);
-  const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [submissionStatus, setSubmissionStatus] = useState<
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle');
 
   // Effect: Handle initial category sync and cleanup memory leaks from image previews
   useEffect(() => {
@@ -121,9 +125,12 @@ export function useAddProductFlow(
     setIsSubmittingData(true);
     setSubmissionStatus('loading');
     try {
-      const { transformCurrencyStringToNumber } = await import('../utils/price');
-      const numericPrice = transformCurrencyStringToNumber(formState.productPrice);
-      
+      const { transformCurrencyStringToNumber } =
+        await import('../utils/price');
+      const numericPrice = transformCurrencyStringToNumber(
+        formState.productPrice,
+      );
+
       // Manual currency prefixing for the Diamond Standard
       const standardizedPriceLabel = `${formState.currency}${numericPrice}`;
 
@@ -142,7 +149,7 @@ export function useAddProductFlow(
         },
         formState.selectedImageFile || undefined,
       );
-      
+
       setSubmissionStatus('success');
       setTimeout(() => {
         handleCloseAndReset();

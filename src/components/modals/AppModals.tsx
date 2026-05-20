@@ -2,17 +2,16 @@ import { memo } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import AddProductModal from './AddProductModal';
 import BulkPriceUpdateModal from './BulkPriceUpdateModal';
-import { 
-  PinModal, 
-  QRModal, 
-  CouponModal, 
-  LocationModal, 
+import {
+  PinModal,
+  QRModal,
+  CouponModal,
+  LocationModal,
   ContactModal,
-  GlobalAddMenuModal
+  GlobalAddMenuModal,
 } from './UtilityModals';
 import DisplaySettingsModal from './DisplaySettingsModal';
 import PriceListModal from './PriceListModal';
-
 
 import SocialExportModal from './SocialExportModal';
 
@@ -38,7 +37,7 @@ const AppModals = memo(() => {
     activeDiscount,
     visitorCurrency,
     applyDiscountCode,
-    discountError
+    discountError,
   } = useStore();
 
   const { updateSetting } = useSettings(isAdmin);
@@ -49,7 +48,7 @@ const AppModals = memo(() => {
     addProduct,
     uploadImage,
     executeGranularBulkActions,
-    addCategory
+    addCategory,
   } = useProducts(searchQuery, [], isAdmin, settings);
 
   const {
@@ -58,9 +57,8 @@ const AppModals = memo(() => {
     isLockedOut,
     failedAttempts,
     isInlineEnabled,
-    toggleInlineEdit
+    toggleInlineEdit,
   } = useAdminMode();
-
 
   const handleGlobalAddAction = (
     type: 'PRODUCT' | 'CATEGORY' | 'REFERENCE' | 'CAROUSEL',
@@ -87,10 +85,7 @@ const AppModals = memo(() => {
 
   return (
     <>
-      <QRModal
-        isOpen={activeModal === 'QR'}
-        onClose={closeModal}
-      />
+      <QRModal isOpen={activeModal === 'QR'} onClose={closeModal} />
 
       <AnimatePresence>
         {isAdmin && (
@@ -128,14 +123,12 @@ const AppModals = memo(() => {
               />
             )}
 
-              <GlobalAddMenuModal
-                isOpen={activeModal === 'GLOBAL_ADD_MENU'}
-                onClose={closeModal}
-                onAction={handleGlobalAddAction}
-              />
-
-
-            </>
+            <GlobalAddMenuModal
+              isOpen={activeModal === 'GLOBAL_ADD_MENU'}
+              onClose={closeModal}
+              onAction={handleGlobalAddAction}
+            />
+          </>
         )}
       </AnimatePresence>
 
@@ -173,7 +166,6 @@ const AppModals = memo(() => {
           storeName={settings.title || 'Katalog'}
         />
       )}
-
 
       <LocationModal
         isOpen={activeModal === 'LOCATION'}

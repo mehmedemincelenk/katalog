@@ -11,7 +11,7 @@ import {
   AlertCircle,
   ArrowLeft,
   Settings2,
-  Check
+  Check,
 } from 'lucide-react';
 
 import { EditProdCardProps } from '../../types';
@@ -43,9 +43,8 @@ export const EditProdCard = memo(
       onImageUpload,
       isOpen,
       setIsOpen,
-      initialStep
+      initialStep,
     );
-
 
     const modalFooter = (
       <Button
@@ -70,7 +69,7 @@ export const EditProdCard = memo(
           className="!rounded-[2rem]"
           isStatic={isStatic}
         >
-            <div className="py-2 flex flex-col gap-4">
+          <div className="py-2 flex flex-col gap-4">
             <input
               type="file"
               ref={fileInputRef}
@@ -81,16 +80,20 @@ export const EditProdCard = memo(
 
             {/* THE NEW DIAMOND GRID (3 COLUMNS, 2 ROWS) */}
             <div className="grid grid-cols-[130px_1fr_1fr] gap-3 items-stretch">
-              
               {/* COL 1: PHOTO (Spans 2 rows potentially by container height) */}
               <div
-                onClick={() => !flow.isUploading && fileInputRef.current?.click()}
+                onClick={() =>
+                  !flow.isUploading && fileInputRef.current?.click()
+                }
                 className={`aspect-square relative group rounded-2xl overflow-hidden bg-white border border-stone-100 flex items-center justify-center cursor-pointer hover:border-stone-300 transition-all shadow-sm ${flow.isUploading ? 'opacity-50' : ''}`}
               >
                 {product.polished_image_url || product.image_url ? (
                   <>
                     <img
-                      src={(product.polished_image_url || product.image_url) ?? undefined}
+                      src={
+                        (product.polished_image_url || product.image_url) ??
+                        undefined
+                      }
                       alt="Preview"
                       className="w-full h-full object-contain p-1.5"
                     />
@@ -101,7 +104,9 @@ export const EditProdCard = memo(
                 ) : (
                   <div className="flex flex-col items-center opacity-30 group-hover:opacity-60 transition-opacity">
                     <ImageIcon size={28} />
-                    <span className="text-[8px] font-black mt-2 uppercase tracking-widest">GÖRSEL</span>
+                    <span className="text-[8px] font-black mt-2 uppercase tracking-widest">
+                      GÖRSEL
+                    </span>
                   </div>
                 )}
                 {flow.isUploading && (
@@ -114,7 +119,9 @@ export const EditProdCard = memo(
               {/* COL 2: STATUS (STOCK & PUBLISH) */}
               <div className="flex flex-col gap-2">
                 <div className="flex-1 bg-stone-50 rounded-2xl p-3 border border-stone-100/50 flex flex-col justify-center gap-1">
-                  <span className="text-[8px] font-black text-stone-400 uppercase tracking-widest">STOK</span>
+                  <span className="text-[8px] font-black text-stone-400 uppercase tracking-widest">
+                    STOK
+                  </span>
                   <StatusToggle
                     label=""
                     value={!product.out_of_stock}
@@ -122,7 +129,9 @@ export const EditProdCard = memo(
                   />
                 </div>
                 <div className="flex-1 bg-stone-50 rounded-2xl p-3 border border-stone-100/50 flex flex-col justify-center gap-1">
-                  <span className="text-[8px] font-black text-stone-400 uppercase tracking-widest">YAYIN</span>
+                  <span className="text-[8px] font-black text-stone-400 uppercase tracking-widest">
+                    YAYIN
+                  </span>
                   <StatusToggle
                     label=""
                     value={!product.is_archived}
@@ -138,9 +147,16 @@ export const EditProdCard = memo(
                   variant="secondary"
                   mode="rectangle"
                   className="flex-1 !rounded-2xl !bg-stone-50 !border-stone-100 flex flex-col items-center justify-center gap-1 group shadow-none hover:!bg-white hover:shadow-sm"
-                  icon={<Download size={18} className="text-stone-900 group-hover:scale-110 transition-transform" />}
+                  icon={
+                    <Download
+                      size={18}
+                      className="text-stone-900 group-hover:scale-110 transition-transform"
+                    />
+                  }
                 >
-                  <span className="text-[8px] font-black uppercase tracking-widest text-stone-400">İNDİR</span>
+                  <span className="text-[8px] font-black uppercase tracking-widest text-stone-400">
+                    İNDİR
+                  </span>
                 </Button>
                 <Button
                   onClick={() => {
@@ -150,9 +166,16 @@ export const EditProdCard = memo(
                   variant="secondary"
                   mode="rectangle"
                   className="flex-1 !rounded-2xl !bg-stone-50 !border-stone-100 flex flex-col items-center justify-center gap-1 group shadow-none hover:!bg-red-50 hover:!border-red-100 hover:!text-red-600"
-                  icon={<Trash2 size={18} className="group-hover:scale-110 transition-transform" />}
+                  icon={
+                    <Trash2
+                      size={18}
+                      className="group-hover:scale-110 transition-transform"
+                    />
+                  }
                 >
-                  <span className="text-[8px] font-black uppercase tracking-widest text-stone-400 group-hover:text-red-400">SİL</span>
+                  <span className="text-[8px] font-black uppercase tracking-widest text-stone-400 group-hover:text-red-400">
+                    SİL
+                  </span>
                 </Button>
               </div>
             </div>
@@ -161,7 +184,9 @@ export const EditProdCard = memo(
             <div className="mt-4 pt-6 border-t border-stone-100/60">
               <div className="flex items-center gap-2 mb-4">
                 <Settings2 size={14} className="text-stone-300" />
-                <h4 className="text-[10px] font-black text-stone-900 uppercase tracking-[0.2em]">KATEGORİ YÖNETİMİ</h4>
+                <h4 className="text-[10px] font-black text-stone-900 uppercase tracking-[0.2em]">
+                  KATEGORİ YÖNETİMİ
+                </h4>
               </div>
               <div className="flex flex-wrap gap-2">
                 {categories.map((cat) => (
@@ -172,7 +197,9 @@ export const EditProdCard = memo(
                     className="!h-9 !px-4 !rounded-xl"
                     mode="rectangle"
                   >
-                    <span className="text-[10px] font-black uppercase tracking-widest">{cat}</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">
+                      {cat}
+                    </span>
                   </Button>
                 ))}
               </div>
@@ -223,7 +250,11 @@ export const EditProdCard = memo(
             <div className="flex flex-col items-center text-center space-y-8 py-6 px-4">
               <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center shadow-inner relative">
                 <div className="absolute inset-0 bg-red-500/10 rounded-full animate-ping" />
-                <AlertCircle size={40} strokeWidth={2.5} className="relative z-10" />
+                <AlertCircle
+                  size={40}
+                  strokeWidth={2.5}
+                  className="relative z-10"
+                />
               </div>
 
               <div className="space-y-3">
@@ -235,7 +266,9 @@ export const EditProdCard = memo(
                     ? 'Bu ürün dükkandan tamamen ve kalıcı olarak kaldırılacak.'
                     : 'Ürünün görseli kalıcı olarak silinecek, ürün dükkanda kalmaya devam edecek.'}
                   <br />
-                  <span className="text-red-500/60 uppercase text-[10px] tracking-widest font-black">Bu işlem geri alınamaz!</span>
+                  <span className="text-red-500/60 uppercase text-[10px] tracking-widest font-black">
+                    Bu işlem geri alınamaz!
+                  </span>
                 </p>
               </div>
 
@@ -251,7 +284,7 @@ export const EditProdCard = memo(
                 >
                   SİLMEYİ ONAYLA
                 </Button>
-                
+
                 <Button
                   onClick={() => flow.setDeleteTarget(null)}
                   variant="ghost"

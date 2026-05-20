@@ -13,7 +13,7 @@ export function useBulkPriceFlow(
   categories: string[],
   onGranularUpdate: (actions: any[]) => Promise<void>,
   onClose: () => void,
-  initialStep?: number
+  initialStep?: number,
 ) {
   const [currentStep, setCurrentStep] = useState<number>(initialStep || 1);
   const [actionType, setActionType] = useState<ActionType>(null);
@@ -22,7 +22,9 @@ export function useBulkPriceFlow(
   const [isIncrease, setIsIncrease] = useState<boolean | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<
+    'idle' | 'success' | 'error'
+  >('idle');
   const [deskItems, setDeskItems] = useState<Record<string, DeskItemState>>({});
 
   const resetAll = () => {
@@ -38,7 +40,13 @@ export function useBulkPriceFlow(
   };
 
   const nextStep = () => {
-    const nextMap: Record<number, number> = { 1: 2, 2: actionType === 'PRICE' ? 2.1 : 3, 2.1: 2.2, 2.2: 2.3, 2.3: 3 };
+    const nextMap: Record<number, number> = {
+      1: 2,
+      2: actionType === 'PRICE' ? 2.1 : 3,
+      2.1: 2.2,
+      2.2: 2.3,
+      2.3: 3,
+    };
     if (nextMap[currentStep]) {
       if (nextMap[currentStep] === 3) prepareDeskAndDirectTo(3);
       else setCurrentStep(nextMap[currentStep]);
@@ -46,13 +54,21 @@ export function useBulkPriceFlow(
   };
 
   const prevStep = () => {
-    const prevMap: Record<number, number> = { 2: 1, 2.1: 2, 2.2: 2.1, 2.3: 2.2, 3: actionType === 'PRICE' ? 2.3 : 2 };
+    const prevMap: Record<number, number> = {
+      2: 1,
+      2.1: 2,
+      2.2: 2.1,
+      2.3: 2.2,
+      3: actionType === 'PRICE' ? 2.3 : 2,
+    };
     if (prevMap[currentStep]) setCurrentStep(prevMap[currentStep]);
   };
 
   const prepareDeskAndDirectTo = (targetStep: number) => {
     const productsForDesk = allProducts.filter(
-      (p) => selectedCategories.length === 0 || selectedCategories.includes(p.category),
+      (p) =>
+        selectedCategories.length === 0 ||
+        selectedCategories.includes(p.category),
     );
     const initialDesk: Record<string, DeskItemState> = {};
     const isStatusAction = actionType === 'STOCK' || actionType === 'ARCHIVE';
@@ -66,7 +82,9 @@ export function useBulkPriceFlow(
 
   const toggleCategory = (cat: string) => {
     if (cat === 'TÜMÜ') {
-      setSelectedCategories(selectedCategories.length === categories.length ? [] : [...categories]);
+      setSelectedCategories(
+        selectedCategories.length === categories.length ? [] : [...categories],
+      );
       return;
     }
     setSelectedCategories((prev) =>
@@ -76,7 +94,11 @@ export function useBulkPriceFlow(
 
   const initialProductsForDesk = useMemo(() => {
     return allProducts
-      .filter((p) => selectedCategories.length === 0 || selectedCategories.includes(p.category))
+      .filter(
+        (p) =>
+          selectedCategories.length === 0 ||
+          selectedCategories.includes(p.category),
+      )
       .sort((a, b) => {
         const catA = categories.indexOf(a.category);
         const catB = categories.indexOf(b.category);
@@ -112,16 +134,25 @@ export function useBulkPriceFlow(
         .filter(([_, state]) => state.included)
         .map(([id]) => id);
 
-      await onGranularUpdate(itemsToUpdate.map(id => {
-        const product = allProducts.find(p => p.id === id);
-        return {
-          productId: id,
-          newPrice: actionType === 'PRICE' ? calculateNewPrice(transformCurrencyStringToNumber(product?.price || '0')) : undefined,
-          delete: actionType === 'DELETE',
-          out_of_stock: actionType === 'STOCK' ? (!product?.out_of_stock) : undefined,
-          is_archived: actionType === 'ARCHIVE' ? (!product?.is_archived) : undefined,
-        };
-      }));
+      await onGranularUpdate(
+        itemsToUpdate.map((id) => {
+          const product = allProducts.find((p) => p.id === id);
+          return {
+            productId: id,
+            newPrice:
+              actionType === 'PRICE'
+                ? calculateNewPrice(
+                    transformCurrencyStringToNumber(product?.price || '0'),
+                  )
+                : undefined,
+            delete: actionType === 'DELETE',
+            out_of_stock:
+              actionType === 'STOCK' ? !product?.out_of_stock : undefined,
+            is_archived:
+              actionType === 'ARCHIVE' ? !product?.is_archived : undefined,
+          };
+        }),
+      );
       setSubmitStatus('success');
       setTimeout(() => {
         onClose();

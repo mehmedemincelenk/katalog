@@ -69,7 +69,7 @@ export const THEME = {
       primary: '#16a34a', // green-600
       secondary: '#dc2626', // red-600
       brand: '#000000', // stone-900
-    }
+    },
   },
 
   announcementBar: {
@@ -196,8 +196,7 @@ export const THEME = {
       wrapper: 'flex items-center gap-1.5 shrink-0',
       logoWrapper:
         'flex items-center justify-center transition-all active:scale-90',
-      logoImg:
-        'w-10 h-10 object-contain rounded-[0.375rem]',
+      logoImg: 'w-10 h-10 object-contain rounded-[0.375rem]',
       logoText: FS.xl.replace('font-black', 'font-normal'),
       textWrapper: 'flex flex-col leading-tight',
       name: `${FS.base} tracking-tighter font-black text-stone-800`,
@@ -223,8 +222,7 @@ export const THEME = {
   },
 
   floatingAdminMenu: {
-    wrapper:
-      'fixed bottom-2 right-2 z-[150]',
+    wrapper: 'fixed bottom-2 right-2 z-[150]',
     container: `flex flex-col items-center p-1 bg-stone-200/50 backdrop-blur-xl border border-white/20 shadow-2xl ${BR.full}`,
     innerActions: 'flex flex-col gap-1.5 overflow-hidden',
     actionsActive: 'max-h-64 opacity-100 mt-1 mb-2',
@@ -263,11 +261,9 @@ export const THEME = {
   searchFilter: {
     layout:
       'bg-white border-b border-stone-200 py-3 relative sticky top-[56px] z-40',
-    container:
-      'max-w-7xl mx-auto px-4 flex flex-col items-start gap-3',
+    container: 'max-w-7xl mx-auto px-4 flex flex-col items-start gap-3',
     searchArea: {
-      wrapper:
-        'flex w-full items-center gap-2 shrink-0 flex-wrap',
+      wrapper: 'flex w-full items-center gap-2 shrink-0 flex-wrap',
       inputWrapper: `relative flex-1 min-w-[140px] ${BR.low}`,
       iconSize:
         'absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400',
@@ -306,8 +302,7 @@ export const THEME = {
     layout: 'w-full flex flex-col min-h-[400px]',
     sectionSpacing: 'mt-12 first:mt-2',
     header: {
-      wrapper:
-        'flex items-center gap-3 mb-6 px-1',
+      wrapper: 'flex items-center gap-3 mb-6 px-1',
       title: `${FS.base} font-black text-stone-900 tracking-tighter`,
       line: 'flex-1 h-px bg-stone-200',
       count: `${FS.xs} font-bold text-stone-400`,
@@ -327,8 +322,7 @@ export const THEME = {
     container: 'max-w-7xl mx-auto px-4 py-10',
     grid: 'flex flex-col items-center justify-center gap-6',
     coupons: {
-      wrapper:
-        'flex flex-col items-center gap-2 w-full max-w-[240px]',
+      wrapper: 'flex flex-col items-center gap-2 w-full max-w-[240px]',
       label: `${FS.xs} font-black text-stone-300 tracking-[0.2em] uppercase`,
       inputWrapper: 'flex items-stretch gap-1 w-full h-10',
       input: `flex-1 px-4 py-2 border border-stone-200 text-stone-900 bg-stone-50/50 outline-none transition-all duration-300 ${FS.sm} font-bold focus:border-stone-900 focus:bg-white`,
@@ -442,8 +436,7 @@ export const THEME = {
     body: 'p-6 space-y-6 overflow-y-auto custom-scrollbar',
     formGap: 'space-y-5',
     footer: 'flex gap-3 pt-2 pb-2',
-    footerCancel:
-      'flex-1 !border-2 !border-stone-100 !text-stone-400 !py-3.5',
+    footerCancel: 'flex-1 !border-2 !border-stone-100 !text-stone-400 !py-3.5',
     footerSubmit: 'flex-[1.5] !py-3.5',
     inputField: `w-full border border-stone-200 rounded-[var(--radius-button)] px-3 py-2.5 ${FS.sm} focus:outline-none focus:ring-2 focus:ring-stone-900 transition outline-none bg-stone-50/50`,
     stockToggle: `flex items-center justify-between bg-stone-50 border border-stone-200 rounded-[var(--radius-button)] px-4 py-3.5 shadow-sm`,
@@ -453,8 +446,7 @@ export const THEME = {
     categoryShowMore: `rounded-[var(--radius-badge)] px-3 py-1.5 ${FS.xs} font-bold border border-dashed border-stone-300 text-stone-500 hover:border-stone-500 hover:text-stone-700 transition-all bg-stone-50 active:scale-95`,
     wizard: {
       progressWrapper: 'flex gap-1 mt-1',
-      progressBase:
-        'h-1 w-6 rounded-full transition-smooth duration-500',
+      progressBase: 'h-1 w-6 rounded-full transition-smooth duration-500',
       stepActive: 'bg-kraft-600',
       stepInactive: 'bg-stone-200',
       stepContent:
@@ -516,14 +508,11 @@ export const THEME = {
   modal: {
     overlay:
       'fixed inset-0 z-[200] flex flex-col items-center justify-center bg-white/40 backdrop-blur-2xl p-4 pointer-events-auto',
-    closeButtonWrapper:
-      'absolute top-6 right-6 z-[210]',
+    closeButtonWrapper: 'absolute top-6 right-6 z-[210]',
     closeButtonCustom: '!bg-white/80',
-    imageWrapper:
-      'w-full flex items-center justify-center max-h-[50vh]',
+    imageWrapper: 'w-full flex items-center justify-center max-h-[50vh]',
     image: `max-w-full max-h-[50vh] object-contain shadow-2xl ${BR.lg}`,
-    contentWrapper:
-      'text-center space-y-4 w-full max-w-2xl mt-2',
+    contentWrapper: 'text-center space-y-4 w-full max-w-2xl mt-2',
     headerWrapper: 'space-y-1',
     title: `${FS.xl} text-stone-900`,
     description: `${FS.base} text-stone-500 leading-relaxed font-medium px-6`,

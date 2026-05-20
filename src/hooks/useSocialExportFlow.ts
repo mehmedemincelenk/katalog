@@ -16,19 +16,25 @@ export function useSocialExportFlow(
   const storeUrl = `${slug}.ekatalog.site`;
 
   const [designIndex, setDesignIndex] = useState(0);
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null,
+  );
   const [isExporting, setIsExporting] = useState(false);
   const [aspectRatio] = useState<'STORY' | 'POST'>('STORY');
 
   useEffect(() => {
     if (isOpen && products.length > 0 && !selectedProductId) {
-      setSelectedProductId(products[Math.floor(Math.random() * products.length)].id);
+      setSelectedProductId(
+        products[Math.floor(Math.random() * products.length)].id,
+      );
     }
   }, [isOpen, products, selectedProductId]);
 
   const activeProduct = useMemo(() => {
     if (!selectedProductId) return products[0] || null;
-    return products.find((p) => p.id === selectedProductId) || products[0] || null;
+    return (
+      products.find((p) => p.id === selectedProductId) || products[0] || null
+    );
   }, [selectedProductId, products]);
 
   const handleNextDesign = () => {

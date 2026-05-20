@@ -8,7 +8,11 @@ import StatusOverlay from '../ui/StatusOverlay';
 import StatusToggle from '../ui/StatusToggle';
 import { transformCurrencyStringToNumber } from '../../utils/core';
 import { BulkPriceUpdateModalProps, Product } from '../../types';
-import { useBulkPriceFlow, ActionType, DeskItemState } from '../../hooks/useBulkPriceFlow';
+import {
+  useBulkPriceFlow,
+  ActionType,
+  DeskItemState,
+} from '../../hooks/useBulkPriceFlow';
 
 /**
  * DESK ITEM ROW (Local Diamond Utility)
@@ -32,9 +36,11 @@ const DeskItemRow = memo(
       <motion.div
         layout
         initial={{ opacity: 0, y: 10 }}
-        animate={{ 
-          opacity: state.included ? 1 : 0.6, 
-          filter: state.included ? 'grayscale(0%) opacity(1)' : 'grayscale(100%) opacity(0.7)'
+        animate={{
+          opacity: state.included ? 1 : 0.6,
+          filter: state.included
+            ? 'grayscale(0%) opacity(1)'
+            : 'grayscale(100%) opacity(0.7)',
         }}
         className={`flex flex-col items-stretch gap-3 p-3.5 rounded-[28px] border transition-all duration-500 ${state.included ? 'bg-white border-stone-100 shadow-sm' : 'bg-stone-50/30 border-transparent'}`}
       >
@@ -42,7 +48,11 @@ const DeskItemRow = memo(
         <div className="flex items-center gap-3 flex-1">
           <div className="w-10 h-10 rounded-xl overflow-hidden bg-stone-100 border border-stone-100 shrink-0">
             {product.image_url ? (
-              <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-stone-300">
                 <Lucide.Sparkles size={18} />
@@ -76,8 +86,8 @@ const DeskItemRow = memo(
           )}
 
           <div className="shrink-0 pointer-events-auto min-w-[80px]">
-            <StatusToggle 
-              value={state.included} 
+            <StatusToggle
+              value={state.included}
               onChange={() => onToggle(product.id)}
               variant="compact"
             />
@@ -124,7 +134,13 @@ export default function BulkPriceUpdateModal({
     toggleProductInclusion,
     calculateNewPrice,
     handleApply,
-  } = useBulkPriceFlow(allProducts, categories, onGranularUpdate, onClose, initialStep);
+  } = useBulkPriceFlow(
+    allProducts,
+    categories,
+    onGranularUpdate,
+    onClose,
+    initialStep,
+  );
 
   if (!isOpen) return null;
 
@@ -137,12 +153,19 @@ export default function BulkPriceUpdateModal({
       }}
       maxWidth="max-w-xl"
       title={
-        currentStep === 1 ? 'İŞLEM' :
-        currentStep === 2 ? 'KATEGORİ' :
-        currentStep === 2.1 ? 'hangisi?' :
-        currentStep === 2.2 ? 'HESAPLAMA' :
-        currentStep === 2.3 ? 'MİKTAR' :
-        currentStep === 3 ? 'ONAY' : 'TOPLU İŞLEM'
+        currentStep === 1
+          ? 'İŞLEM'
+          : currentStep === 2
+            ? 'KATEGORİ'
+            : currentStep === 2.1
+              ? 'hangisi?'
+              : currentStep === 2.2
+                ? 'HESAPLAMA'
+                : currentStep === 2.3
+                  ? 'MİKTAR'
+                  : currentStep === 3
+                    ? 'ONAY'
+                    : 'TOPLU İŞLEM'
       }
       progress={(() => {
         if (currentStep === 0) return undefined;
@@ -163,7 +186,6 @@ export default function BulkPriceUpdateModal({
       isStatic={isStatic}
     >
       <div className="space-y-6">
-
         {/* STEP 1: ACTION SELECTION */}
         {currentStep === 1 && (
           <div className="space-y-3 fade-in py-2">
@@ -197,38 +219,52 @@ export default function BulkPriceUpdateModal({
         {currentStep === 2 && (
           <div className="space-y-6 fade-in py-2">
             <div className="bg-stone-50 p-6 rounded-[32px] border border-stone-100">
-               <div className="flex flex-wrap justify-center gap-2">
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button
+                  onClick={() => toggleCategory('TÜMÜ')}
+                  variant={
+                    selectedCategories.length === categories.length
+                      ? 'primary'
+                      : 'secondary'
+                  }
+                  size="md"
+                  className={`!px-6 !py-3 !rounded-2xl !text-[11px] font-black ${selectedCategories.length === categories.length ? '!bg-stone-900 !text-white' : ''}`}
+                  showFingerprint={true}
+                >
+                  TÜMÜ
+                </Button>
+                {categories.map((cat) => (
                   <Button
-                    onClick={() => toggleCategory('TÜMÜ')}
-                    variant={selectedCategories.length === categories.length ? 'primary' : 'secondary'}
+                    key={cat}
+                    onClick={() => toggleCategory(cat)}
+                    variant={
+                      selectedCategories.includes(cat) ? 'primary' : 'secondary'
+                    }
                     size="md"
-                    className={`!px-6 !py-3 !rounded-2xl !text-[11px] font-black ${selectedCategories.length === categories.length ? '!bg-stone-900 !text-white' : ''}`}
+                    className={`!px-6 !py-3 !rounded-2xl !text-[11px] font-black ${selectedCategories.includes(cat) ? '!bg-stone-900 !text-white' : ''}`}
                     showFingerprint={true}
                   >
-                    TÜMÜ
+                    {cat}
                   </Button>
-                  {categories.map((cat) => (
-                    <Button
-                      key={cat}
-                      onClick={() => toggleCategory(cat)}
-                      variant={selectedCategories.includes(cat) ? 'primary' : 'secondary'}
-                      size="md"
-                      className={`!px-6 !py-3 !rounded-2xl !text-[11px] font-black ${selectedCategories.includes(cat) ? '!bg-stone-900 !text-white' : ''}`}
-                      showFingerprint={true}
-                    >
-                      {cat}
-                    </Button>
-                  ))}
-               </div>
+                ))}
+              </div>
             </div>
 
             <div className="flex gap-3">
-              <Button onClick={prevStep} variant="secondary" mode="rectangle" className="w-20 h-16 shrink-0" showFingerprint={false}>
+              <Button
+                onClick={prevStep}
+                variant="secondary"
+                mode="rectangle"
+                className="w-20 h-16 shrink-0"
+                showFingerprint={false}
+              >
                 <Lucide.ChevronLeft size={24} strokeWidth={3} />
               </Button>
               <Button
                 onClick={nextStep}
-                disabled={selectedCategories.length === 0 && actionType !== 'DELETE'}
+                disabled={
+                  selectedCategories.length === 0 && actionType !== 'DELETE'
+                }
                 variant="primary"
                 className="flex-1 h-16 shadow-2xl font-black !rounded-[24px]"
                 showFingerprint={true}
@@ -242,7 +278,13 @@ export default function BulkPriceUpdateModal({
         {/* PRICE STEPS 2.1, 2.2, 2.3 */}
         {currentStep === 2.1 && (
           <div className="flex items-center gap-3 fade-in py-4">
-            <Button onClick={prevStep} variant="secondary" mode="rectangle" className="w-16 h-16 shrink-0" showFingerprint={false}>
+            <Button
+              onClick={prevStep}
+              variant="secondary"
+              mode="rectangle"
+              className="w-16 h-16 shrink-0"
+              showFingerprint={false}
+            >
               <Lucide.ChevronLeft size={24} strokeWidth={3} />
             </Button>
             <div className="flex gap-2 flex-1">
@@ -254,9 +296,13 @@ export default function BulkPriceUpdateModal({
                 variant="primary"
                 className="flex-1 h-16 !rounded-[20px]"
                 showFingerprint={true}
-                icon={<Lucide.TrendingUp size={18} className="text-emerald-400" />}
+                icon={
+                  <Lucide.TrendingUp size={18} className="text-emerald-400" />
+                }
               >
-                <span className="font-black tracking-widest text-[11px] uppercase">ZAM</span>
+                <span className="font-black tracking-widest text-[11px] uppercase">
+                  ZAM
+                </span>
               </Button>
               <Button
                 onClick={() => {
@@ -266,9 +312,13 @@ export default function BulkPriceUpdateModal({
                 variant="primary"
                 className="flex-1 h-16 !rounded-[20px]"
                 showFingerprint={true}
-                icon={<Lucide.TrendingDown size={18} className="text-red-400" />}
+                icon={
+                  <Lucide.TrendingDown size={18} className="text-red-400" />
+                }
               >
-                <span className="font-black tracking-widest text-[11px] uppercase">İNDİRİM</span>
+                <span className="font-black tracking-widest text-[11px] uppercase">
+                  İNDİRİM
+                </span>
               </Button>
             </div>
           </div>
@@ -276,7 +326,13 @@ export default function BulkPriceUpdateModal({
 
         {currentStep === 2.2 && (
           <div className="flex items-center gap-2 fade-in py-2">
-            <Button onClick={prevStep} variant="secondary" mode="rectangle" className="w-16 h-16 shrink-0" showFingerprint={false}>
+            <Button
+              onClick={prevStep}
+              variant="secondary"
+              mode="rectangle"
+              className="w-16 h-16 shrink-0"
+              showFingerprint={false}
+            >
               <Lucide.ChevronLeft size={24} strokeWidth={3} />
             </Button>
 
@@ -323,7 +379,13 @@ export default function BulkPriceUpdateModal({
 
         {currentStep === 2.3 && (
           <div className="flex items-center gap-3 fade-in py-2">
-            <Button onClick={prevStep} variant="secondary" mode="rectangle" className="w-16 h-16 shrink-0" showFingerprint={false}>
+            <Button
+              onClick={prevStep}
+              variant="secondary"
+              mode="rectangle"
+              className="w-16 h-16 shrink-0"
+              showFingerprint={false}
+            >
               <Lucide.ChevronLeft size={24} strokeWidth={3} />
             </Button>
 
@@ -332,7 +394,9 @@ export default function BulkPriceUpdateModal({
               type="text"
               inputMode="decimal"
               value={inputValue}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setInputValue(e.target.value)
+              }
               placeholder="Miktar"
               className="!text-center !text-lg !font-black !py-4 shadow-sm rounded-[18px] border-2 border-stone-100"
               containerClassName="relative flex-1 max-w-[160px] mx-auto"
@@ -359,7 +423,9 @@ export default function BulkPriceUpdateModal({
           <div className="space-y-4 fade-in">
             <div className="max-h-[45vh] overflow-y-auto pr-1 space-y-5 custom-scrollbar">
               {categories
-                .filter(cat => initialProductsForDesk.some(p => p.category === cat))
+                .filter((cat) =>
+                  initialProductsForDesk.some((p) => p.category === cat),
+                )
                 .map((cat) => (
                   <div key={cat} className="space-y-3">
                     <div className="flex items-center gap-3 px-1">
@@ -402,24 +468,28 @@ export default function BulkPriceUpdateModal({
                 onClick={handleApply}
                 disabled={
                   isProcessing ||
-                  Object.values(deskItems).filter((d) => d.included).length === 0
+                  Object.values(deskItems).filter((d) => d.included).length ===
+                    0
                 }
                 variant={actionType === 'DELETE' ? 'danger' : 'action'}
                 className="flex-1 h-16 font-black !rounded-[24px]"
                 loading={isProcessing}
                 showFingerprint={true}
                 fingerprintType="action"
-                icon={<Lucide.Check size={28} className="text-white" strokeWidth={4} />}
+                icon={
+                  <Lucide.Check
+                    size={28}
+                    className="text-white"
+                    strokeWidth={4}
+                  />
+                }
               />
             </div>
           </div>
         )}
 
         {/* CINEMATIC FEEDBACK OVERLAY */}
-        <StatusOverlay 
-          status={submitStatus} 
-          message="" 
-        />
+        <StatusOverlay status={submitStatus} message="" />
       </div>
     </BaseModal>
   );

@@ -105,7 +105,6 @@ export interface ProductDetailModalProps {
   isStatic?: boolean;
 }
 
-
 /**
  * CompanySettings: Mağazanın kimlik, marka ve sistem ayarları.
  */
@@ -302,7 +301,10 @@ export interface CategoryHeaderProps {
 export interface SearchFilterProps {
   sortedList: string[];
   stats: Record<string, number>;
-  onCategoryOrderChange: (categoryName: string, newPosition: number) => Promise<void>;
+  onCategoryOrderChange: (
+    categoryName: string,
+    newPosition: number,
+  ) => Promise<void>;
   renameCategory: (oldName: string, newName: string) => Promise<void>;
   onAddCategory?: (name: string) => void;
 }

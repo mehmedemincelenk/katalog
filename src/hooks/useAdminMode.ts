@@ -18,7 +18,13 @@ const STORE_SLUG = getActiveStoreSlug();
  * - Sunucu taraflı PIN doğrulama (RPC).
  */
 export function useAdminMode() {
-  const { isAdmin, setIsAdmin, isInlineEnabled, toggleInlineEdit, setAdminPin } = useStore();
+  const {
+    isAdmin,
+    setIsAdmin,
+    isInlineEnabled,
+    toggleInlineEdit,
+    setAdminPin,
+  } = useStore();
 
   const [lockoutUntil, setLockoutUntil] = useState<number | null>(() => {
     const saved = sessionStorage.getItem('admin_lockout_until');
